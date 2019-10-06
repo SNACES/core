@@ -36,7 +36,7 @@ class TwitterDataPreprocessor():
 
         return list(filter(pred, total_tweets))
         
-    def get_friends_by_screen_name(self, screen_name: str, num_friends) -> list:
+    def get_friends_by_screen_name(self, screen_name: str, num_friends: int) -> list:
         """  
         Return a list of screen_names of friends of user with screen name screen_name.
         """
@@ -48,7 +48,7 @@ class TwitterDataPreprocessor():
 
         return [self.twitter_api.get_user(user_id=friend_id).screen_name for friend_id in friends_ids]
     
-    def get_friends_by_id(self, id: int, num_friends) -> list:
+    def get_friends_by_id(self, id: int, num_friends: int) -> list:
         """  
         Return a list of ids of friends of user with id id.
         """
