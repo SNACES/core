@@ -1,0 +1,15 @@
+input-datastores:
+  input-ds1:
+    project-name: ""
+    datastore-name: "TweepyClient"
+    type: "Tweepy"
+    location: ""
+  
+
+output-datastores:
+  output-ds1:
+    project-name: "General"
+    datastore-name: "TwitterDownload"
+    type: "MongoDB"
+    location: "mongodb://localhost:27017"
+  
