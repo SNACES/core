@@ -2,6 +2,7 @@ input-datastores:
   input-ds1:
     project-name: ""
     datastore-name: "TweepyClient"
+    collection-name: "TweepyClient"
     type: "Tweepy"
     location: ""
   
@@ -9,7 +10,22 @@ input-datastores:
 output-datastores:
   output-ds1:
     project-name: "General"
-    datastore-name: "TwitterDownload"
+    datastore-name: "TwitterTweetDownload"
+    collection-name: "getTweets"
+    type: "MongoDB"
+    location: "mongodb://localhost:27017"
+
+  output-ds2:
+      project-name: "General"
+      datastore-name: "TwitterFriendsDownload"
+      collection-name: "getFriendsByScreenName"
+      type: "MongoDB"
+      location: "mongodb://localhost:27017"
+
+  output-ds3:
+    project-name: "General"
+    datastore-name: "TwitterFriendsDownload"
+    collection-name: "getFriendsByID"
     type: "MongoDB"
     location: "mongodb://localhost:27017"
   

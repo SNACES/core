@@ -3,7 +3,7 @@ from tweepy import Stream
 from tweepy import API
 from tweepy import Cursor
 from typing import Union
-from datastore import DataStore
+from datastore import *
 import datetime
 import credentials
 
@@ -15,7 +15,7 @@ class TwitterAuthenticator():
         return auth
 
 
-class TweepyDS(DataStore):
+class TweepyDAO(InputDAO):
     def __init__(self):
         self.auth = TwitterAuthenticator().authenticate()
         self.twitter_api = API(self.auth)

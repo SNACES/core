@@ -1,15 +1,15 @@
 from typing import Union
-from algorithm import Algorithm
+from process import Process
 
 import datetime
 
 """
-Preprocess Tweepy data for use in future algorithms.
+Download Tweets for use in future algorithms.
 """
-class TwitterDownloader(Algorithm):
-    def __init__(self, init_path, input_datastores={}, output_datastores={}):
-        Algorithm.__init__(self, init_path, input_datastores, output_datastores)
-        
+class TwitterTweetDownloader(Process):
+    def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
+        Process.__init__(self, init_path, input_DAOs, output_DAOs)
+
     def get_tweets(self, id: Union[str, int], start_date: datetime,
                    end_date: datetime, num_tweets: int) -> list:
         """
@@ -23,7 +23,7 @@ class TwitterDownloader(Algorithm):
                  "num_tweets": num_tweets
                  }
 
-        tweets = self.input_datastores['TweepyClient'].read(query) 
+        tweets = self.input_DAOs['TweepyClient'].read(query) 
         document = {
             "id": id,
             "start_date": start_date,
@@ -31,8 +31,15 @@ class TwitterDownloader(Algorithm):
             # "num_tweets": num_tweets
             "tweets": tweets
         }
-        self.output_datastores['TwitterDownload'].create("getTweets", document)
-    
+        self.output_DAOs["getTweets"].create(document)
+
+"""
+Download Twitter Friends for use in future algorithms.
+"""
+class TwitterFriendsDownloader(Process):
+    def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
+        Process.__init__(self, init_path, input_DAOs, output_DAOs)
+
     def get_friends_by_screen_name(self, screen_name: str, num_friends: int) -> list:
         """  
         Return a list of screen_names of friends of user with screen name screen_name.
@@ -44,14 +51,14 @@ class TwitterDownloader(Algorithm):
                  "screen_name": screen_name,
                  "num_friends": num_friends}
         
-        friends = self.input_datastores['TweepyClient'].read(query)
+        friends = self.input_DAOs['TweepyClient'].read(query)
         document = {
             "screen_name": screen_name,
             # "num_friends": num_friends,
             "friends": friends
         }
-        self.output_datastores['TwitterDownload'].create("getFriendsByScreenName", document)
-    
+        self.output_DAOs["getFriendsByScreenName"].create(document)
+
     def get_friends_by_id(self, id: int, num_friends: int) -> list:
         """  
         Return a list of ids of friends of user with id id.
@@ -63,37 +70,34 @@ class TwitterDownloader(Algorithm):
                  "id": id,
                  "num_friends": num_friends}
 
-        friends = self.input_datastores['TweepyClient'].read(query)
+        friends = self.input_DAOs['TweepyClient'].read(query)
         document = {
             "id": id,
             # "num_friends": num_friends,
             "friends": friends
         }
-        self.output_datastores['TwitterDownload'].create("getFriendsByID", document)
+        self.output_DAOs["getFriendsByID"].create(document)
 
-    def rate_limited_functions(self) -> str:
-        functions_list = ["get_user_tweets_by_screen_name", "get_user_tweets_by_id", 
-                          "get_friends_screen_names_by_screen_name", "get_friends_ids_by_id"]
-        
-        result = ""
-        for function_name in functions_list:
-            result += function_name + "\n"
-
-        return result.strip()
-
+def rate_limited_functions() -> str:
+    functions_list = ["get_user_tweets_by_screen_name", "get_user_tweets_by_id", 
+                      "get_friends_screen_names_by_screen_name", "get_friends_ids_by_id"]
+    
+    result = ""
+    for function_name in functions_list:
+        result += function_name + "\n"
+    return result.strip()
 
 if __name__ == "__main__":
     start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
-    end_date =   datetime.datetime(2019, 10, 24, 0, 0, 0)
+    end_date =   datetime.datetime(2019, 11, 3, 0, 0, 0)
     
-    # import tweepyDS
-    # input_datastore = tweepyDS.TweepyDS()
-
-    # import mongoDS
-    # output_datastore = mongoDS.MongoDS()
-
-
-    twitterDownloader = TwitterDownloader("init-algo.yaml")
+    twitterDownloader = TwitterTweetDownloader("init-algo.yaml")
     twitterDownloader.get_tweets("realDonaldTrump", start_date, end_date, 1)
+    
     # twitterDownloader.get_friends_by_id(25073877, 5)
-    twitterDownloader.get_friends_by_screen_name("realDonaldTrump", 5)
+    # twitterDownloader.get_friends_by_screen_name("realDonaldTrump", 5)
+
+
+
+
+    
