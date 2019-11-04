@@ -94,9 +94,12 @@ if __name__ == "__main__":
     twitterDownloader = TwitterTweetDownloader("init-algo.yaml")
     twitterDownloader.get_tweets("realDonaldTrump", start_date, end_date, 1)
     
-    # twitterDownloader.get_friends_by_id(25073877, 5)
-    # twitterDownloader.get_friends_by_screen_name("realDonaldTrump", 5)
 
+    twitterDownloader = TwitterFriendsDownloader("ds-init-config.yaml")
+    # twitterDownloader.get_friends_by_id(25073877, 5)
+    twitterDownloader.get_friends_by_screen_name("realDonaldTrump", 5)
+
+    twitterDownloader.get_friends_by_screen_name(user_name, num_friends_to_get)
 
 
 

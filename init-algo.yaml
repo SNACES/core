@@ -13,7 +13,7 @@ output-datastores:
     datastore-name: "TwitterTweetDownload"
     collection-name: "getTweets"
     type: "MongoDB"
-    location: "mongodb://localhost:27017"
+    location: "mongodb://localhost:27018"
 
   output-ds2:
       project-name: "General"
