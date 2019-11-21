@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy import API
@@ -6,6 +9,30 @@ from typing import Union
 from datastore import *
 import datetime
 import credentials
+
+from tweepy.streaming import StreamListener
+from tweepy import Stream
+
+class TweepyListener(StreamListener):
+    def __init__(self, num_tweets):
+        super().__init__()
+        self.counter = 0
+        self.limit = num_tweets
+        self.tweets = []
+
+    # TODO:
+    def on_data(self, data):
+        try:
+            # userid = status.user.id_str
+            self.tweets.append(data)
+            self.counter += 1
+            if self.counter < self.limit:
+                return True
+            else:
+                self.disconnect()
+        except BaseException as e:
+            print('failed on_status,',str(e))
+            
 
 class TwitterAuthenticator():
     def authenticate(self):
@@ -23,7 +50,7 @@ class TweepyDAO(InputDAO):
     def read(self, query):
         query_type = query["query_type"]
 
-        if (query_type == "get_tweets"):
+        if (query_type == "get_tweets_by_timeframe_user"):
             id = query["id"]
             start_date = query["start_date"]
             end_date = query["end_date"]
@@ -38,7 +65,19 @@ class TweepyDAO(InputDAO):
             tweet_objects = list(filter(pred, total_tweets))
             json_tweets = list(map(lambda t: t._json, tweet_objects))
             return json_tweets
-
+        elif (query_type == "get_tweets_user"):
+            id = query["id"]
+            num_tweets = query["num_tweets"]
+            total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items(num_tweets)
+            json_tweets = list(map(lambda t: t._json, total_tweets))
+            return json_tweets
+        elif (query_type == "get_random_tweets"):
+            # TODO:
+            num_tweets = query["num_tweets"]
+            listener = TweepyListener(num_tweets)
+            stream = Stream(self.auth, listener)
+            
+            return list(map(lambda t: t._json, listener.tweets)) 
         elif (query_type == "get_friends_by_screen_name"):
             screen_name = query["screen_name"]
             num_friends = query["num_friends"]
@@ -51,6 +90,18 @@ class TweepyDAO(InputDAO):
             num_friends = query["num_friends"]
             
             return [friend_id for friend_id in Cursor(self.twitter_api.friends_ids, user_id=id).items(num_friends)]
+        elif (query_type == "get_following_by_screen_name"):
+            screen_name = query["screen_name"]
+            num_following = query["num_following"]
+
+            following_users_id = [following_id for following_id in Cursor(self.twitter_api.followers_ids, screen_name=screen_name).items(num_following)]
+
+            return [self.twitter_api.get_user(user_id=following_id).screen_name for following_id in following_users_id]
+        elif (query_type == "get_following_by_id"):
+            id = query["id"]
+            num_following = query["num_following"]
+
+            return [following_id for following_id in Cursor(self.twitter_api.followers_ids, user_id=id).items(num_following)]
         else:
             raise Exception("Invalid Query")
 

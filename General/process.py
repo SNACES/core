@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../')
+
 from datastore import *
 import credentials
 from DAOFactory import *

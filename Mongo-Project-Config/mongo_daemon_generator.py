@@ -1,4 +1,5 @@
 import os
+import sys
 import yaml
 
 def monogo_daemon_generator(init_path):
@@ -33,7 +34,14 @@ def monogo_daemon_generator(init_path):
         except yaml.YAMLError as exc:
             print(exc)
 
-monogo_daemon_generator('mongo-project-config.yaml')
+# monogo_daemon_generator('mongo-project-config.yaml')
+
+if len(sys.argv) != 2:
+    raise Exception("Please provide a path to a Mongo Project Configuration file.")
+
+monogo_daemon_generator(sys.argv[1])
 
 # need to make location folder if it doesn't exist >> let the bash script do this
 # # --fork --logpath ${1}/mongodb.log
+
+# TODO: make folder if doesn't exist

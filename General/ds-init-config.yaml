@@ -11,21 +11,36 @@ output-datastores:
   output-ds1:
     project-name: "General"
     datastore-name: "TwitterTweetDownload"
-    collection-name: "getTweets"
+    collection-name: "getTweetsByTimeframeUser"
     type: "MongoDB"
-    location: "mongodb://localhost:27018"
+    location: "mongodb://localhost:27017"
 
-  output-ds2:
+    output-ds1:
+    project-name: "General"
+    datastore-name: "TwitterTweetDownload"
+    collection-name: "getTweetsByUser"
+    type: "MongoDB"
+    location: "mongodb://localhost:27017"
+
+  output-ds3:
       project-name: "General"
       datastore-name: "TwitterFriendsDownload"
       collection-name: "getFriendsByScreenName"
       type: "MongoDB"
       location: "mongodb://localhost:27017"
 
-  output-ds3:
+  output-ds4:
     project-name: "General"
     datastore-name: "TwitterFriendsDownload"
     collection-name: "getFriendsByID"
     type: "MongoDB"
     location: "mongodb://localhost:27017"
+
+  output-ds4:
+    project-name: "General"
+    datastore-name: "TwitterFollowingDownload"
+    collection-name: "getFollowingByScreenName"
+    type: "MongoDB"
+    location: "mongodb://localhost:27017"
+  
   

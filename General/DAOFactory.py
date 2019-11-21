@@ -1,6 +1,9 @@
+import sys
+sys.path.append('../Concrete-DAO')
+
 import yaml
 from mongoDAO import *
-from tweepyDS import *
+from tweepyDAO import *
 
 
 class DAOConfig():
@@ -68,5 +71,3 @@ class DAOFactory():
         elif (ds_type == 'Tweepy'):
             return DAO_constructor()
 
-
-   

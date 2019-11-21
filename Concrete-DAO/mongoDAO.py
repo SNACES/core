@@ -1,3 +1,6 @@
+import sys
+sys.path.append('../General')
+
 from datastore import *
 from pymongo import MongoClient
 
