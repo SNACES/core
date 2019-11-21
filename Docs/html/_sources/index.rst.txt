@@ -1,0 +1,14 @@
+================================
+ Community Detection Algorithms
+================================
+
+Contents
+========
+.. toctree::
+   :maxdepth: 2
+
+   introduction
+   key_concepts
+   api
+   tutorial
+   examples
