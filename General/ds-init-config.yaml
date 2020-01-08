@@ -15,7 +15,7 @@ output-datastores:
     type: "MongoDB"
     location: "mongodb://localhost:27017"
 
-    output-ds1:
+  output-ds2:
     project-name: "General"
     datastore-name: "TwitterTweetDownload"
     collection-name: "getTweetsByUser"
@@ -23,11 +23,11 @@ output-datastores:
     location: "mongodb://localhost:27017"
 
   output-ds3:
-      project-name: "General"
-      datastore-name: "TwitterFriendsDownload"
-      collection-name: "getFriendsByScreenName"
-      type: "MongoDB"
-      location: "mongodb://localhost:27017"
+    project-name: "General"
+    datastore-name: "TwitterFriendsDownload"
+    collection-name: "getFriendsByScreenName"
+    type: "MongoDB"
+    location: "mongodb://localhost:27017"
 
   output-ds4:
     project-name: "General"
@@ -36,7 +36,7 @@ output-datastores:
     type: "MongoDB"
     location: "mongodb://localhost:27017"
 
-  output-ds4:
+  output-ds5:
     project-name: "General"
     datastore-name: "TwitterFollowingDownload"
     collection-name: "getFollowingByScreenName"

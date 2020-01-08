@@ -21,15 +21,16 @@ class TweepyListener(StreamListener):
         self.tweets = []
 
     # TODO:
-    def on_data(self, data):
+    def on_status(self, data):
         try:
             # userid = status.user.id_str
+            # print(data)
             self.tweets.append(data)
             self.counter += 1
             if self.counter < self.limit:
                 return True
             else:
-                self.disconnect()
+                return False
         except BaseException as e:
             print('failed on_status,',str(e))
             
@@ -72,12 +73,16 @@ class TweepyDAO(InputDAO):
             json_tweets = list(map(lambda t: t._json, total_tweets))
             return json_tweets
         elif (query_type == "get_random_tweets"):
-            # TODO:
-            num_tweets = query["num_tweets"]
+            num_tweets = query["num_tweets"] 
             listener = TweepyListener(num_tweets)
+
             stream = Stream(self.auth, listener)
+            for _ in range(num_tweets): stream.sample()
             
-            return list(map(lambda t: t._json, listener.tweets)) 
+            random_tweets = listener.tweets
+            json_tweets = list(map(lambda t: t._json, random_tweets))   
+            
+            return len(json_tweets)
         elif (query_type == "get_friends_by_screen_name"):
             screen_name = query["screen_name"]
             num_friends = query["num_friends"]
