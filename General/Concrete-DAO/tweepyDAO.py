@@ -46,7 +46,7 @@ class TwitterAuthenticator():
 class TweepyDAO(InputDAO):
     def __init__(self):
         self.auth = TwitterAuthenticator().authenticate()
-        self.twitter_api = API(self.auth)
+        self.twitter_api = API(self.auth, wait_on_rate_limit=True)
 
     def read(self, query):
         query_type = query["query_type"]
@@ -73,16 +73,20 @@ class TweepyDAO(InputDAO):
             json_tweets = list(map(lambda t: t._json, total_tweets))
             return json_tweets
         elif (query_type == "get_random_tweets"):
-            num_tweets = query["num_tweets"] 
-            listener = TweepyListener(num_tweets)
+            listener = TweepyListener(1)
 
             stream = Stream(self.auth, listener)
-            for _ in range(num_tweets): stream.sample()
+            # filter out all non-English Tweets
+            stream.filter(languages=["en"]) 
+            stream.sample()
             
-            random_tweets = listener.tweets
-            json_tweets = list(map(lambda t: t._json, random_tweets))   
-            
-            return len(json_tweets)
+            random_tweet = listener.tweets[0] if len(listener.tweets) != 0 else None
+            if random_tweet != None:
+                json_tweet = random_tweet._json 
+                # list(map(lambda t: t._json, random_tweets))   
+                return json_tweet
+
+            return None
         elif (query_type == "get_friends_by_screen_name"):
             screen_name = query["screen_name"]
             num_friends = query["num_friends"]

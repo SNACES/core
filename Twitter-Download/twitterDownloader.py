@@ -1,10 +1,11 @@
 import sys
 sys.path.append('../General')
-sys.path.append('../Concrete-DAO')
+sys.path.append('../General/Concrete-DAO')
 
 import functools 
 from typing import Union, List
 from process import Process
+from mongoDAO import MongoOutputDAO
 
 import datetime
 
@@ -70,22 +71,22 @@ class TwitterTweetDownloader(Process):
         }
         self.output_DAOs["getTweetsByUser"].create(document)
 
-    def get_random_tweets(self, num_tweets: int, output_collection_name: str, ds_location="", mongo_database_name="") -> list:
+    def get_random_tweet(self, output_collection_name: str, config={}):
         query = {
             "query_type": "get_random_tweets",
-            "num_tweets": num_tweets
         }
-        tweets = self.input_DAOs['TweepyClient'].read(query) 
+        tweet = self.input_DAOs['TweepyClient'].read(query) 
         
-        # TODO: hmm, how should this be stored?
-        documents = [{"tweet": tweet} for tweet in tweets]
-        
-        for document in documents:
+        if tweet != None:
+            tweet_document = {'tweetID': tweet['id'], 'text': tweet['text']}
+            
             if output_collection_name not in self.output_DAOs:
-                # we assume for now we want a MongoDAO
-                # ds_location and mongo_database are provided in the case that we want to dynamically create a new collection
-                self.output_DAOs[output_collection_name] = MongoOutputDAO(ds_location, mongo_database_name, output_collection_name)
-            self.output_DAOs[output_collection_name].create(document)
+                # config should be provided in the case that we want to dynamically create a new collection
+                self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", config) 
+            self.output_DAOs[output_collection_name].create(tweet_document)
+            return tweet_document
+
+        return None
 
 """
 Download Twitter Friends for use in future algorithms.
@@ -195,7 +196,7 @@ class UserListProcessor:
         self.process_user_list(user_list, curried_operation)
 
     def process_user_list(self, user_list, curried_function):
-        functools.reduce(curried_function, user_list) 
+        functools.reduce(curried_function, user_list)   
 
 if __name__ == "__main__":
     start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
@@ -204,19 +205,9 @@ if __name__ == "__main__":
     import os
     # note that we need to pass in full path
     ds_config_path = os.getcwd() + "/../General/ds-init-config.yaml"
-    twitterDownloader = TwitterTweetDownloader(ds_config_path)
-    # twitterDownloader.get_tweets_by_user(1, )
-    # twitterDownloader.get_tweets_by_timeframe_user(start_date, end_date, 1, user_list_file_path="user_list")
     
-    # twitterDownloader.get_random_tweets(1)
-
-    # twitterDownloader = TwitterFriendsDownloader(os.getcwd() + "/../General/ds-init-config.yaml")
-    # twitterDownloader.get_friends_by_id(25073877, 5)
-    # twitterDownloader.get_friends_by_screen_name("realDonaldTrump", 5)
-
-    # twitterDownloader.get_friends_by_screen_name(user_name, num_friends_to_get)
-
-    # following_downloader = TwitterFollowingDownloader(ds_config_path)
-    # following_downloader.get_following_by_screen_name("Twitter", 5)
-
-# twitter_downloader.get_tweets_by_timeframe_user(id, start_date, end_date: datetime, num_tweets)
+    # num_tweets_to_download = 1
+    # output_collection_name = "test"
+    # ds_location = 
+    # ds_name = "test"
+    # num_tweets_downloaded = twitter_downloader.get_random_tweets(num_tweets_to_download, output_collection_name, ds_location, ds_name)

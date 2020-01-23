@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../Concrete-DAO')
+sys.path.append('./Concrete-DAO')
 
 import yaml
 from mongoDAO import *
@@ -31,7 +31,7 @@ class DAOFactory():
             "MongoDB": MongoOutputDAO
         }
 
-    def create_DAOs(self, init_path: str) -> (dict, dict):
+    def create_DAOs_from_config_file(self, init_path: str) -> (dict, dict):
         """
         Return input and output datastore dictionaries, generated based 
         on syntactically valid initial configurations located at init_path.
@@ -46,6 +46,21 @@ class DAOFactory():
                 return input_datastore_interfaces, output_datastore_interfaces
             except yaml.YAMLError as exc:
                 print(exc)
+
+    def create_DAO_from_config(self, DAO_type: str, datastore_config):
+        """
+        DAO type is either 'input' or 'output'
+        """
+
+        assert DAO_type == "input" or DAO_type == "output"
+
+        DAO_config = DAOConfig(datastore_config) 
+        if DAO_type == "input":
+            DAO = self._get_DAO(DAO_config, self.input_DAO_constructors)
+        else:
+            DAO = self._get_DAO(DAO_config, self.output_DAO_constructors)
+        
+        return DAO
 
     def _get_DAOs(self, datastores_config, DAO_constructors):
         result = {}
@@ -66,8 +81,8 @@ class DAOFactory():
             raise Exception('Invalid Data Store type')
 
         if (ds_type == 'MongoDB'):
-            mongo_database_name = "{0}-{1}".format(DAO_config.project_name, DAO_config.ds_name)
-            return DAO_constructor(DAO_config.ds_location, mongo_database_name, DAO_config.collection_name)
+            # mongo_database_name = "{0}-{1}".format(DAO_config.project_name, DAO_config.ds_name)
+            return DAO_constructor(DAO_config.ds_location, DAO_config.ds_name, DAO_config.collection_name)
         elif (ds_type == 'Tweepy'):
             return DAO_constructor()
 

@@ -1,0 +1,11 @@
+download-datastore:
+  project-name: "Word Frequency"
+  datastore-name: "RawTweetsDS"
+  type: "MongoDB"
+  location: "mongodb://localhost:2223"
+
+processed-datastore:
+  project-name: "Word Frequency"
+  datastore-name: "ProcessedTweetDS"
+  type: "MongoDB"
+  location: "mongodb://localhost:2223"
