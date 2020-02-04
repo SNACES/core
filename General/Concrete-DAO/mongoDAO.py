@@ -14,8 +14,11 @@ class MongoDAO():
 Concrete implementation of InputDAO that supports MongoDB.
 """
 class MongoInputDAO(InputDAO, MongoDAO):
-    def read(self, query):
-        self.collection.find(query)
+    def read(self, query=None):
+        if query is None:
+            return self.collection.find()
+        else:
+            return self.collection.find(query)
 
 """
 Concrete implementation of OutputDAO that supports MongoDB.
