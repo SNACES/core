@@ -14,7 +14,7 @@ id = "david_madras"
 
 # download tweets for a user
 downloader = TwitterTweetDownloader(os.getcwd() + "/../General/ds-init-config.yaml")
-downloader.get_tweets_by_timeframe_user(start_date, end_date, 20, id, None)
+# downloader.get_tweets_by_timeframe_user(start_date, end_date, 20, id, None)
 
 # get user word frequency vector for timeframe
 word_frequency = WordFrequency(os.getcwd() + "/../General/ds-init-config.yaml")

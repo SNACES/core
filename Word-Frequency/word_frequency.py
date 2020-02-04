@@ -41,28 +41,29 @@ class WordFrequency(Process):
         daily_processed_tweets = self.input_DAOs[input_name].read()
         daily_processed_tweet_text = [processed_tweet for processed_tweet in daily_processed_tweets]
 
-        print(input_name)
-        print(collection)
-        print(daily_processed_tweet_text)
+        # print(input_name)
+        # print(collection)
+        # print(daily_processed_tweet_text)
 
         words = []
         for processed_tweet in daily_processed_tweet_text:
             words.extend(processed_tweet['processed-text-list'])
-        print(words)
+        # print(words)
         word_freq_vector = self._get_word_frequency_vector(words)
-        word_freq_vector_doc = {
-            "Date": date,
-            "WordFreqVector": word_freq_vector
-        }
-        print(word_freq_vector)
+        if word_freq_vector:
+            word_freq_vector_doc = {
+                "Date": date,
+                "WordFreqVector": word_freq_vector
+            }
+            # print(word_freq_vector)
 
-        # output_collection_name = "({})-GlobalWordFrequency".format(formatted_date) 
-        # output_collection_name = "GlobalWordFrequency" # TODO: this is a temporary default
-        output_config['collection-name'] = output_collection_name
-        if output_collection_name not in self.output_DAOs:
-            # dynamically create new DAO
-            self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
-        self.output_DAOs[output_collection_name].create(word_freq_vector_doc)
+            # output_collection_name = "({})-GlobalWordFrequency".format(formatted_date) 
+            # output_collection_name = "GlobalWordFrequency" # TODO: this is a temporary default
+            output_config['collection-name'] = output_collection_name
+            if output_collection_name not in self.output_DAOs:
+                # dynamically create new DAO
+                self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
+            self.output_DAOs[output_collection_name].create(word_freq_vector_doc)
 
     def generate_user_word_frequency_vector(self, date: datetime, user, output_collection_name, date_input_config=None, output_config=None):
         # TODO: handle default value for date_input_config
@@ -85,20 +86,20 @@ class WordFrequency(Process):
         
         word_freq_vector = self._get_word_frequency_vector(words)
         # print(word_freq_vector)
-        
-        word_freq_vector_doc = {
-            "User": user,
-            "Date": date,
-            "WordFreqVector": word_freq_vector
-        }
+        if word_freq_vector:
+            word_freq_vector_doc = {
+                "User": user,
+                "Date": date,
+                "WordFreqVector": word_freq_vector
+            }
 
-        # output_collection_name generated based on the date
-        # output_collection_name = "UserWordFrequency"
-        output_config['collection-name'] = output_collection_name
-        if output_collection_name not in self.output_DAOs:
-            # dynamically create new DAO
-            self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
-        self.output_DAOs[output_collection_name].create(word_freq_vector_doc)
+            # output_collection_name generated based on the date
+            # output_collection_name = "UserWordFrequency"
+            output_config['collection-name'] = output_collection_name
+            if output_collection_name not in self.output_DAOs:
+                # dynamically create new DAO
+                self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
+            self.output_DAOs[output_collection_name].create(word_freq_vector_doc)
 
     def _get_word_frequency_vector(self, words):
         word_freq_vector = collections.Counter()
