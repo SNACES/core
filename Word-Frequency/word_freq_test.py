@@ -14,7 +14,7 @@ id = "david_madras"
 
 # download tweets for a user
 downloader = TwitterTweetDownloader(os.getcwd() + "/../General/ds-init-config.yaml")
-# downloader.get_tweets_by_timeframe_user(start_date, end_date, 10, id, None)
+downloader.get_tweets_by_timeframe_user(start_date, end_date, 10, id, None)
 
 # get user word frequency vector
 word_frequency = WordFrequency(os.getcwd() + "/../General/ds-init-config.yaml")
@@ -31,7 +31,7 @@ output_config = {
     "type": "MongoDB",
     "location": "mongodb://localhost:" + port
 }
-# word_frequency.generate_user_word_frequency_vector(start_date, id, "UserWordFrequency", input_config, output_config)
+word_frequency.generate_user_word_frequency_vector(start_date, id, "UserWordFrequency", input_config, output_config)
 
 # get global word frequency vector
 input_config = {
@@ -48,7 +48,7 @@ output_config = {
     "location": "mongodb://localhost:" + port
 }
 # date = datetime.datetime(2020, 2, 3, 0, 0, 0)
-# word_frequency.generate_global_word_frequency_vector(start_date, "GlobalWordFrequency", input_config, output_config)
+word_frequency.generate_global_word_frequency_vector(start_date, "GlobalWordFrequency", input_config, output_config)
 
 # get relative word frequency for david_madras
 global_word_freq_config = {
