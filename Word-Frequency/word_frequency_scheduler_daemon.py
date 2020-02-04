@@ -78,6 +78,4 @@ def run_scheduler():
 with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
     run_scheduler()
     
-# TODO: need to handle case when can't connect to Mongo >> raise exception
-
 # python3 word_frequency_scheduler_daemon.py --config-file-name word-freq-ds-config.yaml
