@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append('../Twitter-Download')
 
-from word_frequency import WordFrequency
+from word_frequency import WordFrequency, daterange
 from twitterDownloader import TwitterTweetDownloader
 import datetime
 
@@ -14,9 +14,9 @@ id = "david_madras"
 
 # download tweets for a user
 downloader = TwitterTweetDownloader(os.getcwd() + "/../General/ds-init-config.yaml")
-downloader.get_tweets_by_timeframe_user(start_date, end_date, 10, id, None)
+downloader.get_tweets_by_timeframe_user(start_date, end_date, 20, id, None)
 
-# get user word frequency vector
+# get user word frequency vector for timeframe
 word_frequency = WordFrequency(os.getcwd() + "/../General/ds-init-config.yaml")
 input_config = {
     "project-name": "General",
@@ -31,7 +31,8 @@ output_config = {
     "type": "MongoDB",
     "location": "mongodb://localhost:" + port
 }
-word_frequency.generate_user_word_frequency_vector(start_date, id, "UserWordFrequency", input_config, output_config)
+for date in daterange(start_date, end_date):
+    word_frequency.generate_user_word_frequency_vector(date, id, "UserWordFrequency", input_config, output_config)
 
 # get global word frequency vector
 input_config = {
@@ -47,8 +48,9 @@ output_config = {
     "type": "MongoDB",
     "location": "mongodb://localhost:" + port
 }
-# date = datetime.datetime(2020, 2, 3, 0, 0, 0)
-word_frequency.generate_global_word_frequency_vector(start_date, "GlobalWordFrequency", input_config, output_config)
+
+for date in daterange(start_date, end_date):
+    word_frequency.generate_global_word_frequency_vector(date, "GlobalWordFrequency", input_config, output_config)
 
 # get relative word frequency for david_madras
 global_word_freq_config = {
@@ -71,4 +73,4 @@ output_config = {
     "type": "MongoDB",
     "location": "mongodb://localhost:" + port
 }
-word_frequency.generate_relative_user_word_frequency_vector(start_date, end_date, id, user_word_freq_config, global_word_freq_config, output_config)
+word_frequency.generate_relative_user_word_frequency_vector(start_date, end_date, id, user_word_freq_config, global_word_freq_config, "RelativeUserWordFrequency", output_config)

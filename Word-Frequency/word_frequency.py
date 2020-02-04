@@ -141,7 +141,7 @@ class WordFrequency(Process):
         return processed_text_list
 
     def generate_relative_user_word_frequency_vector(self, start_date: datetime, 
-                end_date: datetime, user, user_word_freq_config={}, global_word_freq_config=None, output_config=None):
+                end_date: datetime, user, user_word_freq_config={}, global_word_freq_config=None, output_collection_name="", output_config=None):
         # get user_word_frequency vectors for timeframe
             # combine the counters to get megacounter
         input_name = global_word_freq_config['collection-name']
@@ -151,10 +151,12 @@ class WordFrequency(Process):
 
         daily_global_vectors = []
         for date in daterange(start_date, end_date): # TODO: modulaize this for global and user
+            # print(date)
+            # date = date.strftime("%Y-%m-%d")
             query = self.input_DAOs[input_name].read({"Date": date})
             daily_vectors = [collections.Counter(daily_vector_doc["WordFreqVector"]) for daily_vector_doc in query]
             daily_global_vectors.extend(daily_vectors)
-        print(daily_global_vectors)
+        # print(daily_global_vectors)
         timeframe_global_word_freq = sum(daily_global_vectors, collections.Counter())
         
         # get global word frequency vectors for time frame
@@ -197,8 +199,7 @@ class WordFrequency(Process):
             "UserWordsNotInGlobal": user_words_not_in_global
         }
         print(output_doc)
-        output_config['collection-name'] = user
-        output_collection_name = user
+        output_config["collection-name"] = output_collection_name
         if output_collection_name not in self.output_DAOs:
             # dynamically create new DAO
             self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
