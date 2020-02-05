@@ -173,8 +173,8 @@ class WordFrequency(Process):
             daily_vectors = [collections.Counter(daily_vector_doc["WordFreqVector"]) for daily_vector_doc in query]
             daily_user_vectors.extend(daily_vectors)
         timeframe_user_word_freq = sum(daily_user_vectors, collections.Counter())
-        print(timeframe_user_word_freq)
-        print(timeframe_global_word_freq)
+        # print(timeframe_user_word_freq)
+        # print(timeframe_global_word_freq)
         # for each word in user vector
             # if in global
                 # get relative
@@ -199,7 +199,7 @@ class WordFrequency(Process):
             "RelativeWordFrequency": relative_word_freq,
             "UserWordsNotInGlobal": user_words_not_in_global
         }
-        print(output_doc)
+        # print(output_doc)
         output_config["collection-name"] = output_collection_name
         if output_collection_name not in self.output_DAOs:
             # dynamically create new DAO
