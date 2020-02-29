@@ -60,7 +60,8 @@ def main():
 
     download_ds_config = parse_download_ds_config(raw_tweet_collection_name)
     tweet_doc = download_raw_tweets(ds_config_path, raw_tweet_collection_name, download_ds_config)
-    
+    print(tweet_doc)
+
     if tweet_doc != None:
         word_frequency = WordFrequency(ds_config_path)
         processed_ds_collection_name = "({})-ProcessedTweets".format(date)
@@ -75,7 +76,7 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(1)
 
-with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
-    run_scheduler()
+# with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
+run_scheduler()
     
 # python3 word_frequency_scheduler_daemon.py --config-file-name word-freq-ds-config.yaml

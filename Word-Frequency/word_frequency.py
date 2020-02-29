@@ -126,18 +126,19 @@ class WordFrequency(Process):
 
         processed_text_list = list(filter(lambda x: x != '', processed_text_list))
         
+        # run stemming: it's important to run this first before stop words for cases such as that's
+        sno = nltk.stem.SnowballStemmer('english')
+        processed_text_list = [sno.stem(word) for word in processed_text_list]
+
         # remove stop words
-        nltk.download('stopwords') # TODO: maybe not efficient to do this here`
+        # nltk.download('stopwords') # TODO: maybe not efficient to do this here`
         stopwords = set(nltk.corpus.stopwords.words('english'))
         stopwords.add('amp')
         for word in stopwords:
             if word in processed_text_list:
                 #TODO extract
-                processed_text_list.remove(word)
-
-        # run stemming
-        sno = nltk.stem.SnowballStemmer('english')
-        processed_text_list = [sno.stem(word) for word in processed_text_list]
+                while (processed_text_list.count(word)): 
+                    processed_text_list.remove(word)
 
         return processed_text_list
 
@@ -184,9 +185,9 @@ class WordFrequency(Process):
         relative_word_freq = {}
         for word in timeframe_user_word_freq:
             user_word_count = timeframe_user_word_freq[word]
-            global_word_count = timeframe_global_word_freq[word]
             if user_word_count >= 3:
                 if word in timeframe_global_word_freq:
+                    global_word_count = timeframe_global_word_freq[word]
                     relative_word_freq[word] = user_word_count / global_word_count
                 else:
                     user_words_not_in_global.append(word)

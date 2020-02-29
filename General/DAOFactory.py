@@ -1,16 +1,20 @@
 import sys
 sys.path.append('./Concrete-DAO')
+sys.path.append('../Twitter-Download')
 
 import yaml
 from mongoDAO import *
 from tweepyDAO import *
+from downloadMongoOutputDAO import *
 
+# In general, it might be better to have a different DAO factory depending on the
+# type of database used, although this works for now
 
 class DAOConfig():
     def __init__(self, DAO_config_yaml):
         self.ds_type = DAO_config_yaml['type']
         self.ds_name = DAO_config_yaml['datastore-name']
-        self.project_name = DAO_config_yaml['project-name']
+        self.project_type = DAO_config_yaml['project-type']
         self.ds_location = DAO_config_yaml['location']
         self.collection_name = DAO_config_yaml['collection-name']
 
@@ -23,12 +27,12 @@ class DAOFactory():
 
     def _initialize_DAO_constructors(self):
         self.input_DAO_constructors = {
-            "Tweepy": TweepyDAO,
-            "MongoDB": MongoInputDAO
+            "DownloadTweepy": TweepyDAO,
+            # "MongoDB": MongoInputDAO
         }
 
         self.output_DAO_constructors = {
-            "MongoDB": MongoOutputDAO
+            "DownloadMongoDB": DownloadMongoOutputDAO
         }
 
     def create_DAOs_from_config_file(self, init_path: str) -> (dict, dict):
@@ -74,9 +78,10 @@ class DAOFactory():
 
     def _get_DAO(self, DAO_config, DAO_constructors):
         ds_type = DAO_config.ds_type
+        project_type = DAO_config.project_type
         
         try:
-            DAO_constructor = DAO_constructors[ds_type]
+            DAO_constructor = DAO_constructors[project_type + ds_type]
         except:
             raise Exception('Invalid Data Store type')
 

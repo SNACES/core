@@ -2,12 +2,10 @@ import sys
 sys.path.append('../General')
 sys.path.append('../General/Concrete-DAO')
 
-import functools 
-from typing import Union, List
-from process import Process
-from mongoDAO import MongoOutputDAO
-
+import functools
 import datetime
+from process import Process
+from typing import Union, List
 
 """
 Download Tweets for use in future algorithms.
@@ -16,77 +14,25 @@ class TwitterTweetDownloader(Process):
     def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
         Process.__init__(self, init_path, input_DAOs, output_DAOs)
 
-    def get_tweets_by_timeframe_user(self, start_date: datetime,
-                   end_date: datetime, num_tweets: int, id: Union[str, int]=None, user_list_file_path=None) -> list:
+    def get_tweets_by_timeframe_user(self, id: Union[str, int], start_date: datetime,
+                                     end_date: datetime, num_tweets: int, input_name: str, output_name: str):
         """
         Return num_tweets tweets made by user with id(username or user id) id between start_date and end_date.
         """
-        
-        # def list_path_handler(self):
-        #     user_list_processor = UserListProcessor()
-        #     user_list = user_list_processor.user_list_parser(user_list_file_path)
-        #     user_list_processor.download_function_by_user_list(self.get_tweets_by_timeframe_user, user_list, start_date, end_date, num_tweets)
-        
-        # def user_handler(self):
 
-        # process_user_or_list_path(id, user_list_file_path, list_path_handler, user_handler)
+        tweets = self.input_DAOs[input_name].get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
+        self.output_DAOs[output_name].store_tweet_by_timeframe_user(id, start_date, end_date, tweets)
 
-        if id is None and user_list_file_path is not None:
-            user_list_processor = UserListProcessor()
-            user_list = user_list_processor.user_list_parser(user_list_file_path)
-            user_list_processor.download_function_by_user_list(self.get_tweets_by_timeframe_user, user_list, start_date, end_date, num_tweets)
+    def get_tweets_by_user(self, id: Union[str, int], num_tweets: int, input_name: str, output_name: str) -> list:
+        tweets = self.input_DAOs[input_name].get_tweets_by_user(id, num_tweets)
+        self.output_DAOs[output_name].store_tweet_by_user(id, tweets)
 
-        elif id is not None and user_list_file_path is None:
-            query = {
-                "query_type": "get_tweets_by_timeframe_user",
-                "id": id, 
-                "start_date": start_date, 
-                "end_date": end_date, 
-                "num_tweets": num_tweets
-            }
+    def get_random_tweet(self, input_name: str, output_name: str):
+        tweet = self.input_DAOs[input_name].get_random_tweet()
+        self.output_DAOs[output_name].store_random_tweet(tweet)
 
-            tweets = self.input_DAOs['TweepyClient'].read(query) 
-            document = {
-                "id": id,
-                "start_date": start_date,
-                "end_date": end_date,
-                # "num_tweets": num_tweets
-                "tweets": tweets
-            }
-            self.output_DAOs["getTweetsByTimeframeUser"].create(document)
-        else: 
-            raise Exception("Please pass in exclusively either an id or a user list file path.")
+        return tweet
 
-    def get_tweets_by_user(self, id: Union[str, int], num_tweets: int) -> list:
-        query = {"query_type": "get_tweets_user",
-                 "id": id, 
-                 "num_tweets": num_tweets
-                 }
-
-        tweets = self.input_DAOs['TweepyClient'].read(query) 
-        document = {
-            "id": id,
-            # "num_tweets": num_tweets
-            "tweets": tweets
-        }
-        self.output_DAOs["getTweetsByUser"].create(document)
-
-    def get_random_tweet(self, output_collection_name: str, config={}):
-        query = {
-            "query_type": "get_random_tweets",
-        }
-        tweet = self.input_DAOs['TweepyClient'].read(query) 
-        
-        if tweet != None:
-            tweet_document = {'tweetID': tweet['id'], 'text': tweet['text']}
-            
-            if output_collection_name not in self.output_DAOs:
-                # config should be provided in the case that we want to dynamically create a new collection
-                self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", config) 
-            self.output_DAOs[output_collection_name].create(tweet_document)
-            return tweet_document
-
-        return None
 
 """
 Download Twitter Friends for use in future algorithms.
@@ -95,43 +41,30 @@ class TwitterFriendsDownloader(Process):
     def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
         Process.__init__(self, init_path, input_DAOs, output_DAOs)
 
-    def get_friends_by_screen_name(self, screen_name: str, num_friends: int) -> list:
+    def get_friends_by_screen_name(self, screen_name: str, num_friends: int, input_name: str, output_name: str) -> list:
         """  
         Return a list of screen_names of friends of user with screen name screen_name.
         """
-        
+
         assert type(screen_name) == str
 
-        query = {"query_type": "get_friends_by_screen_name", 
-                 "screen_name": screen_name,
-                 "num_friends": num_friends}
-        
-        friends = self.input_DAOs['TweepyClient'].read(query)
-        document = {
-            "screen_name": screen_name,
-            # "num_friends": num_friends,
-            "friends": friends
-        }
-        self.output_DAOs["getFriendsByScreenName"].create(document)
+        friends = self.input_DAOs['TweepyClient'].get_friends_by_screen_name(
+            screen_name, num_friends)
+        self.output_DAOs["getFriendsByScreenName"].store_friends_by_screen_name(
+            screen_name, friends)
 
-    def get_friends_by_id(self, id: int, num_friends: int) -> list:
+        return friends
+
+    def get_friends_by_id(self, id: int, num_friends: int, input_name: str, output_name: str) -> list:
         """  
         Return a list of ids of friends of user with id id.
         """
-        
-        assert type(id) == int
-        
-        query = {"query_type": "get_friends_by_id", 
-                 "id": id,
-                 "num_friends": num_friends}
 
-        friends = self.input_DAOs['TweepyClient'].read(query)
-        document = {
-            "id": id,
-            # "num_friends": num_friends,
-            "friends": friends
-        }
-        self.output_DAOs["getFriendsByID"].create(document)
+        assert type(id) == int
+
+        friends = self.input_DAOs['TweepyClient'].get_friends_by_id(
+            id, num_friends)
+        self.output_DAOs["getFriendsByID"].store_friends_by_id(id, friends)
 
 
 """
@@ -141,73 +74,71 @@ class TwitterFollowingDownloader(Process):
     def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
         Process.__init__(self, init_path, input_DAOs, output_DAOs)
 
-    def get_following_by_screen_name(self, screen_name: str, num_following: int) -> list:
+    def get_following_by_screen_name(self, screen_name: str, num_following: int, input_name: str, output_name: str) -> list:
         assert type(screen_name) == str
 
-        query = {"query_type": "get_following_by_screen_name", 
-                 "screen_name": screen_name,
-                 "num_following": num_following}
-        
-        following_users_screen_name = self.input_DAOs['TweepyClient'].read(query)
-        document = {
-            "screen_name": screen_name,
-            "following_users_screen_name": following_users_screen_name
-        }
-        self.output_DAOs["getFollowingByScreenName"].create(document)
+        following_users_screen_name = self.input_DAOs[input_name].get_following_by_screen_name(
+            screen_name, num_following)
+        self.output_DAOs[output_name].store_following_by_screen_name(
+            screen_name, following_users_screen_name)
 
-    def get_following_by_id(self, id: int, num_following: int) -> list:
+    def get_following_by_id(self, id: int, num_following: int, input_name: str, output_name: str) -> list:
         assert type(id) == int
-        
-        query = {"query_type": "get_following_by_screen_name", 
-                 "id": id,
-                 "num_following": num_following}
 
-        following_users_ID = self.input_DAOs['TweepyClient'].read(query)
-        document = {
-            "id": id,
-            "following_users_ID": following_users_ID
-        }
-        self.output_DAOs["getFollowingByID"].create(document)
+        following_users_ID = self.input_DAOs[input_name].get_following_by_id(
+            id, num_following)
+        self.output_DAOs[output_name].store_following_by_id(
+            id, following_users_ID)
 
 
 def rate_limited_functions() -> str:
-    functions_list = ["get_user_tweets_by_screen_name", "get_user_tweets_by_id", 
+    functions_list = ["get_user_tweets_by_screen_name", "get_user_tweets_by_id",
                       "get_friends_screen_names_by_screen_name", "get_friends_ids_by_id"]
-    
+
     result = ""
     for function_name in functions_list:
         result += function_name + "\n"
     return result.strip()
 
+
 class UserListProcessor:
     """
     Return a list of users given the path to a file containing a list of users.
     """
+
     def user_list_parser(self, user_list_file_path):
         with open(user_list_file_path, 'r') as stream:
             return [user.strip() for user in stream]
 
     """
-    Precondition: argsv matches the args for download_function
+    Precondition: argv matches the args for download_function
     """
+
     def download_function_by_user_list(self, download_function, user_list, *argv):
-        curried_operation = lambda acc, id: download_function(*argv, id) # acc is a dummy var
-        
+        def curried_operation(acc, id): return download_function(id, *argv)  # acc is a dummy var
+
         self.process_user_list(user_list, curried_operation)
 
     def process_user_list(self, user_list, curried_function):
-        functools.reduce(curried_function, user_list)   
+        functools.reduce(curried_function, user_list)
+
 
 if __name__ == "__main__":
     start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
-    end_date =   datetime.datetime(2019, 11, 26, 0, 0, 0)
-    
+    end_date = datetime.datetime(2019, 11, 26, 0, 0, 0)
+
     import os
     # note that we need to pass in full path
     ds_config_path = os.getcwd() + "/../General/ds-init-config.yaml"
-    
-    # num_tweets_to_download = 1
-    # output_collection_name = "test"
-    # ds_location = 
-    # ds_name = "test"
-    # num_tweets_downloaded = twitter_downloader.get_random_tweets(num_tweets_to_download, output_collection_name, ds_location, ds_name)
+
+    num_tweets_to_download = 1
+    twitter_downloader = TwitterTweetDownloader(ds_config_path)
+    friends_downloader = TwitterFriendsDownloader(ds_config_path)
+    following_downloader = TwitterFollowingDownloader(ds_config_path)
+
+    id = "realDonaldTrump"
+    # twitter_downloader.get_tweets_by_timeframe_user(id, start_date, end_date, 1, 'TweepyClient', 'getTweetsByTimeframeUser')
+    friends_downloader.get_friends_by_screen_name(id, 1, 'TweepyClient', 'getFriendsByScreenName')
+    following_downloader.get_following_by_screen_name(id, 1, 'TweepyClient', 'getFollowingByScreenName')
+
+    # "mongodb://localhost:2223"
