@@ -14,6 +14,7 @@ datetime = "*"
 tweepy = "*"
 nltk = "*"
 argparse = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.6"
