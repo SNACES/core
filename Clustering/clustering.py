@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from collections import Counter
-from sklearn.cluster import AffinityPropagation
+# from sklearn.cluster import AffinityPropagation
 import numpy as np
 
 def cluster_relative_frequency(user_to_rwf, cluster) -> Counter:
@@ -12,35 +12,35 @@ def cluster_relative_frequency(user_to_rwf, cluster) -> Counter:
     return sum(rwf_list, Counter())
 
 
-def get_fitted_affinity(user_to_rwf, distance):
-    aff_prop = AffinityPropagation(affinity='precomputed')
+# def get_fitted_affinity(user_to_rwf, distance):
+#     aff_prop = AffinityPropagation(affinity='precomputed')
 
-    similarity_mtx = np.zeros((len(user_to_rwf), len(user_to_rwf)))
-    if distance == 'cosine':
-        i = 0
-        for user1 in user_to_rwf:
-            j = 0
-            for user2 in user_to_rwf:
-                similarity_mtx[i][j] = cosine_sim(
-                    user_to_rwf[user1], user_to_rwf[user2])
-                j += 1
-            i += 1
-    else:
-        i = 0
-        for user1 in user_to_rwf:
-            j = 0
-            for user2 in user_to_rwf:
-                similarity_mtx[i][j] = word_overlap(
-                    user_to_rwf[user1], user_to_rwf[user2])
-                j += 1
-            i += 1
+#     similarity_mtx = np.zeros((len(user_to_rwf), len(user_to_rwf)))
+#     if distance == 'cosine':
+#         i = 0
+#         for user1 in user_to_rwf:
+#             j = 0
+#             for user2 in user_to_rwf:
+#                 similarity_mtx[i][j] = cosine_sim(
+#                     user_to_rwf[user1], user_to_rwf[user2])
+#                 j += 1
+#             i += 1
+#     else:
+#         i = 0
+#         for user1 in user_to_rwf:
+#             j = 0
+#             for user2 in user_to_rwf:
+#                 similarity_mtx[i][j] = word_overlap(
+#                     user_to_rwf[user1], user_to_rwf[user2])
+#                 j += 1
+#             i += 1
 
-    median = np.median(similarity_mtx)
+#     median = np.median(similarity_mtx)
 
-    for i in range(len(user_to_rwf)):
-        similarity_mtx[i][i] = median
+#     for i in range(len(user_to_rwf)):
+#         similarity_mtx[i][i] = median
 
-    return aff_prop.fit(similarity_mtx)
+#     return aff_prop.fit(similarity_mtx)
 
 
 def get_clusters(user_to_rwf):
