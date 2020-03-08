@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"WordFreq-Test2.UserWordFreq"}],"uuid":"fbf25ce3c08c4d4bbf06eaf8af4b9701"}
