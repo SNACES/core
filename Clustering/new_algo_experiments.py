@@ -1,5 +1,6 @@
 from new_algo_clustering import *
 from new_algo_clustering_mongo_dao import *
+import daemon
 
 # -------------------------------User Tweets------------------------------------
 def run_clustering_experiment(user_to_rwf, threshold, user_count, item_count):
@@ -33,25 +34,27 @@ def save_to_file(file_name, cluster_list):
         duplicate_count = cluster['count']
         file_object.write("Core Users: {}\nCore Items: {}\nMost Typical Words: {}\nDuplicate Count: {}\n\n".format(core_users, core_items, most_typical_words, duplicate_count)) # TODO:
 
-threshold_list = [0.7, 0.5, 0.3, 0.1]
-top_items = [5, 10, 15]
-top_users = [5, 10, 15]
 
-# threshold_list = [0.5]
-# top_items = [5]
-# top_users = [5]
-new_algo_clustering = NewAlgoClustering()
-mongo_dao = NewAlgoClusteringMongoDAO()
-user_to_rwf = mongo_dao.get_rwf()
-for threshold in threshold_list:
-    for user_count in top_users:
-        for item_count in top_items:
-            clusters = run_clustering_experiment(user_to_rwf, threshold, user_count, item_count)
-            
-            # save results to file and database
-            file_name = "Threshold {}, Top Items {}, Top Users {}".format(threshold, item_count, user_count)
-            save_to_file(file_name, clusters)
-            mongo_dao.store_clusters(clusters, threshold, user_count, item_count)
+with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
+    threshold_list = [0.7, 0.5, 0.3, 0.1]
+    top_items = [5, 10, 15]
+    top_users = [5, 10, 15]
+
+    # threshold_list = [0.5]
+    # top_items = [5]
+    # top_users = [5]
+    new_algo_clustering = NewAlgoClustering()
+    mongo_dao = NewAlgoClusteringMongoDAO()
+    user_to_rwf = mongo_dao.get_rwf()
+    for threshold in threshold_list:
+        for user_count in top_users:
+            for item_count in top_items:
+                clusters = run_clustering_experiment(user_to_rwf, threshold, user_count, item_count)
+                
+                # save results to file and database
+                file_name = "Threshold {}, Top Items {}, Top Users {}".format(threshold, item_count, user_count)
+                save_to_file(file_name, clusters)
+                mongo_dao.store_clusters(clusters, threshold, user_count, item_count)
 
 # ----------------------------------Retweets-------------------------------------
 # compute retweet to id map
