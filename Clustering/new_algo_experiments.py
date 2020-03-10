@@ -35,9 +35,9 @@ def save_to_file(file_name, cluster_list):
 
 
 with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
-    threshold_list = [0.7, 0.5, 0.3, 0.1]
-    top_items = [5, 10, 15]
-    top_users = [5, 10, 15]
+    threshold_list = [0.3]
+    top_items = [20, 25, 30]
+    top_users = [5, 15]
 
     # threshold_list = [0.5]
     # top_items = [5]
