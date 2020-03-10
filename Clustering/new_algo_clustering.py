@@ -127,47 +127,4 @@ class NewAlgoClustering(Process):
         popular_users.sort()
         return popular_users
 
-    def user_to_items(self, user_to_rwf, factor, count):
-        # want to get the most typical words for each user
-        # start off with relative word freq for user
-        # for each user, get the average rwf, then multiply by threshold to get cutoff
-        # words with rwf values above threashold are considered typical for that user
-        user_to_items = {}
-        relevant_words = {}
-        for user in user_to_rwf:
-            user_rwf = user_to_rwf[user]
-            average_rwf = numpy.mean(
-                [rwf for item, rwf in user_rwf.most_common(count)])
-            threshold = factor * average_rwf
-            typical_items = list(filter(lambda item: user_rwf[item] >= threshold, user_rwf))
-            user_to_items[user] = typical_items
-            for word in typical_items:
-                relevant_words[word] = 1
-
-        return user_to_items, relevant_words
-
-    def item_to_users(self, item_to_user_usage, relevant_words, factor, count):
-        # want to get the most typical users for each word
-        # for each word, get the average rwf among users of this word, then filter users by threshold
-        item_to_users = {}
-        for item in relevant_words:
-            user_to_rwf_for_item = item_to_user_usage[item]
-            average_rwf = numpy.mean(
-                [rwf for user, rwf in user_to_rwf_for_item.most_common(count)])
-            threshold = factor * average_rwf
-            typical_users = list(filter(
-                lambda user: user_to_rwf_for_item[user] >= threshold, user_to_rwf_for_item))
-            item_to_users[item] = typical_users
-
-        return item_to_users
-
-    def item_to_user_usage(self, user_to_rwf):
-        # compute item to user_to_rwf_for_this_word for each word
-        item_to_user_usage = {}
-        for user in user_to_rwf:
-            for item in user_to_rwf[user]:
-                if item not in item_to_user_usage:
-                    item_to_user_usage[item] = Counter()
-                item_to_user_usage[item][user] = user_to_rwf[user][item]
-
-        return item_to_user_usage
+    

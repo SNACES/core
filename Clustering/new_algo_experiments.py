@@ -3,20 +3,19 @@ from new_algo_clustering_mongo_dao import *
 import daemon
 
 # -------------------------------User Tweets------------------------------------
-def run_clustering_experiment(user_to_rwf, threshold, user_count, item_count):
+def run_clustering_experiment(rwf, threshold, user_count, item_count):
     # get user_to_items
-    user_to_items, relevant_words = new_algo_clustering.user_to_items(user_to_rwf, threshold, 5)
+    user_to_items = dao.user_to_items(table6, threshold, item_count)
 
     # get item_to_users
-    item_to_user_usage = new_algo_clustering.item_to_user_usage(user_to_rwf)
-    item_to_users = new_algo_clustering.item_to_users(item_to_user_usage, relevant_words, threshold, 5)
+    item_to_users = dao.item_to_users(table4, threshold, user_count)
 
-    # # call detect all communities
+    # call detect all communities
     clusters = new_algo_clustering.detect_all_communities(user_to_items, item_to_users, user_count, item_count, True)
 
     # get the most typical words for each cluster
     for cluster in clusters:
-        cluster_rwf = cluster_relative_frequency(user_to_rwf, cluster['users'])
+        cluster_rwf = cluster_relative_frequency(rwf, cluster['users'])
         most_typical_words = []
         for item in cluster_rwf.most_common(10):
             most_typical_words.append(item[0])
@@ -44,12 +43,18 @@ with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
     # top_items = [5]
     # top_users = [5]
     new_algo_clustering = NewAlgoClustering()
-    mongo_dao = NewAlgoClusteringMongoDAO()
-    user_to_rwf = mongo_dao.get_rwf()
+    dao = NewAlgoClusteringMongoDAO()
+    rwf = dao.get_rwf()
+    table1 = dao.get_user_to_info(rwf)
+
     for threshold in threshold_list:
+        table2, relevant_words = dao.get_filtered_user_to_info(table1, threshold, 5)
+        table3 = dao.get_item_to_info(table2, relevant_words)
+        table4, relevant_users = dao.get_filtered_item_to_info(table3, threshold, 5)
+        table6 = dao.get_double_filter_user_to_info(table2, relevant_users)
         for user_count in top_users:
             for item_count in top_items:
-                clusters = run_clustering_experiment(user_to_rwf, threshold, user_count, item_count)
+                clusters = run_clustering_experiment(rwf, threshold, user_count, item_count)
                 
                 # save results to file and database
                 file_name = "Threshold {}, Top Items {}, Top Users {}".format(threshold, item_count, user_count)
