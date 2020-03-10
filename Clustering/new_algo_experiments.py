@@ -59,7 +59,7 @@ with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
                 # save results to file and database
                 file_name = "Threshold {}, Top Items {}, Top Users {}".format(threshold, item_count, user_count)
                 save_to_file(file_name, clusters)
-                mongo_dao.store_clusters(clusters, threshold, user_count, item_count)
+                dao.store_clusters(clusters, threshold, user_count, item_count)
 
 # ----------------------------------Retweets-------------------------------------
 # compute retweet to id map
