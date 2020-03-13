@@ -14,28 +14,33 @@ class NewAlgoClusteringMongoDAO():
     def get_rwf(self):
         # get user_to_rwf from database
         word_freq_db = client['WordFreq-Test2']
-        user_relative_word_freq_collection = word_freq_db['UserRelativeWordFreq']
+        user_relative_word_freq_collection = word_freq_db['UserRWF']
         user_word_freq_collection = word_freq_db["UserWordFreq"]
         user_to_rwf = {}
         for doc in user_relative_word_freq_collection.find():
             user = doc['User']
-            modified_wf_vector = Counter(doc['RelativeWordFrequency'])
-            words_not_in_wf_vector = doc['UserWordsNotInGlobal']
+            rwf_vector = Counter(doc['RelativeWordFrequency'])
+            new_rwf_vector = Counter()
+            # words_not_in_wf_vector = doc['UserWordsNotInGlobal']
 
-            # compute modified user relative wf
-            if modified_wf_vector != {}:  # TODO: careful about this corner case
-                word_count_doc = user_word_freq_collection.find({"User": user})[0]
-                user_word_frequency = word_count_doc['UserWordFreqVector']
-                for word in words_not_in_wf_vector:
-                    word_count = user_word_frequency[word]
-                    modified_wf_vector[word] = word_count / \
-                        20000  # TODO: this is hardcoded for now
-                # get 50 of the most common words
-                final_wf_vector = Counter()
-                for item in modified_wf_vector.most_common(50):
-                    final_wf_vector[item[0]] = item[1]
+            # # compute modified user relative wf
+            # if modified_wf_vector != {}:  # TODO: careful about this corner case
+            #     word_count_doc = user_word_freq_collection.find({"User": user})[0]
+            #     user_word_frequency = word_count_doc['UserWordFreqVector']
+            #     for word in words_not_in_wf_vector:
+            #         word_count = user_word_frequency[word]
+            #         modified_wf_vector[word] = word_count / \
+            #             20000  # TODO: this is hardcoded for now
+            #     # get 50 of the most common words
+            #     final_wf_vector = Counter()
+            #     for item in modified_wf_vector.most_common():
+            #         final_wf_vector[item[0]] = item[1]
 
-                user_to_rwf[user] = final_wf_vector
+            #     user_to_rwf[user] = final_wf_vector
+            if rwf_vector != {}:
+                for word, value in rwf_vector.most_common(50):
+                    new_rwf_vector[word] = value
+                user_to_rwf[user] = new_rwf_vector 
 
         return user_to_rwf
 
@@ -52,7 +57,7 @@ class NewAlgoClusteringMongoDAO():
         """
         
         word_freq_db = client['WordFreq-Test2']
-        user_relative_word_freq_collection = word_freq_db['UserRelativeWordFreq']
+        user_relative_word_freq_collection = word_freq_db['UserRWF']
         user_word_freq_collection = word_freq_db["UserWordFreq"]
         user_to_info = {}
 
@@ -226,7 +231,7 @@ class NewAlgoClusteringMongoDAO():
 
 
     def store_clusters(self, clusters, threshold, user_count, item_count):
-        word_freq_db = client['WordFreqClusteringNewTables']
+        word_freq_db = client['WordFreqClusteringNoiseTests']
         user_tweets_popularity_only = word_freq_db['UserTweetsOnlyPopularity']
         user_tweets_popularity_only.insert_one({
             'Threshold': threshold,
@@ -240,13 +245,12 @@ class NewAlgoClusteringMongoDAO():
       
         table7 = self.get_user_to_items(table6, item_count)
 
-        return {user:Counter({item:table7[user][item][0] for item in table7[user]}) for user in table7}
-
+        return {user:Counter({item:table6[user][item][0] for item in table7[user]}) for user in table7}
 
     def item_to_users(self, table4, factor, user_count):
         table5 = self.get_item_to_users(table4, user_count)
 
-        return {item:Counter({user:table5[item][user][0] for user in table5[item]}) for item in table5}
+        return {item:Counter({user:table4[item][user][0] for user in table5[item]}) for item in table5}
         
         
 # testing
