@@ -22,7 +22,7 @@ class NewAlgoClustering(Process):
 
 
     # Main methods
-    def detect_all_communities(self, user_to_items, item_to_users, user_count, item_count, intersection_min, is_only_popularity):
+    def detect_all_communities(self, user_to_items, item_to_users, user_count, item_count, intersection_min, popularity, is_only_popularity):
         id_to_cluster = {}
         count = 0
         # print(len(user_to_items))
@@ -36,7 +36,7 @@ class NewAlgoClustering(Process):
                     if len(item_intersection) >= intersection_min:
                     # if len(item_intersection) != 0:
                         cluster = self.detect_single_community(
-                            user_to_items, item_to_users, item_intersection, user_count, item_count, is_only_popularity)
+                            user_to_items, item_to_users, item_intersection, user_count, item_count, popularity, is_only_popularity)
                         if cluster:
                             cluster_id = cluster['users']
                             if cluster_id not in id_to_cluster:
@@ -53,8 +53,8 @@ class NewAlgoClustering(Process):
 
         return [id_to_cluster[cluster_id] for cluster_id in id_to_cluster]
 
-    def detect_single_community(self, user_to_items, item_to_users, core_items, user_count, item_count, is_only_popularity):
-        min_pop = math.ceil(0.2 * item_count) 
+    def detect_single_community(self, user_to_items, item_to_users, core_items, user_count, item_count, popularity, is_only_popularity):
+        min_pop = math.ceil(popularity * item_count) 
         
         is_converged = False
         num_iterations = 0
@@ -92,8 +92,8 @@ class NewAlgoClustering(Process):
         if is_only_popularity:
             # get the top count most popular users
             popular_users = [user for user, popularity in user_to_popularity.most_common(count)]
-            # if len(popular_users) != count:
-            #     return []
+            if len(popular_users) != count:
+                return []
             # consider tie cases
             possible_tie_value = user_to_popularity[popular_users[-1]]
             users_sorted_by_popularity = user_to_popularity.most_common()

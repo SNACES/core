@@ -4,15 +4,15 @@ import daemon
 from collections import Counter
 
 # -------------------------------User Tweets------------------------------------
-def run_clustering_experiment(rwf, threshold, user_count, item_count, intersection_min):
+def run_clustering_experiment(rwf, threshold, user_count, item_count, intersection_min, popularity):
     # get user_to_items
-    user_to_items = dao.user_to_items(table6, threshold, item_count)
+    user_to_items = dao.user_to_items(table2, threshold, item_count)
 
     # get item_to_users
     item_to_users = dao.item_to_users(table4, threshold, user_count)
 
     # call detect all communities
-    clusters = new_algo_clustering.detect_all_communities(user_to_items, item_to_users, user_count, item_count, intersection_min, True)
+    clusters = new_algo_clustering.detect_all_communities(user_to_items, item_to_users, user_count, item_count, intersection_min, popularity, True)
 
     # get the most typical words for each cluster
     for cluster in clusters:
@@ -36,14 +36,16 @@ def save_to_file(file_name, cluster_list):
         file_object.write("Core Users: {}\nCore Items: {}\nMost Typical Words: {}\nDuplicate Count: {}\n\n".format(core_users, core_items, most_typical_words, duplicate_count)) # TODO:
 
 with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
-    threshold_list = [0.7, 0.5, 0.3, 0.1]
-    top_items = [5, 10, 15]
+    intersection_min_list = [2, 3, 4, 5]
+    popularity_list = [0.2, 0.3]
+    threshold_list = [0.7, 0.5, 0.3, 0.2, 0.1]
+    top_items = [5, 10, 15, 20, 25, 30]
     top_users = [5, 10, 15]
 
-    intersection_limit = 2
-    # threshold_list = [0.1]
-    # top_items = [5]
-    # top_users = [5]
+    # intersection_min = 5
+    # threshold_list = [0.1, 0.3]
+    # top_items = [20, 25, 30]
+    # top_users = [5, 15]
     new_algo_clustering = NewAlgoClustering()
     dao = NewAlgoClusteringMongoDAO()
     rwf = dao.get_rwf()
@@ -56,22 +58,23 @@ with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
     # table6 = dao.get_double_filter_user_to_info(table2, relevant_users)
     # print(table6['JFutoma'])
 
+    for intersection_min in intersection_min_list:
+        for popularity in popularity_list:
+            for threshold in threshold_list:
+                table2, relevant_words = dao.get_filtered_user_to_info(table1, threshold, 5)
+                table3 = dao.get_item_to_info(table2, relevant_words)
+                table4, relevant_users = dao.get_filtered_item_to_info(table3, threshold, 5)
+                table6 = dao.get_double_filter_user_to_info(table2, relevant_users)
+                for user_count in top_users:
+                    for item_count in top_items:
+                        clusters = run_clustering_experiment(rwf, threshold, user_count, item_count, intersection_min, popularity)
+                        
+                        # save results to file and database
+                        file_name = "Popularity {} Intersection Min {} Threshold {}, Top Items {}, Top Users {}".format(popularity, intersection_min, threshold, item_count, user_count)
+                        save_to_file(file_name, clusters)
+                        dao.store_clusters(clusters, threshold, user_count, item_count)
 
-    for threshold in threshold_list:
-        table2, relevant_words = dao.get_filtered_user_to_info(table1, threshold, 5)
-        table3 = dao.get_item_to_info(table2, relevant_words)
-        table4, relevant_users = dao.get_filtered_item_to_info(table3, threshold, 5)
-        table6 = dao.get_double_filter_user_to_info(table2, relevant_users)
-        for user_count in top_users:
-            for item_count in top_items:
-                clusters = run_clustering_experiment(rwf, threshold, user_count, item_count, intersection_limit)
-                
-                # save results to file and database
-                file_name = "Threshold {}, Top Items {}, Top Users {}".format(threshold, item_count, user_count)
-                save_to_file(file_name, clusters)
-                dao.store_clusters(clusters, threshold, user_count, item_count)
-
-# ----------------------------------Retweets-------------------------------------
+# ----------------------------------Retweets------------------------------------
 # compute retweet to id map
 
 # user list
@@ -185,3 +188,42 @@ then run experiments >> like top 10 >> change parameters
 
 **** fix issue with random tweet downloader
 '''
+
+# f = open('UserRWF', 'w')
+# word_freq_db = client['WordFreq-Test2']
+# user_relative_word_freq_collection = word_freq_db['UserRWF']
+# user_word_freq_collection = word_freq_db["UserWordFreq"]
+# for doc in user_relative_word_freq_collection.find():
+#     user = doc['User']
+#     orig_rwf_vector = Counter(doc['RelativeWordFrequency'])
+    
+#     f.write("User: {}\nRWF: {}\n\n".format(user, orig_rwf_vector))
+
+
+
+
+
+# word_freq_db = client['WordFreq-Test2']
+# user_relative_word_freq_collection = word_freq_db['UserRelativeWordFreq']
+# user_word_freq_collection = word_freq_db["UserWordFreq"]
+
+# new_algo_clustering = NewAlgoClustering()
+# dao = NewAlgoClusteringMongoDAO()
+# rwf = dao.get_rwf()
+# table1 = dao.get_user_to_info(rwf)
+
+# threshold = 0.7
+# table2, relevant_words = dao.get_filtered_user_to_info(table1, threshold, 5)
+# table3 = dao.get_item_to_info(table2, relevant_words)
+# table4, relevant_users = dao.get_filtered_item_to_info(table3, threshold, 5)
+# table6 = dao.get_double_filter_user_to_info(table2, relevant_users)
+# table7 = dao.get_user_to_items(table6, 10)
+
+# f = open('UserToItems Threshold {}'.format(threshold), 'w')
+# for user in ['JFutoma', 'david_sontag', 'Yair_Rosenberg', 'dhackett1565', 'random_walker', 'GraphicMatt']:
+#     f.write("{}\n".format(user))
+#     f.write("Table 1(Top 50 Words by RWF): {}\n".format(table1[user]))
+#     f.write("Table 2(Threshold Filtered): {}\n".format(table2[user]))
+#     f.write("Table 6(Words only from Table 4): {}\n".format(table6[user]))
+#     f.write("Table 7(Top 5 Words by Word Count): {}\n\n".format(table7[user]))
+

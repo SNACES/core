@@ -38,7 +38,7 @@ class NewAlgoClusteringMongoDAO():
 
             #     user_to_rwf[user] = final_wf_vector
             if rwf_vector != {}:
-                for word, value in rwf_vector.most_common(50):
+                for word, value in rwf_vector.most_common(): # 50
                     new_rwf_vector[word] = value
                 user_to_rwf[user] = new_rwf_vector 
 
@@ -231,7 +231,7 @@ class NewAlgoClusteringMongoDAO():
 
 
     def store_clusters(self, clusters, threshold, user_count, item_count):
-        word_freq_db = client['WordFreqClusteringNoiseTests']
+        word_freq_db = client['WordFreqClusteringNoiseTestsAllWords']
         user_tweets_popularity_only = word_freq_db['UserTweetsOnlyPopularity']
         user_tweets_popularity_only.insert_one({
             'Threshold': threshold,
