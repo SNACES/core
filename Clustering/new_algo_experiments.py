@@ -112,7 +112,7 @@ for intersection_min in intersection_min_list:
             for user_count in top_users:
                 for item_count in top_items:
                     cluster_list = new_algo_clustering.detect_all_communities(user_to_rir_top_count_filtered, user_to_rir_top_count_filtered, user_count, item_count, intersection_min, popularity, True)
-
+                    print(cluster_list)
                     # get the most typical words for each cluster
                     for cluster in cluster_list:
                         cluster_rwf = cluster_relative_frequency(rwf, cluster['users'])
