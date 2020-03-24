@@ -102,31 +102,31 @@ threshold_list = [0.7, 0.5, 0.3, 0.2, 0.1]
 top_items = [5, 10, 15]
 top_users = [5, 10, 15]
 
-with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
-    for intersection_min in intersection_min_list:
-        for popularity in popularity_list:
-            for typicality_threshold in threshold_list:
-                user_to_rir_threshold_filtered, filtered_interaction_count, _ = retweet_dao.user_to_rir_threshold_filtered(user_to_relative_interaction_rate, user_to_interaction_count, typicality_threshold, 5)
-                user_to_rir_top_count_filtered = retweet_dao.user_to_rir_top_count_filtered(user_to_rir_threshold_filtered, filtered_interaction_count, 5)
+# with daemon.DaemonContext(chroot_directory=None, working_directory='./'):
+for intersection_min in intersection_min_list:
+    for popularity in popularity_list:
+        for typicality_threshold in threshold_list:
+            user_to_rir_threshold_filtered, filtered_interaction_count, _ = retweet_dao.user_to_rir_threshold_filtered(user_to_relative_interaction_rate, user_to_interaction_count, typicality_threshold, 5)
+            user_to_rir_top_count_filtered = retweet_dao.user_to_rir_top_count_filtered(user_to_rir_threshold_filtered, filtered_interaction_count, 5)
 
-                for user_count in top_users:
-                    for item_count in top_items:
-                        cluster_list = new_algo_clustering.detect_all_communities(user_to_rir_top_count_filtered, user_to_rir_top_count_filtered, user_count, item_count, intersection_min, popularity, True)
+            for user_count in top_users:
+                for item_count in top_items:
+                    cluster_list = new_algo_clustering.detect_all_communities(user_to_rir_top_count_filtered, user_to_rir_top_count_filtered, user_count, item_count, intersection_min, popularity, True)
 
-                        # get the most typical words for each cluster
-                        for cluster in cluster_list:
-                            cluster_rwf = cluster_relative_frequency(rwf, cluster['users'])
-                            most_typical_words = []
-                            for item in cluster_rwf.most_common(10):
-                                most_typical_words.append(item[0])
-                            most_typical_words.sort()
-                            cluster['typical'] = most_typical_words
+                    # get the most typical words for each cluster
+                    for cluster in cluster_list:
+                        cluster_rwf = cluster_relative_frequency(rwf, cluster['users'])
+                        most_typical_words = []
+                        for item in cluster_rwf.most_common(10):
+                            most_typical_words.append(item[0])
+                        most_typical_words.sort()
+                        cluster['typical'] = most_typical_words
 
-                        
-                        # save results to file and database
-                        file_name = "Popularity {} Intersection Min {} Threshold {}, Top Items {}, Top Users {}".format(popularity, intersection_min, typicality_threshold, item_count, user_count)
-                        save_to_file(file_name, cluster_list)
-                        # dao.store_clusters(clusters, threshold, user_count, item_count)
+                    
+                    # save results to file and database
+                    file_name = "Popularity {} Intersection Min {} Threshold {}, Top Items {}, Top Users {}".format(popularity, intersection_min, typicality_threshold, item_count, user_count)
+                    save_to_file(file_name, cluster_list)
+                    # dao.store_clusters(clusters, threshold, user_count, item_count)
 
 
 '''
