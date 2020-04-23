@@ -9,61 +9,29 @@ import nltk
 import re
 import collections
 import datetime
+from word_freq_mongo_output_dao import WordFrequencyMongoOutputDAO
+from word_freq_mongo_input_dao import WordFrequencyMongoInputDAO
 
 class WordFrequency(Process):
-    def process_raw_tweets(self, tweet_doc, output_collection_name, config):
-        tweet_ID = tweet_doc['tweetID']
-        text = tweet_doc['text']
-
+    def process_raw_tweets(self, tweet_ID, text, output_collection_name):
         # process 
         processed_text_list = self._process_tweet_text(text)
 
         # store in output_collection_name
-        processed_tweet_doc = {
-            'tweetID': tweet_ID, 
-            'processed-text-list': processed_text_list
-        }
-        if output_collection_name not in self.output_DAOs:
-            # dynamically create new DAO
-            self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", config) 
-        self.output_DAOs[output_collection_name].create(processed_tweet_doc)
+        self.output_DAOs[output_collection_name].store_processed_tweet(tweet_ID, processed_text_list)
 
-    def generate_global_word_frequency_vector(self, date: datetime, output_collection_name, date_input_config=None, output_config=None):
-        formatted_date = date.strftime("%Y-%m-%d")
+    def generate_global_word_frequency_vector(self, date: datetime, input_collection_name, output_collection_name):
+        # TODO: finish fixing this
         
-        # get the collection that has the processed tweets from date
-        input_name = "({})-ProcessedTweets".format(formatted_date) 
-        date_input_config['collection-name'] = input_name
-        if input_name not in self.input_DAOs:
-            # dynamically create new DAO
-            self.input_DAOs[input_name] = self.DAO_factory.create_DAO_from_config("input", date_input_config)
-        collection = self.input_DAOs[input_name]
-        daily_processed_tweets = self.input_DAOs[input_name].read()
-        daily_processed_tweet_text = [processed_tweet for processed_tweet in daily_processed_tweets]
-
-        # print(input_name)
-        # print(collection)
-        # print(daily_processed_tweet_text)
-
+        daily_processed_tweet_text = self.input_DAOs[input_collection_name].get_processed_tweet
+        
         words = []
         for processed_tweet in daily_processed_tweet_text:
             words.extend(processed_tweet['processed-text-list'])
-        # print(words)
+        
         word_freq_vector = self._get_word_frequency_vector(words)
         if word_freq_vector:
-            word_freq_vector_doc = {
-                "Date": date,
-                "WordFreqVector": word_freq_vector
-            }
-            # print(word_freq_vector)
-
-            # output_collection_name = "({})-GlobalWordFrequency".format(formatted_date) 
-            # output_collection_name = "GlobalWordFrequency" # TODO: this is a temporary default
-            output_config['collection-name'] = output_collection_name
-            if output_collection_name not in self.output_DAOs:
-                # dynamically create new DAO
-                self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config("output", output_config) 
-            self.output_DAOs[output_collection_name].create(word_freq_vector_doc)
+            self.output_DAOs[output_collection_name].store_daily_global_word_frequency_vector
 
     def generate_user_word_frequency_vector(self, date: datetime, user, output_collection_name, date_input_config=None, output_config=None):
         # TODO: handle default value for date_input_config
@@ -74,8 +42,6 @@ class WordFrequency(Process):
         # TODO: dates issue
         collection = self.input_DAOs[input_name].read({ "id": user, "start_date": date })
         user_daily_tweet_text = [tweet['text'] for tweets_doc in collection for tweet in tweets_doc['tweets']]
-
-        # print(usser_daily_tweet_text)
 
         # process 
         words = []

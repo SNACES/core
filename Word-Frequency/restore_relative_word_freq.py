@@ -94,3 +94,101 @@ collection.insert_one({
       
 # word_frequency = WordFrequency(os.getcwd() + "/../General/ds-init-config.yaml")
 # print(word_frequency._process_tweet_text("thatve thatss yeas"))
+
+#-------------------------------DEBUG INFO--------------------------------------
+db = client['globalData']
+collection = db['wordCount']
+result = collection.find()
+global_word_freq_vector = Counter()
+for doc in result:
+    for word in doc:
+        if word != '_id':
+            global_word_freq_vector[word] = doc[word]
+
+# f = open('debug2', 'w')
+# word_freq_db = client['WordFreq-Test2']
+# user_relative_word_freq_collection = word_freq_db['UserRelativeWordFreq']
+# user_word_freq_collection = word_freq_db["UserWordFreq"]
+# user_to_rwf = {}
+# for doc in user_relative_word_freq_collection.find({'User': "JFutoma"}):
+#     user = doc['User']
+#     # orig_rwf_vector = Counter(doc['RelativeWordFrequency'])
+#     dao = NewAlgoClusteringMongoDAO()
+#     orig_rwf_vector = dao.get_rwf()[user]
+#     words_not_in_wf_vector = doc['UserWordsNotInGlobal']
+#     word_count_doc = user_word_freq_collection.find({"User": user})[0]
+#     user_word_frequency = word_count_doc['UserWordFreqVector']
+
+#     # handle words in global wf vector
+#     for word in words_not_in_wf_vector:
+#         user_word_count = user_word_frequency[word]
+#         global_count = global_word_freq_vector[word] if word in global_word_freq_vector else 0
+#         # print([doc['UserWordFreqVector'][word] for doc in user_word_freq_collection.find() if word in doc['UserWordFreqVector']])
+#         local_community_count = sum([doc['UserWordFreqVector'][word] for doc in user_word_freq_collection.find() if word in doc['UserWordFreqVector']])
+#         total_user_word_count = sum([user_word_frequency[word] for word in user_word_frequency])
+#         user_wf_length = len(user_word_frequency)
+#         # gwf_len
+#         rwf = orig_rwf_vector[word]
+#         f.write("Word: {}\nUser Word Count: {}\nGlobal Word Count: {}\nLocal Community Word Count: {}\nRWF: {}\n\n".format(word, user_word_count, global_count, local_community_count, rwf))
+
+word_freq_db = client['WordFreq-Test2']
+user_relative_word_freq_collection = word_freq_db['UserRelativeWordFreq']
+user_word_freq_collection = word_freq_db["UserWordFreq"]
+new_rwf_collection = word_freq_db['UserRWF']
+cache = {}
+total_global_count = sum([global_word_freq_vector[word] for word in global_word_freq_vector])
+
+user_to_wcv = {}
+for doc in user_relative_word_freq_collection.find():
+    user = doc['User']
+    word_count_doc = user_word_freq_collection.find({"User": user})[0]
+    user_word_count = word_count_doc['UserWordFreqVector']
+    user_to_wcv[user] = user_word_count 
+
+for doc in user_relative_word_freq_collection.find():
+    user = doc['User']
+    old_rwf_vector = Counter(doc['RelativeWordFrequency'])
+    new_rwf_vector = Counter(doc['RelativeWordFrequency'])
+    words_not_in_wf_vector = doc['UserWordsNotInGlobal']
+
+    word_count_doc = user_word_freq_collection.find({"User": user})[0]
+    user_word_frequency = word_count_doc['UserWordFreqVector']
+
+    # need to recompute rwf value 
+    for word in user_word_frequency:
+        """
+        uwf = user_count/total_user_count
+        gwf = global_count/total_global_count
+        rwf = uwf/gwf
+        """
+
+        user_count = user_word_frequency[word]
+        global_count = global_word_freq_vector[word] if word in global_word_freq_vector else 0
+        # print([doc['UserWordFreqVector'][word] for doc in user_word_freq_collection.find() if word in doc['UserWordFreqVector']])
+        total_user_count = sum([user_word_frequency[word] for word in user_word_frequency])
+        
+        if global_count == 0:
+            # we can cache local community count
+            if word not in cache:
+                # local_community_count = sum([Counter(doc['UserWordFreqVector'])[word] for doc in user_word_freq_collection.find() if word in Counter(doc['UserWordFreqVector'])])
+                local_community_count = 0
+                for user_ in user_to_wcv:
+                    u_word_counter = user_to_wcv[user_]
+                    if word in u_word_counter:
+                        local_community_count += u_word_counter[word]
+                cache[word] = local_community_count
+            else:
+                local_community_count = cache[word]
+            global_count = local_community_count
+
+        uwf = user_count / total_user_count
+        gwf = global_count / total_global_count
+        rwf = uwf / gwf
+        new_rwf_vector[word] = rwf
+
+    new_rwf_collection.insert_one({
+        "User": user,
+        "RelativeWordFrequency": new_rwf_vector,
+        "UserWordsNotInGlobal": words_not_in_wf_vector
+    })
+    

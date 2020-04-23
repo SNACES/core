@@ -54,13 +54,15 @@ class NewAlgoClustering(Process):
         return [id_to_cluster[cluster_id] for cluster_id in id_to_cluster]
 
     def detect_single_community(self, user_to_items, item_to_users, core_items, user_count, item_count, popularity, is_only_popularity):
-        min_pop = math.ceil(popularity * item_count) 
-        
+        # min_pop = math.ceil(popularity * item_count) # for words clustering
+        min_pop = math.ceil(popularity * user_count) # for retweet clustering
+
         is_converged = False
         num_iterations = 0
         max_iterations = 10  # TODO: hyperparameter
 
         while not is_converged and num_iterations < max_iterations:
+            # for word freq
             tmp_core_items = deepcopy(core_items)
             core_users = self.select(user_to_items, core_items, user_count, min_pop, is_only_popularity)
             if core_users == []:

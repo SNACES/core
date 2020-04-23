@@ -235,5 +235,5 @@ if __name__ == '__main__':
     user_to_rir_threshold_filtered, filtered_interaction_count, _ = retweet_dao.user_to_rir_threshold_filtered(user_to_relative_interaction_rate, user_to_interaction_count, 0.5, 5)
     user_to_rir_top_count_filtered = retweet_dao.user_to_rir_top_count_filtered(user_to_rir_threshold_filtered, filtered_interaction_count, 5)
    
-    print(user_to_rir_top_count_filtered['kdphd'])
+    print(user_to_rir_top_count_filtered)
 
