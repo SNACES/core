@@ -107,19 +107,19 @@ def rate_limited_functions() -> str:
     return result.strip()
 
 
-def filter_out_bots(users: List[str], start: datetime, end: datetime, threshold=0.75) -> List[str]:
-    """
-    Filters out bots from the supplied list of screen names. An account is flagged as a bot
-    if more than the given threshold of total tweets supplied by the account in the given
-    timeframe are retweets.
-    """
-    li = []
-    for user in users:
-        retweets, tweets = self.get_tweets(user, start, end)
-        if len(retweets) + len(tweets) > 0 and (len(retweets)/(len(tweets)+len(retweets)) <= 0.75):
-            li.append(user)
+# def filter_out_bots(users: List[str], start: datetime, end: datetime, threshold=0.75) -> List[str]:
+#     """
+#     Filters out bots from the supplied list of screen names. An account is flagged as a bot
+#     if more than the given threshold of total tweets supplied by the account in the given
+#     timeframe are retweets.
+#     """
+#     li = []
+#     for user in users:
+#         retweets, tweets = self.get_tweets(user, start, end)
+#         if len(retweets) + len(tweets) > 0 and (len(retweets)/(len(tweets)+len(retweets)) <= 0.75):
+#             li.append(user)
 
-    return li
+#     return li
 
 
 class UserListProcessor:
