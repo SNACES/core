@@ -2,10 +2,10 @@ import sys
 sys.path.append('../General')
 sys.path.append('../General/Concrete-DAO')
 
-import functools
-import datetime
-from process import Process
 from typing import Union, List
+from process import Process
+import datetime
+import functools
 
 """
 Download Tweets for use in future algorithms.
@@ -20,8 +20,10 @@ class TwitterTweetDownloader(Process):
         Return num_tweets tweets made by user with id(username or user id) id between start_date and end_date.
         """
 
-        tweets = self.input_DAOs[input_name].get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
-        self.output_DAOs[output_name].store_tweet_by_timeframe_user(id, start_date, end_date, tweets)
+        tweets = self.input_DAOs[input_name].get_tweets_by_timeframe_user(
+            id, start_date, end_date, num_tweets)
+        self.output_DAOs[output_name].store_tweet_by_timeframe_user(
+            id, start_date, end_date, tweets)
 
     def get_tweets_by_user(self, id: Union[str, int], num_tweets: int, input_name: str, output_name: str) -> list:
         tweets = self.input_DAOs[input_name].get_tweets_by_user(id, num_tweets)
@@ -37,12 +39,14 @@ class TwitterTweetDownloader(Process):
 """
 Download Twitter Friends for use in future algorithms.
 """
+
+
 class TwitterFriendsDownloader(Process):
     def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
         Process.__init__(self, init_path, input_DAOs, output_DAOs)
 
     def get_friends_by_screen_name(self, screen_name: str, num_friends: int, input_name: str, output_name: str) -> list:
-        """  
+        """
         Return a list of screen_names of friends of user with screen name screen_name.
         """
 
@@ -56,7 +60,7 @@ class TwitterFriendsDownloader(Process):
         return friends
 
     def get_friends_by_id(self, id: int, num_friends: int, input_name: str, output_name: str) -> list:
-        """  
+        """
         Return a list of ids of friends of user with id id.
         """
 
@@ -70,6 +74,8 @@ class TwitterFriendsDownloader(Process):
 """
 Download Twitter Following for use in future algorithms.
 """
+
+
 class TwitterFollowingDownloader(Process):
     def __init__(self, init_path, input_DAOs={}, output_DAOs={}):
         Process.__init__(self, init_path, input_DAOs, output_DAOs)
@@ -101,6 +107,21 @@ def rate_limited_functions() -> str:
     return result.strip()
 
 
+def filter_out_bots(users: List[str], start: datetime, end: datetime, threshold=0.75) -> List[str]:
+    """
+    Filters out bots from the supplied list of screen names. An account is flagged as a bot
+    if more than the given threshold of total tweets supplied by the account in the given
+    timeframe are retweets.
+    """
+    li = []
+    for user in users:
+        retweets, tweets = self.get_tweets(user, start, end)
+        if len(retweets) + len(tweets) > 0 and (len(retweets)/(len(tweets)+len(retweets)) <= 0.75):
+            li.append(user)
+
+    return li
+
+
 class UserListProcessor:
     """
     Return a list of users given the path to a file containing a list of users.
@@ -115,7 +136,8 @@ class UserListProcessor:
     """
 
     def download_function_by_user_list(self, download_function, user_list, *argv):
-        def curried_operation(acc, id): return download_function(id, *argv)  # acc is a dummy var
+        def curried_operation(acc, id): return download_function(
+            id, *argv)  # acc is a dummy var
 
         self.process_user_list(user_list, curried_operation)
 
@@ -125,7 +147,7 @@ class UserListProcessor:
 
 if __name__ == "__main__":
     start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
-    end_date = datetime.datetime(2019, 11, 26, 0, 0, 0)
+    end_date = datetime.datetime(2020, 5, 7, 0, 0, 0)
 
     import os
     # note that we need to pass in full path
@@ -136,9 +158,10 @@ if __name__ == "__main__":
     friends_downloader = TwitterFriendsDownloader(ds_config_path)
     following_downloader = TwitterFollowingDownloader(ds_config_path)
 
-    id = "realDonaldTrump"
-    # twitter_downloader.get_tweets_by_timeframe_user(id, start_date, end_date, 1, 'TweepyClient', 'getTweetsByTimeframeUser')
-    friends_downloader.get_friends_by_screen_name(id, 1, 'TweepyClient', 'getFriendsByScreenName')
-    following_downloader.get_following_by_screen_name(id, 1, 'TweepyClient', 'getFollowingByScreenName')
+    id = "animesh_garg"
+    twitter_downloader.get_tweets_by_timeframe_user(
+        id, start_date, end_date, num_tweets_to_download, 'TweepyClient', 'getTweetsByTimeframeUser')
+    # friends_downloader.get_friends_by_screen_name(id, 1, 'TweepyClient', 'getFriendsByScreenName')
+    # following_downloader.get_following_by_screen_name(id, 1, 'TweepyClient', 'getFollowingByScreenName')
 
     # "mongodb://localhost:2223"
