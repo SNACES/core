@@ -1,7 +1,8 @@
-credentials.py
-__pycache__/
-General/Concrete-DAO/__pycache__/
-General/__pycache__/
-Twitter-Download/__pycache__/
-Word-Frequency/log.txt
-credentials.pyc
+conf/credentials.py
+**/__pycache__/
+**/.vscode
+**/log.txt
+**/*.pyc
+
+src/twitter-download/user_list
+src/clustering/label-propagation/label_propagation_results

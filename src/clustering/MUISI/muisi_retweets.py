@@ -1,0 +1,92 @@
+from process import Process
+from pymongo import MongoClient
+from collections import Counter
+from copy import deepcopy, copy
+import datetime
+from clustering import *
+import numpy
+import math
+
+class NewAlgoRetweetsClustering(Process):
+    # Main methods
+    def detect_all_communities(self, user_to_items, user_count, intersection_min, popularity):
+        id_to_cluster = {}
+        count = 0
+        # print(len(user_to_items))
+        already_seen = []
+        for user1 in user_to_items:
+            for user2 in user_to_items:
+                if user2 not in already_seen and user1 != user2:
+                    item_intersection = list(set.intersection(
+                        set(user_to_items[user1]), set(user_to_items[user2])))
+
+                    if len(item_intersection) >= intersection_min:
+                    # if len(item_intersection) != 0:
+                        cluster = self.detect_single_community(
+                            user_to_items, item_intersection, user_count, popularity)
+                        if cluster:
+                            cluster_id = cluster['users']
+                            if cluster_id not in id_to_cluster:
+                                # print(cluster)
+                                cluster['count'] = 1
+                                id_to_cluster[cluster_id] = cluster
+                                count += 1
+                            else:
+                                id_to_cluster[cluster_id]['count'] += 1
+
+                            # print(count)
+
+            already_seen.append(user1)
+
+        return [id_to_cluster[cluster_id] for cluster_id in id_to_cluster]
+
+    def detect_single_community(self, user_to_items, core_users, user_count, popularity):
+        # min_pop = math.ceil(popularity * item_count) # for words clustering
+        min_pop = math.ceil(popularity * user_count) # for retweet clustering
+
+        is_converged = False
+        num_iterations = 0
+        max_iterations = 10  # TODO: hyperparameter
+
+        while not is_converged and num_iterations < max_iterations:
+            # for word freq
+            tmp_core_users = deepcopy(core_users)
+            core_users = self.select(user_to_items, core_users, user_count, min_pop)
+            if core_users == []:
+                return None
+
+            if tmp_core_users == core_users:
+                is_converged = True
+            
+            num_iterations += 1
+
+        core_users.sort()
+        return {'users': tuple(core_users)} if is_converged else None
+
+    def select(self, user_to_items, core_users, count, min_pop):
+        # compute the popularity of each user wrt the core_items
+        user_to_popularity = Counter()
+        for user in user_to_items:
+            user_items = user_to_items[user]
+            intersect_count = len(set.intersection(
+                set(core_users), set(user_items)))
+            if len(user_items) >= min_pop:
+                user_to_popularity[user] = intersect_count / len(core_users)
+
+        # get the top count most popular users
+        popular_users = [user for user, popularity in user_to_popularity.most_common(count)]
+        if len(popular_users) != count:
+            return []
+        # consider tie cases
+        possible_tie_value = user_to_popularity[popular_users[-1]]
+        users_sorted_by_popularity = user_to_popularity.most_common()
+        for i in range(count + 1, len(users_sorted_by_popularity)):
+            user, popularity = users_sorted_by_popularity[i]
+            if popularity == possible_tie_value:
+                popular_users.append(user)
+            else:
+                return popular_users
+
+        # popular_users.sort()
+        return popular_users
+
