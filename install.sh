@@ -1,7 +1,5 @@
- #!/bin/bash
+#!/bin/bash
 
- pip install pipenv
- pipenv install --three
- pipenv install -e .
- pipenv install
- pipenv shell
+pip install pipenv
+pipenv install -e .
+pipenv shell

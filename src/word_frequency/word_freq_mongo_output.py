@@ -1,8 +1,7 @@
 from typing import Union, List
 from collections import Counter
-from mongoDAO import MongoDAO
 
-class WordFrequencyMongoOutput(MongoDAO, OutputDAO):
+class WordFrequencyMongoOutputDAO():
     # Important to distinguish between new entry and update
     def __init__(self):
         super().__init__()

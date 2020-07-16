@@ -1,10 +1,8 @@
 from typing import Union, List
 from collections import Counter
 from copy import copy
-from process import Process
-from mongoDAO import MongoOutputDAO
-from word_freq_mongo_output_dao import WordFrequencyMongoOutputDAO
-from word_freq_mongo_input_dao import WordFrequencyMongoInputDAO
+
+from src.general.process import Process
 
 class WordFrequency(Process):
     def gen_global_word_count_vector(self, input_dao, output_dao):

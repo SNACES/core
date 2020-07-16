@@ -1,0 +1,93 @@
+Users: ['1vnzh', 'A_Aspuru_Guzik', 'Aaroth', 'AidanNGomez', 'AkiyoshiKitaoka', 'AmirRosenfeld', 'CausalKathy', 'EthanFetaya', 'HelloHops', 'JaggamanJames', 'KLdivergence', 'Lv100Swagneton', 'MarzyehGhassemi', 'MattBobkin', 'Miles_Brundage', 'Mo_Fad3l', 'MrDanielMax', 'NicolasPapernot', 'PariAIML', 'RandomlyWalking', 'RogerGrosse', 'RonSoupprune', 'ShalitUri', 'SingularMattrix', 'SirrahChan', 'Smerity', 'SoloGen', 'SussilloDavid', 'TaiUdovicic', 'VectorInst', 'ZOMGZinc', '_HeatherE', '__sarah_anne__', '_asubbaswamy', '_galyo', 'adversariel', 'aerinykim', 'aivillage_dc', 'alex_y_gao', 'alexdamour', 'angelamczhou', 'annakoop', 'beenwrekt', 'berty38', 'blancamiller_', 'carrasqu', 'catherineols', 'ceh0', 'chloepouprom', 'cobyviner', 'coolboi95', 'databoydg', 'david_madras', 'david_sontag', 'ddebow', 'dirk_hovy', 'dramemariama20', 'edwardhkennedy', 'ermgrant', 'fhuszar', 'geomblog', 'goodfellow_ian', 'haldaume3', 'hannawallach', 'hardmaru', 'iamstripedhorse', 'j_asminewang', 'jackclarkSF', 'james_c_atwood', 'james_r_lucas', 'jamiemorgenste1', 'jasserole', 'jefrankle', 'jennwvaughan', 'jessebett', 'jh_jacobsen', 'johnmyleswhite', 'judyhshen', 'julius_adebayo', 'kongaloosh', 'korymath', 'kswersk', 'langston_poems', 'leeclemnet', 'leilanigilpin', 'liannapisani', 'ltondji', 'maria__cuellar', 'mariadearteaga', 'mark_riedl', 'marthadarby', 'math_rachel', 'mattschleg', 'mchlglry', 'megberetta', 'melosare', 'mikekimbackward', 'mmitchell_ai', 'moyix', 'mrtz', 'mtesfald', 'nickfrosst', 'nicohowe', 'notsapphoe', 'octonion', 'orionbuske', 'osageev', 'packer_ben', 'panfordkobby', 'patrickcorneil', 'payaicha15', 'raebett', 'rajiinio', 'randal_olson', 'random_walker', 'rctatman', 'realnamepolicy', 'risk4bisc', 'roydanroy', 'sarahcolq', 'sina_lana', 'slydesilva', 'suchisaria', 'tdietterich', 'thesasho', 'tw_killian', 'tyrell_turing', 'umangsbhatt', 'variationalBAE', 'wgrathwohl', 'yoavgo', 'zacharylipton']
+Most Typical Words: ['algorithm', 'causal', 'dataset', 'embed', 'github', 'invari', 'keynot', 'ml', 'quantum', 'rl']
+
+Users: ['3r1nG', 'AINowInstitute', 'AlecMacGillis', 'BKCHarvard', 'BrendaKLeong', 'BrendanNyhan', 'ClareMalone', 'ContraPoints', 'DaraKaye', 'ErikLoomis', 'EvanSelinger', 'ForecasterEnten', 'FrankPasquale', 'GretchenAMcC', 'HeerJeet', 'JohnHolbein1', 'JuliaAngwin', 'KT_So_It_Goes', 'LisPower1', 'LorenRaeDeJ', 'MarkupReal', 'MattGertz', 'MichaelSLinden', 'ModeledBehavior', 'NateSilver538', 'Nate_Cohn', 'Noahpinion', 'OsitaNwanevu', 'RespectableLaw', 'Richard_Florida', 'SarahJamieLewis', 'SarahTaber_bww', 'SatterthwaiteML', 'SeanMcElwee', 'SeanTrende', 'SethAMandel', 'ShannonVallor', 'SolomonMg', 'Susan_Athey', 'TerribleMaps', 'TimHarford', 'TrooperSanders', 'Undercoverhist', 'WillOremus', 'Yair_Rosenberg', 'alexhanna', 'alexstamos', 'aprilaser', 'ashleyfeinberg', 'bencasselman', 'benzevgreen', 'briebriejoy', 'byrdinator', 'causalinf', 'curaffairs', 'david_madras', 'ddale8', 'dick_nixon', 'egavactip', 'elanazeide', 'elizabeth_joh', 'elyratner', 'gelliottmorris', 'ggreenwald', 'ghadfield', 'grimmelm', 'harvard_data', 'j2bryson', 'jasonmillar', 'jessesingal', 'julia_azari', 'juliagalef', 'katecrawford', 'lawfareblog', 'lawlkat', 'leah_boustan', 'linamkhan', 'madbev14', 'mathbabedotorg', 'matthewstoller', 'mattyglesias', 'maya_sen', 'mbogen', 'mikarv', 'mkoplow', 'natematias', 'nathanjurgenson', 'ncasenmare', 'ndiakopoulos', 'ne0liberal', 'ollie', 'peltzmadeline', 'poverty_action', 'propublica', 'qjurecic', 'skepticalsports', 'supergovernance', 'superwuster', 'team_markup', 'theintercept', 'timhwang', 'timoreilly', 'willsommer', 'wsisaac', 'zeynep', 'zittrain']
+Most Typical Words: ['algorithm', 'autonom', 'causal', 'coauthor', 'econ', 'forthcom', 'intervent', 'postdoc', 'selfdriv', 'skeptic']
+
+Users: ['AndrewDBailey', 'NBA_Math', 'OldHossRadbourn', 'TorontoStar', 'ZachLowe_NBA', 'bencfalk', 'bruce_arthur', 'david_madras', 'dmorey', 'ekoreen']
+Most Typical Words: ['andr', 'blk', 'damian', 'donovan', 'fare', 'fiveyear', 'gianni', 'pelican', 'rebound', 'stl']
+
+Users: ['AnnaJaneSmith4', 'BlakeMurphyODC', 'david_madras', 'dhackett1565', 'joey_doubleyou', 'william_lou', 'wtevs']
+Most Typical Words: ['gianni', 'hernandez', 'jv', 'kyle', 'pascal', 'pod', 'raptor', 'rebound', 'serg', 'steph']
+
+Users: ['EgSophie', 'david_madras', 'haaretzcom', 'jstreetdotorg', 'rabbijilljacobs', 'tabletmag']
+Most Typical Words: ['isra', 'jew', 'jewish', 'netanyahu', 'reenter', 'roundup', 'shabbat', 'unauthor', 'zionism', 'zionist']
+
+Users: ['IanGormely', 'LStanley24', 'david_madras', 'exclaimdotca', 'theneedledrop']
+Most Typical Words: ['bluesyrockyfolki', 'florist', 'hugggg', 'kidhav', 'mauno', 'oso', 'rad', 'sunsetor', 'ticketmast', 'tunag']
+
+Users: ['chancetherapper', 'david_madras', 'pitchfork', 'vincestaples']
+Most Typical Words: ['cuh', 'dre', 'fleec', 'mayfair', 'mustang', 'snitch', 'squabbl', 'stapl', 'vanya', 'vinc']
+
+Users: ['GraphicMatt', 'david_madras', 'jen_keesmaat', 'm_layton']
+Most Typical Words: ['councillor', 'municip', 'neighbourhood', 'ontario', 'pedestrian', 'perk', 'provinci', 'transit', 'ttc', 'waterfront']
+
+Users: ['CANADALAND', 'JesseBrown', 'david_madras']
+Most Typical Words: ['bailout', 'bryant', 'ddos', 'peterson', 'podcast', 'retract', 'sleaz', 'subsidi', 'thunder', 'vancouv']
+
+Users: ['CBCNews', 'david_madras', 'dsouzamichaelc']
+Most Typical Words: ['acadian', 'blueberri', 'clementin', 'colleen', 'corn', 'cranberri', 'dough', 'oyster', 'raspberri', 'shrimp']
+
+Users: ['DoctorVive', 'GeoffreySupran', 'david_madras']
+Most Typical Words: ['climat', 'denier', 'emiss', 'fossil', 'halv', 'identif', 'increment', 'mitig', 'refram', 'tobacco']
+
+Users: ['david_madras', 'ithrow88', 'whatwouldDOOdo']
+Most Typical Words: ['arcanin', 'ballpark', 'dmv', 'eireann', 'maxim', 'mlbs', 'mound', 'pitcher', 'romo', 'trilog']
+
+Users: ['JasonIsbell', 'carolinespence_', 'david_madras']
+Most Typical Words: []
+
+Users: ['david_madras', 'vanillatary']
+Most Typical Words: ['assad', 'gabbard', 'generos', 'intervent', 'kink', 'nich', 'rubin', 'saddam', 'tulsi', 'yank']
+
+Users: ['abbagoldbot', 'david_madras']
+Most Typical Words: ['aha', 'fernando', 'flown', 'gimm', 'mamma', 'mia', 'midnight', 'scar', 'suppper', 'trouppper']
+
+Users: ['Limericking', 'david_madras']
+Most Typical Words: ['azealia', 'bannon', 'brett', 'hog', 'inquir', 'latest', 'limerick', 'maxim', 'pod', 'thus']
+
+Users: ['ProbCausation', 'david_madras']
+Most Typical Words: ['cjar', 'criminalizingdecrimin', 'decarcer', 'incarcer', 'listenersupport', 'lovenheim', 'muellersmith', 'philadelphia', 'syring', 'unintend']
+
+Users: ['david_madras', 'fermatslibrary']
+Most Typical Words: ['algorithm', 'approxim', 'deriv', 'feynman', 'mathemat', 'mathematician', 'notat', 'physicist', 'quantum', 'vinci']
+
+Users: ['A_single_bear', 'david_madras']
+Most Typical Words: ['bear', 'cave', 'chew', 'dumpster', 'fur', 'fuzz', 'fuzzi', 'growl', 'lizard', 'trashcan']
+
+Users: ['TedOnPrivacy', 'david_madras']
+Most Typical Words: ['algorithm', 'dataset', 'differenti', 'invari', 'keynot', 'leakag', 'mitig', 'opensourc', 'privaci', 'tracker']
+
+Users: ['MicroSFF', 'david_madras']
+Most Typical Words: ['amanda', 'copyright', 'fanfic', 'hah', 'hog', 'knight', 'misunderstood', 'paperback', 'squir', 'westin']
+
+Users: ['GeoffRockwell', 'david_madras']
+Most Typical Words: ['capurro', 'goebel', 'hatsunemiku', 'jeppi', 'keynot', 'lieg', 'ninnaji', 'rafael', 'shamil', 'timbuktu']
+
+Users: ['david_madras', 'dril']
+Most Typical Words: ['absorb', 'ape', 'corn', 'denim', 'dip', 'hog', 'luch', 'morph', 'peni', 'yale']
+
+Users: ['HMSHCP', 'david_madras']
+Most Typical Words: ['239th', 'adelstein', 'benzodiazepin', 'hcps', 'mcneil', 'medicaidcov', 'opioid', 'preval', 'wmh', 'zirui']
+
+Users: ['ProBirdRights', 'david_madras']
+Most Typical Words: []
+
+Users: ['david_madras', 'rxgau']
+Most Typical Words: []
+
+Users: ['aliceysu', 'david_madras']
+Most Typical Words: ['beij', 'extradit', 'hallelujah', 'hk', 'mainland', 'mtr', 'retract', 'taiwan', 'tiananmen', 'xinjiang']
+
+Users: ['david_madras', 'forexposure_txt']
+Most Typical Words: ['benefict', 'copyright', 'deviantart', 'dras', 'godddamn', 'hussl', 'payi', 'someom', 'unpaid', 'watermark']
+
+Users: ['david_madras', 'ewarren']
+Most Typical Words: ['fec', 'forprofit', 'grassroot', 'hampshir', 'iowa', 'opioid', 'puerto', 'rico', 'structur', 'wealthiest']
+
+Users: ['Kurt_Vonnegut', 'david_madras']
+Most Typical Words: ['conquer', 'dynamit', 'extenu', 'hermaphrodit', 'inhabit', 'loneli', 'misrepres', 'pluck', 'sixteen', 'tin']
+
+Users: ['computerfact', 'david_madras']
+Most Typical Words: ['binari', 'closedgl', 'comput', 'computercoin', 'fuzzi', 'halt', 'jdaughter', 'manmonth', 'manmoth', 'sk_babymax']
+

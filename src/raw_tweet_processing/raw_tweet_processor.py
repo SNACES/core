@@ -1,9 +1,9 @@
 import nltk
 import re
 import datetime
-
-from process import Process
 from functools import reduce
+
+from src.general.process import Process
 
 class RawTweetProcessor(Process):
     def gen_processed_global_tweets(self, input_dao, output_dao):

@@ -1,14 +1,9 @@
-from tweepy import OAuthHandler
-from tweepy import Stream
-from tweepy import API
-from tweepy import Cursor
-from typing import Union
-from datastore import *
 import datetime
-import credentials
-
+from typing import Union
+from tweepy import OAuthHandler, Stream, API, Cursor
 from tweepy.streaming import StreamListener
-from tweepy import Stream
+
+import conf.credentials as credentials
 
 class TweepyListener(StreamListener):
     def __init__(self, num_tweets):
@@ -40,7 +35,7 @@ class TwitterAuthenticator():
         return auth
 
 
-class TweepyDAO(InputDAO):
+class TweepyDAO():
     def __init__(self):
         self.auth = TwitterAuthenticator().authenticate()
         self.twitter_api = API(self.auth, wait_on_rate_limit=True)

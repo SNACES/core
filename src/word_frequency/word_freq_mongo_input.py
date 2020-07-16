@@ -1,11 +1,10 @@
-from typing import Union, List
-from mongoDAO import MongoDAO
 import collections
 import datetime
+from typing import Union, List
 
 # TODO: implement lazy mode: this makes sure that accurate wc and wf vectors are generated
 # to do this, need to keep track of which processed tweets have already had their words counted
-class WordFrequencyMongoInput(MongoDAO, InputDAO):
+class WordFrequencyMongoInputDAO():
     def __init__(self):
         super().__init__()
         self.global_processed_tweets_collection = None

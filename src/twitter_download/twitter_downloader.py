@@ -1,10 +1,9 @@
 import functools
 import datetime
-from process import Process
-from typing import Union, List
-from process import Process
-import datetime
 import functools
+from typing import Union, List
+
+from src.general.process import Process
 
 """
 Download Tweets for use in future algorithms.
@@ -158,12 +157,7 @@ if __name__ == "__main__":
     following_downloader = TwitterFollowingDownloader(ds_config_path)
 
     id = "animesh_garg"
-<<<<<<< HEAD:src/twitter-download/twitter_downloader.py
     twitter_downloader.get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets_to_download, 'TweepyClient', 'getTweetsByTimeframeUser')
-=======
-    twitter_downloader.get_tweets_by_timeframe_user(
-        id, start_date, end_date, num_tweets_to_download, 'TweepyClient', 'getTweetsByTimeframeUser')
->>>>>>> 923b908d41206b1b5d20407b17608744009a9584:Twitter-Download/twitterDownloader.py
     # friends_downloader.get_friends_by_screen_name(id, 1, 'TweepyClient', 'getFriendsByScreenName')
     # following_downloader.get_following_by_screen_name(id, 1, 'TweepyClient', 'getFollowingByScreenName')
 

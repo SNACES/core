@@ -1,4 +1,4 @@
-from datastore import *
+from src.general.datastore import *
 from pymongo import MongoClient
 
 class MongoDAO():

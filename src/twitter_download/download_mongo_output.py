@@ -1,7 +1,4 @@
-from mongoDAO import MongoDAO
-from datastore import OutputDAO
-
-class DownloadMongoOutputDAO(MongoDAO, OutputDAO):
+class DownloadMongoOutputDAO():
     def store_tweet_by_timeframe_user(self, id, start_date, end_date, tweets):
         document = {
                 "id": id,
