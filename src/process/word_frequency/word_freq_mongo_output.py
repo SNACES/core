@@ -4,9 +4,8 @@ from collections import Counter
 class WordFrequencyMongoOutputDAO():
     # Important to distinguish between new entry and update
     def __init__(self):
-        super().__init__()
         self.global_word_count_vector_collection = None
-        self.user_word_count_frequency_collection = None
+        self.user_word_count_vector_collection = None
         self.global_word_frequency_vector_collection = None
         self.user_word_frequency_vector_collection = None
         self.relative_user_word_frequency_vector_collection = None
@@ -29,14 +28,14 @@ class WordFrequencyMongoOutputDAO():
         for user in user_wc_vector:
             wc_vector = Counter(user_wc_vector[user])
 
-            user_doc = self.user_word_count_vector_collection.find({
+            user_doc = self.user_word_count_vector_collection.find_one({
                 'user': user
             })
             if user_doc:
                 # Update
                 existing_wc_vector = Counter(user_doc['word_count_vector'])
                 updated_wc_vector = existing_wc_vector + wc_vector
-                self.user_word_count_vector_collection.update_one({
+                self.user_word_count_vector_collection.replace_one({
                     'user': user
                 }, {
                     'user': user,
@@ -63,12 +62,12 @@ class WordFrequencyMongoOutputDAO():
         for user in user_wf_vector:
             wf_vector = Counter(user_wf_vector[user])
 
-            user_doc = self.user_word_frequency_vector_collection.find({
+            user_doc = self.user_word_frequency_vector_collection.find_one({
                 'user': user
             })
             if user_doc:
                 # Update
-                self.user_word_frequency_vector_collection.update_one({
+                self.user_word_frequency_vector_collection.replace_one({
                     'user': user
                 }, {
                     'user': user,
@@ -129,7 +128,7 @@ class WordFrequencyMongoOutputDAO():
             for tweet in processed_tweet_list:
                 tweet['is_counted'] = True
 
-            self.user_processed_tweets_collection.update_one({'user': user}, user_doc)
+            self.user_processed_tweets_collection.replace_one({'user': user}, user_doc)
 
 
 

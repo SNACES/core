@@ -6,7 +6,6 @@ from typing import Union, List
 # to do this, need to keep track of which processed tweets have already had their words counted
 class WordFrequencyMongoInputDAO():
     def __init__(self):
-        super().__init__()
         self.global_processed_tweets_collection = None
         self.user_processed_tweets_collection = None
         self.global_word_count_vector_collection = None
@@ -46,17 +45,20 @@ class WordFrequencyMongoInputDAO():
         user_to_tweet_words = {}
 
         if lazy:
+            # user_tweet_doc_list = self.user_processed_tweets_collection.find({
+            #     'processed_tweets': [{'is_processed': False}]
+            # },
+            # {
+            #     'processed_tweets': [{'is_processed': "null"}]
+            # })
             user_tweet_doc_list = self.user_processed_tweets_collection.find({
-                'processed_tweets': [{'is_processed': False}]
-            },
-            {
-                'processed_tweets': [{'is_processed': "null"}]
+                'processed_tweets': {'is_counted': False}
             })
         else:
             user_tweet_doc_list = self.user_processed_tweets_collection.find()
 
         # Run through tweets in collection and collect words from tweets
-        for user_doc in self.user_processed_tweets_collection.find():
+        for user_doc in user_tweet_doc_list:
             user = user_doc['user']
             tweet_words = []
             
@@ -65,6 +67,7 @@ class WordFrequencyMongoInputDAO():
 
             user_to_tweet_words[user] = tweet_words
 
+        print(user_to_tweet_words)
         return user_to_tweet_words
 
     def get_global_word_count_vector(self):

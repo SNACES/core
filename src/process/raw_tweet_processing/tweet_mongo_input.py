@@ -2,7 +2,6 @@
 # lazy mode only returns tweets that have yet to be processed
 class TweetMongoInputDAO:
     def __init__(self):
-        super().__init__()
         self.global_tweets_collection = None
         self.user_tweets_collection = None
     
@@ -18,9 +17,7 @@ class TweetMongoInputDAO:
         if lazy:
             # TODO: not sure if we're querying for missing fields correctly
             global_tweet_doc_list = self.global_tweets_collection.find({
-                'is_processed': False
-            }, {
-                'is_processed': "null"
+                'is_processed': {'$ne': True}
             })
         else:
             global_tweet_doc_list = self.global_tweets_collection.find()
@@ -41,20 +38,21 @@ class TweetMongoInputDAO:
         user_to_tweets = {}
 
         if lazy:
-            user_tweet_doc_list = self.user_tweets_collection.find({
-                'tweets': [{'is_processed': False}]
-            },
-            {
-                'tweets': [{'is_processed': "null"}]
-            })
+            # user_tweet_doc_list = self.user_tweets_collection.find({
+            #     '$or': [{'tweets.is_processed': False}, 
+            #             {'tweets.is_processed': {"$exists": False}}
+            #     ]          
+            # })
+            user_tweet_doc_list = self.user_tweets_collection.find({'tweets.is_processed': False})
         else:
             user_tweet_doc_list = self.user_tweets_collection.find()
 
         for user_doc in user_tweet_doc_list:
             user = user_doc['user']
             user_tweet_wrapper_list = user_doc['tweets']
-            tweet_text = [tweet_wrapper['user'] for tweet_wrapper in user_tweet_wrapper_list]
+            tweet_text = [tweet_wrapper['text'] for tweet_wrapper in user_tweet_wrapper_list]
 
             user_to_tweets[user] = tweet_text
 
+        print(user_to_tweets)
         return user_to_tweets

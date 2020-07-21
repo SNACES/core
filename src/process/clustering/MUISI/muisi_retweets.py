@@ -1,4 +1,3 @@
-from process import Process
 from pymongo import MongoClient
 from collections import Counter
 from copy import deepcopy, copy
@@ -7,7 +6,7 @@ from clustering import *
 import numpy
 import math
 
-class NewAlgoRetweetsClustering(Process):
+class NewAlgoRetweetsClustering():
     # Main methods
     def detect_all_communities(self, user_to_items, user_count, intersection_min, popularity):
         id_to_cluster = {}

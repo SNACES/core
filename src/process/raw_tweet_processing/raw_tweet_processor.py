@@ -1,11 +1,8 @@
 import nltk
 import re
 import datetime
-from functools import reduce
 
-from src.general.process import Process
-
-class RawTweetProcessor(Process):
+class RawTweetProcessor():
     def gen_processed_global_tweets(self, input_dao, output_dao):
         """
         Assume that the input dao contains a random stream of tweets. 
@@ -15,7 +12,7 @@ class RawTweetProcessor(Process):
         """
         
         global_tweet_list = input_dao.get_global_tweets()
-        processed_global_tweet_list = list(reduce(_process_tweet_text, global_tweet_list))
+        processed_global_tweet_list = list(map(self._process_tweet_text, global_tweet_list))
         output_dao.store_global_processed_tweets(processed_global_tweet_list)
         output_dao.update_global_tweet_state()
 
@@ -29,13 +26,12 @@ class RawTweetProcessor(Process):
         Update user tweet database to reflect processed tweet state.
         """
 
-        user_tweet_list = input_dao.get_user_tweets()
+        user_to_tweets = input_dao.get_user_tweets()
         user_to_processed_tweet_list = {}
 
-        for user in user_to_processed_tweet_list:
-            tweet_list = user_to_processed_tweet_list[user]
-            processed_tweet_list = reduce(_process_tweet_text, tweet_list)
-
+        for user in user_to_tweets:
+            tweet_list = user_to_tweets[user]
+            processed_tweet_list = map(self._process_tweet_text, tweet_list)
             user_to_processed_tweet_list[user] = processed_tweet_list
 
         output_dao.store_user_processed_tweets(user_to_processed_tweet_list)
@@ -75,23 +71,3 @@ class RawTweetProcessor(Process):
                     processed_text_list.remove(word)
 
         return processed_text_list
-    
-    # def get_processed_tweet(self, tweet_ID, processed_text_list):
-    #     # Old Format.
-    #     formatted_date = date.strftime("%Y-%m-%d")
-        
-    #     # get the collection that has the processed tweets from date
-    #     input_name = "({})-ProcessedTweets".format(formatted_date) 
-    #     collection = self.input_DAOs[input_name]
-    #     daily_processed_tweets = self.input_DAOs[input_name].read()
-    #     daily_processed_tweet_text = [processed_tweet for processed_tweet in daily_processed_tweets]
-
-    #     return daily_processed_tweet_text
-
-    # def process_raw_tweets(self, tweet_ID, text, output_collection_name):
-    #     # process 
-    #     processed_text_list = self._process_tweet_text(text)
-
-    #     # store in output_collection_name
-    #     self.output_DAOs[output_collection_name].store_processed_tweet(tweet_ID, processed_text_list)
-        

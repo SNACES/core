@@ -1,8 +1,7 @@
-from functools import reduce
+from src.shared.lib import get_unique_list
 
 class TweetMongoOutputDAO:
     def __init__(self):
-        super().__init__()
         self.global_processed_tweets_collection = None
         self.global_tweets_collection = None
         self.user_processed_tweets_collection = None
@@ -14,7 +13,6 @@ class TweetMongoOutputDAO:
         Format: {'tweet_words': [str]}
         """
         
-        # Store
         for tweet_words in processed_global_tweet_list:
             self.global_processed_tweets_collection.insert_one({
                 'tweet_words': tweet_words,
@@ -26,15 +24,25 @@ class TweetMongoOutputDAO:
         Format: {'user': str, 'processed_tweets' [{'tweet_words': [str]}]}
         """
         
-        # Store
         for user in user_to_processed_tweet_list:
             tweet_list = user_to_processed_tweet_list[user]
-            processed_tweet_list = list(reduce(lambda a: {'tweet_words': a}, tweet_list))
+            processed_tweet_list = list(map(lambda a: {'tweet_words': a}, tweet_list))
 
-            self.user_processed_tweets_collection.insert_one({
-                'user': user,
-                'processed_tweets': processed_tweet_list
+            user_doc = self.user_processed_tweets_collection.find_one({
+                'user': user
             })
+            if user_doc:
+                # Update
+                user_doc['processed_tweets'] += processed_tweet_list
+                self.user_processed_tweets_collection.replace_one({
+                    'user': user
+                }, user_doc)
+            else:
+                # Add new entry
+                self.user_processed_tweets_collection.insert_one({
+                    'user': user,
+                    'processed_tweets': processed_tweet_list
+                })
 
     def update_global_tweet_state(self):
         """
@@ -58,6 +66,7 @@ class TweetMongoOutputDAO:
             tweet_list = user_doc['tweets']
 
             for tweet in tweet_list:
-                tweet['is_processed'] = True
+                # TODO: change back to True
+                tweet['is_processed'] = False
 
-            self.user_tweets_collection.update_one({'user': user}, user_doc)
+            self.user_tweets_collection.replace_one({'user': user}, user_doc)

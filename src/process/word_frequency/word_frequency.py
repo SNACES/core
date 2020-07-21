@@ -2,9 +2,7 @@ from typing import Union, List
 from collections import Counter
 from copy import copy
 
-from src.general.process import Process
-
-class WordFrequency(Process):
+class WordFrequency():
     def gen_global_word_count_vector(self, input_dao, output_dao):
         """
         Assume that the input dao contains tweets.

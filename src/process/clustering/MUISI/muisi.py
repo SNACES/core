@@ -1,4 +1,3 @@
-from process import Process
 from pymongo import MongoClient
 from collections import Counter
 from copy import deepcopy, copy
@@ -7,7 +6,7 @@ from clustering import *
 import numpy
 import math
 
-class NewAlgoClustering(Process):
+class NewAlgoClustering():
     # Database load and store wrappers
     # def process_cluster():
     #     pass
