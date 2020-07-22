@@ -34,7 +34,7 @@ class WordFrequencyMongoInputDAO():
 
         return global_tweet_words
 
-    def get_user_tweet_words(self, lazy=True):
+    def get_user_tweet_words(self, lazy=False): # TODO: change back to true once lazy mode fixed
         """
         Return for each user a list of all words from tweets in the user processed tweets collection.
         Input database doc format: {'user': str, 'processed_tweets' [{'tweet_words': [str]}]}

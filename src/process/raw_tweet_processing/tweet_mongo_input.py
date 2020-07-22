@@ -27,7 +27,7 @@ class TweetMongoInputDAO:
 
         return global_tweets
 
-    def get_user_tweets(self, lazy=True):
+    def get_user_tweets(self, lazy=False): # TODO: change back to true once lazy mode fixed
         """
         Return unprocessed user tweets when lazy mode is toggled, 
         else return all user tweets in database.
