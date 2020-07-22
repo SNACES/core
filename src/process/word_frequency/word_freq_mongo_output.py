@@ -84,7 +84,7 @@ class WordFrequencyMongoOutputDAO():
         for user in relative_user_wf_vector:
             relative_wf_vector = Counter(relative_user_wf_vector[user])
 
-            user_doc = self.relative_user_word_frequency_vector_collection.find({
+            user_doc = self.relative_user_word_frequency_vector_collection.find_one({
                 'user': user
             })
             if user_doc:

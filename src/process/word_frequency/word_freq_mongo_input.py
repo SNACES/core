@@ -12,6 +12,7 @@ class WordFrequencyMongoInputDAO():
         self.user_word_count_vector_collection = None
         self.global_word_frequency_vector_collection = None
         self.user_word_frequency_vector_collection = None
+        self.relative_user_word_frequency_vector_collection = None
     
     def get_global_tweet_words(self, lazy=True):
         """
@@ -65,7 +66,6 @@ class WordFrequencyMongoInputDAO():
 
             user_to_tweet_words[user] = tweet_words
 
-        print(user_to_tweet_words)
         return user_to_tweet_words
 
     def get_global_word_count_vector(self):
@@ -121,3 +121,18 @@ class WordFrequencyMongoInputDAO():
             user_word_frequency_vector[user] = word_frequency_vector
 
         return user_word_frequency_vector
+    
+    def get_relative_user_word_frequency_vector(self):
+        """
+        Return the relative user word frequency vector.
+        Format: {user: {word: relative word frequency}}
+        """
+        
+        relative_user_word_frequency_vector = {}
+        
+        for user_doc in self.relative_user_word_frequency_vector_collection.find():
+            user = user_doc['user']
+            relative_word_frequency_vector = user_doc['relative_word_frequency_vector']
+            relative_user_word_frequency_vector[user] = relative_word_frequency_vector
+
+        return relative_user_word_frequency_vector

@@ -19,6 +19,8 @@ input_dao.user_processed_tweets_collection = processed_db['UserTweets']
 input_dao.user_word_count_vector_collection = wf_db['UserWordCount']
 input_dao.user_word_frequency_vector_collection = wf_db['UserWordFrequency']
 
+input_dao.relative_user_word_frequency_vector_collection = wf_db['RelativeUserWordFrequency']
+
 output_dao = WordFrequencyMongoOutputDAO()
 output_dao.global_word_count_vector_collection = wf_db['GlobalWordCount']
 output_dao.global_processed_tweets_collection = processed_db['GlobalTweets']
