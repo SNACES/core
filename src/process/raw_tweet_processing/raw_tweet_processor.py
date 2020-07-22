@@ -61,7 +61,7 @@ class RawTweetProcessor():
         processed_text_list = [sno.stem(word) for word in processed_text_list]
 
         # Remove stop words
-        nltk.download('stopwords') # TODO: maybe not efficient to do this here`
+        nltk.download('stopwords') # TODO: maybe not efficient to do this here, enable when running first time
         stopwords = set(nltk.corpus.stopwords.words('english'))
         stopwords.add('amp')
         for word in stopwords:

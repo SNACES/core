@@ -42,7 +42,7 @@ class WordFrequency():
         """
 
         global_wc_vector = input_dao.get_global_word_count_vector()
-        global_wf_vector = self._process_word_frequency_vector(global_wc_vector)
+        global_wf_vector = self._process_global_word_frequency_vector(global_wc_vector)
         output_dao.store_global_word_frequency_vector(global_wf_vector)
 
         return global_wf_vector
@@ -68,10 +68,12 @@ class WordFrequency():
         Return and store the relative user word frequency vector.
         """
 
-        wf_vector = input_dao.get_user_word_frequency_vector()
+        global_wf_vector = input_dao.get_global_word_frequency_vector()
         user_wf_vector = input_dao.get_user_word_frequency_vector()
-        relative_user_wf_vector = self._process_relative_user_word_frequency_vector(wf_vector,
-                                                                                    user_wf_vector)
+        user_to_wcv = input_dao.get_user_word_count_vector()
+        relative_user_wf_vector = self._process_relative_user_word_frequency_vector(global_wf_vector,
+                                                                                    user_wf_vector,
+                                                                                    user_to_wcv)
         output_dao.store_relative_user_word_frequency_vector(relative_user_wf_vector)
         
         return relative_user_wf_vector

@@ -14,9 +14,10 @@ class TweetMongoOutputDAO:
         """
         
         for tweet_words in processed_global_tweet_list:
-            self.global_processed_tweets_collection.insert_one({
-                'tweet_words': tweet_words,
-            })
+            if tweet_words:
+                self.global_processed_tweets_collection.insert_one({
+                    'tweet_words': tweet_words,
+                })
 
     def store_user_processed_tweets(self, user_to_processed_tweet_list):
         """
@@ -52,8 +53,9 @@ class TweetMongoOutputDAO:
 
         for global_tweet_doc in self.global_tweets_collection.find():
             id = global_tweet_doc['_id']
+            # TODO: change back to True
             global_tweet_doc['is_processed'] = True
-            self.global_tweets_collection.update_one({'_id': id}, global_tweet_doc)
+            self.global_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
 
     def update_user_tweet_state(self):
         """
@@ -67,6 +69,6 @@ class TweetMongoOutputDAO:
 
             for tweet in tweet_list:
                 # TODO: change back to True
-                tweet['is_processed'] = False
+                tweet['is_processed'] = True
 
             self.user_tweets_collection.replace_one({'user': user}, user_doc)

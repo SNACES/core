@@ -19,7 +19,7 @@ class WordFrequencyMongoOutputDAO():
             existing_global_wc_vector = Counter(existing_global_wc_vector)
             global_wc_vector = Counter(global_wc_vector)
             updated_global_wc_vector = existing_global_wc_vector + global_wc_vector
-            self.global_word_count_vector_collection.update_one({}, updated_global_wc_vector)
+            self.global_word_count_vector_collection.replace_one({}, updated_global_wc_vector)
         else:
             # Add global_wc_vector as a new entry
             self.global_word_count_vector_collection.insert_one(global_wc_vector)
@@ -53,7 +53,7 @@ class WordFrequencyMongoOutputDAO():
         existing_global_wf_vector = self.global_word_frequency_vector_collection.find_one()
         if existing_global_wf_vector:
             global_wf_vector = Counter(global_wf_vector)
-            self.global_word_frequency_vector_collection.update_one({}, global_wf_vector)
+            self.global_word_frequency_vector_collection.replace_one({}, global_wf_vector)
         else:
             # Add global_wf_vector as a new entry
             self.global_word_frequency_vector_collection.insert_one(global_wf_vector)
@@ -89,7 +89,7 @@ class WordFrequencyMongoOutputDAO():
             })
             if user_doc:
                 # Update
-                self.relative_user_word_frequency_vector_collection.update_one({
+                self.relative_user_word_frequency_vector_collection.replace_one({
                     'user': user
                 }, {
                     'user': user,
@@ -112,7 +112,7 @@ class WordFrequencyMongoOutputDAO():
         for global_tweet_doc in self.global_processed_tweets_collection.find():
             id = global_tweet_doc['_id']
             global_tweet_doc['is_counted'] = True
-            self.global_processed_tweets_collection.update_one({'_id': id}, global_tweet_doc)
+            self.global_processed_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
 
     def update_user_processed_tweet_state(self):
         """
@@ -129,37 +129,3 @@ class WordFrequencyMongoOutputDAO():
                 tweet['is_counted'] = True
 
             self.user_processed_tweets_collection.replace_one({'user': user}, user_doc)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # def store_processed_tweet(self, tweet_ID, processed_text_list):
-    #     processed_tweet_doc = {
-    #         'tweetID': tweet_ID,
-    #         'processed-text-list': processed_text_list
-    #     }
-
-    #     self.collection.insert_one(processed_tweet_doc)
-
-    # def store_daily_global_word_frequency_vector(self):
-    #     word_freq_vector_doc = {
-    #         "Date": date,
-    #         "WordFreqVector": word_freq_vector
-    #     }
-
-    #     output_config['collection-name'] = output_collection_name
-    #     if output_collection_name not in self.output_DAOs:
-    #         # dynamically create new DAO
-    #         self.output_DAOs[output_collection_name] = self.DAO_factory.create_DAO_from_config(
-    #             "output", output_config)
-    #     self.output_DAOs[output_collection_name].create(word_freq_vector_doc)

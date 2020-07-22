@@ -15,7 +15,6 @@ class TweetMongoInputDAO:
         global_tweets = []
 
         if lazy:
-            # TODO: not sure if we're querying for missing fields correctly
             global_tweet_doc_list = self.global_tweets_collection.find({
                 'is_processed': {'$ne': True}
             })
@@ -26,7 +25,7 @@ class TweetMongoInputDAO:
             tweet_text = global_tweet_doc['text']
             global_tweets.append(tweet_text)
 
-        return tweet_text
+        return global_tweets
 
     def get_user_tweets(self, lazy=True):
         """
