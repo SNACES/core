@@ -53,5 +53,4 @@ class TweetMongoInputDAO:
 
             user_to_tweets[user] = tweet_text
 
-        print(user_to_tweets)
         return user_to_tweets
