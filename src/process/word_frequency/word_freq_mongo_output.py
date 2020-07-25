@@ -14,7 +14,7 @@ class WordFrequencyMongoOutputDAO():
 
     def store_global_word_count_vector(self, global_wc_vector):
         # Check whether an existing entry exists, update if so
-        existing_global_wc_vector = self.global_word_count_vector_collection.find_one()
+        existing_global_wc_vector = self.global_word_count_vector_collection.find_one({}, {'_id': 0})
         if existing_global_wc_vector:
             existing_global_wc_vector = Counter(existing_global_wc_vector)
             global_wc_vector = Counter(global_wc_vector)
@@ -50,7 +50,7 @@ class WordFrequencyMongoOutputDAO():
 
     def store_global_word_frequency_vector(self, global_wf_vector):
         # Check whether an existing entry exists, update if so
-        existing_global_wf_vector = self.global_word_frequency_vector_collection.find_one()
+        existing_global_wf_vector = self.global_word_frequency_vector_collection.find_one({}, {'_id': 0})
         if existing_global_wf_vector:
             global_wf_vector = Counter(global_wf_vector)
             self.global_word_frequency_vector_collection.replace_one({}, global_wf_vector)

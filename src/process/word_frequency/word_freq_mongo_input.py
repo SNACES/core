@@ -103,7 +103,7 @@ class WordFrequencyMongoInputDAO():
         
         # According to our database format, the global word frequency vector collection
         # only contains one doc
-        global_word_frequency_vector = self.global_word_frequency_vector_collection.find_one()
+        global_word_frequency_vector = self.global_word_frequency_vector_collection.find_one({}, {'_id': 0})
 
         return global_word_frequency_vector
 
