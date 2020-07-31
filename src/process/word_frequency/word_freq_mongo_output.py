@@ -13,18 +13,28 @@ class WordFrequencyMongoOutputDAO():
         self.user_processed_tweets_collection = None
 
     def store_global_word_count_vector(self, global_wc_vector):
+        """
+        Store global word count vector in descending order.
+        """
+
         # Check whether an existing entry exists, update if so
         existing_global_wc_vector = self.global_word_count_vector_collection.find_one({}, {'_id': 0})
         if existing_global_wc_vector:
             existing_global_wc_vector = Counter(existing_global_wc_vector)
             global_wc_vector = Counter(global_wc_vector)
             updated_global_wc_vector = existing_global_wc_vector + global_wc_vector
+            updated_global_wc_vector = {word:wc for word, wc in updated_global_wc_vector.most_common()}
             self.global_word_count_vector_collection.replace_one({}, updated_global_wc_vector)
         else:
             # Add global_wc_vector as a new entry
+            global_wc_vector = {word:wc for word, wc in global_wc_vector.most_common()}
             self.global_word_count_vector_collection.insert_one(global_wc_vector)
     
     def store_user_word_count_vector(self, user_wc_vector):
+        """
+        Store user word count vector in descending order.
+        """
+
         for user in user_wc_vector:
             wc_vector = Counter(user_wc_vector[user])
 
@@ -35,6 +45,7 @@ class WordFrequencyMongoOutputDAO():
                 # Update
                 existing_wc_vector = Counter(user_doc['word_count_vector'])
                 updated_wc_vector = existing_wc_vector + wc_vector
+                updated_wc_vector = {word:wc for word, wc in updated_wc_vector.most_common()}
                 self.user_word_count_vector_collection.replace_one({
                     'user': user
                 }, {
@@ -43,12 +54,19 @@ class WordFrequencyMongoOutputDAO():
                 })
             else:
                 # Add new entry
+                wc_vector = {word:wc for word, wc in wc_vector.most_common()}
                 self.user_word_count_vector_collection.insert_one({
                     'user': user,
                     'word_count_vector': wc_vector 
                 })
 
     def store_global_word_frequency_vector(self, global_wf_vector):
+        """
+        Store global word frequency vector in descending order.
+        """
+
+        global_wf_vector = {word:wf for word, wf in global_wf_vector.most_common()}
+
         # Check whether an existing entry exists, update if so
         existing_global_wf_vector = self.global_word_frequency_vector_collection.find_one({}, {'_id': 0})
         if existing_global_wf_vector:
@@ -59,8 +77,13 @@ class WordFrequencyMongoOutputDAO():
             self.global_word_frequency_vector_collection.insert_one(global_wf_vector)
     
     def store_user_word_frequency_vector(self, user_wf_vector):
+        """
+        Store user word frequency vector in descending order.
+        """
+
         for user in user_wf_vector:
             wf_vector = Counter(user_wf_vector[user])
+            wf_vector = {word:wf for word, wf in wf_vector.most_common()}
 
             user_doc = self.user_word_frequency_vector_collection.find_one({
                 'user': user
@@ -81,8 +104,13 @@ class WordFrequencyMongoOutputDAO():
                 })
         
     def store_relative_user_word_frequency_vector(self, relative_user_wf_vector):
+        """
+        Store relative user word frequency vector in descending order.
+        """
+
         for user in relative_user_wf_vector:
             relative_wf_vector = Counter(relative_user_wf_vector[user])
+            relative_wf_vector = {word:rwf for word, rwf in relative_wf_vector.most_common()}
 
             user_doc = self.relative_user_word_frequency_vector_collection.find_one({
                 'user': user

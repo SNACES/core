@@ -56,10 +56,15 @@ class DownloadMongoOutputDAO():
         }) 
 
     def _get_unique_tweet_list(self, tweet_list):
+        # Assume that tweet_list is organized like so: 
+        # A = {raw tweets that have been processed} 
+        # B = {tweets that have not been processed}
+        # [A, B]
         tweet_id_to_tweet_obj = {}
         for tweet in tweet_list:
             tweet_id = tweet['id']
-            tweet_id_to_tweet_obj[tweet_id] = tweet
+            if tweet_id not in tweet_id_to_tweet_obj: 
+                tweet_id_to_tweet_obj[tweet_id] = tweet
 
         unique_tweet_list = [tweet_id_to_tweet_obj[tweet_id] 
                              for tweet_id in tweet_id_to_tweet_obj]

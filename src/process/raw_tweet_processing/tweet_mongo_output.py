@@ -53,7 +53,6 @@ class TweetMongoOutputDAO:
 
         for global_tweet_doc in self.global_tweets_collection.find():
             id = global_tweet_doc['_id']
-            # TODO: change back to True
             global_tweet_doc['is_processed'] = True
             self.global_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
 
@@ -68,7 +67,6 @@ class TweetMongoOutputDAO:
             tweet_list = user_doc['tweets']
 
             for tweet in tweet_list:
-                # TODO: change back to True
                 tweet['is_processed'] = True
 
             self.user_tweets_collection.replace_one({'user': user}, user_doc)

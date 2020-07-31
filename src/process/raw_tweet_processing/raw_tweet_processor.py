@@ -3,6 +3,9 @@ import re
 import datetime
 
 class RawTweetProcessor():
+    def __init__(self):
+        nltk.download('stopwords')
+
     def gen_processed_global_tweets(self, input_dao, output_dao):
         """
         Assume that the input dao contains a random stream of tweets. 
@@ -61,7 +64,6 @@ class RawTweetProcessor():
         processed_text_list = [sno.stem(word) for word in processed_text_list]
 
         # Remove stop words
-        nltk.download('stopwords') # TODO: maybe not efficient to do this here, enable when running first time
         stopwords = set(nltk.corpus.stopwords.words('english'))
         stopwords.add('amp')
         for word in stopwords:
