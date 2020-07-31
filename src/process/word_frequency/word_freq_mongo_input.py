@@ -34,7 +34,7 @@ class WordFrequencyMongoInputDAO():
 
         return global_tweet_words
 
-    def get_user_tweet_words(self, lazy=False): # TODO: change back to true once lazy mode fixed
+    def get_user_tweet_words(self, lazy=True): 
         """
         Return for each user a list of all words from tweets in the user processed tweets collection.
         Input database doc format: {'user': str, 'processed_tweets' [{'tweet_words': [str]}]}
@@ -44,15 +44,18 @@ class WordFrequencyMongoInputDAO():
         user_to_tweet_words = {}
 
         if lazy:
-            # user_tweet_doc_list = self.user_processed_tweets_collection.find({
-            #     'processed_tweets': [{'is_processed': False}]
-            # },
-            # {
-            #     'processed_tweets': [{'is_processed': "null"}]
-            # })
-            user_tweet_doc_list = self.user_processed_tweets_collection.find({
-                'processed_tweets': {'is_counted': False}
-            })
+            pipeline = ([{
+                '$project': {
+                    'processed_tweets': {
+                        '$filter': {
+                        'input': "$processed_tweets",
+                        'as': "p",
+                        'cond': {'$ne': ['$$p.is_counted', True]}}
+                        }
+                    }
+                }
+            ])
+            user_tweet_doc_list = self.user_processed_tweets_collection.aggregate(pipeline)
         else:
             user_tweet_doc_list = self.user_processed_tweets_collection.find()
 

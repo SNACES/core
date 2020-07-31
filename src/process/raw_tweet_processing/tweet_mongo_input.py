@@ -27,7 +27,7 @@ class TweetMongoInputDAO:
 
         return global_tweets
 
-    def get_user_tweets(self, lazy=False): # TODO: change back to true once lazy mode fixed
+    def get_user_tweets(self, lazy=True):
         """
         Return unprocessed user tweets when lazy mode is toggled, 
         else return all user tweets in database.
@@ -37,12 +37,18 @@ class TweetMongoInputDAO:
         user_to_tweets = {}
 
         if lazy:
-            # user_tweet_doc_list = self.user_tweets_collection.find({
-            #     '$or': [{'tweets.is_processed': False}, 
-            #             {'tweets.is_processed': {"$exists": False}}
-            #     ]          
-            # })
-            user_tweet_doc_list = self.user_tweets_collection.find({'tweets.is_processed': False})
+            pipeline = ([{
+                '$project': {
+                    'tweets': {
+                        '$filter': {
+                        'input': "$tweets",
+                        'as': "t",
+                        'cond': {'$ne': ['$$t.is_processed', True]}}
+                        }
+                    }
+                }
+            ])
+            user_tweet_doc_list = self.user_tweets_collection.aggregate(pipeline)
         else:
             user_tweet_doc_list = self.user_tweets_collection.find()
 
