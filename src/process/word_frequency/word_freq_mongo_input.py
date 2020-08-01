@@ -46,10 +46,7 @@ class WordFrequencyMongoInputDAO():
         if lazy:
             pipeline = ([{
                 '$project': {
-<<<<<<< HEAD
                     'user': True,
-=======
->>>>>>> 2f5eae10f5aa09c6ce1c2c78f132566186f194d3
                     'processed_tweets': {
                         '$filter': {
                         'input': "$processed_tweets",
