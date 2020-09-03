@@ -1,7 +1,7 @@
 from typing import Union, List
 from collections import Counter
 
-class WordFrequencyMongoOutputDAO():
+class WordFrequencyMongoSetDAO():
     # Important to distinguish between new entry and update
     def __init__(self):
         self.global_word_count_vector_collection = None
@@ -9,8 +9,6 @@ class WordFrequencyMongoOutputDAO():
         self.global_word_frequency_vector_collection = None
         self.user_word_frequency_vector_collection = None
         self.relative_user_word_frequency_vector_collection = None
-        self.global_processed_tweets_collection = None
-        self.user_processed_tweets_collection = None
 
     def store_global_word_count_vector(self, global_wc_vector):
         """
@@ -65,6 +63,7 @@ class WordFrequencyMongoOutputDAO():
         Store global word frequency vector in descending order.
         """
 
+        global_wf_vector = Counter(global_wf_vector)
         global_wf_vector = {word:wf for word, wf in global_wf_vector.most_common()}
 
         # Check whether an existing entry exists, update if so
@@ -129,31 +128,3 @@ class WordFrequencyMongoOutputDAO():
                     'user': user,
                     'relative_word_frequency_vector': relative_wf_vector 
                 })
-
-    def update_global_processed_tweet_state(self):
-        """
-        Assume that all tweets in the global processed tweets collection 
-        have their words counted and word count vectors stored.
-        Update is_counted field in global processed tweet docs to reflect this.
-        """
-
-        for global_tweet_doc in self.global_processed_tweets_collection.find():
-            id = global_tweet_doc['_id']
-            global_tweet_doc['is_counted'] = True
-            self.global_processed_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
-
-    def update_user_processed_tweet_state(self):
-        """
-        Assume that all tweets in the user processed tweets collection 
-        have their words counted and word count vectors stored.
-        Update is_counted field in user processed tweet docs to reflect this.
-        """
-
-        for user_doc in self.user_processed_tweets_collection.find():
-            user = user_doc['user']
-            processed_tweet_list = user_doc['processed_tweets']
-
-            for tweet in processed_tweet_list:
-                tweet['is_counted'] = True
-
-            self.user_processed_tweets_collection.replace_one({'user': user}, user_doc)

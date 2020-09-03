@@ -1,9 +1,9 @@
 import datetime
+import conf.credentials as credentials
+
 from typing import Union
 from tweepy import OAuthHandler, Stream, API, Cursor
 from tweepy.streaming import StreamListener
-
-import conf.credentials as credentials
 
 class TweepyListener(StreamListener):
     def __init__(self, num_tweets):
@@ -12,11 +12,8 @@ class TweepyListener(StreamListener):
         self.limit = num_tweets
         self.tweets = []
 
-    # TODO:
     def on_status(self, data):
         try:
-            # userid = status.user.id_str
-            # print(data)
             self.tweets.append(data)
             self.counter += 1
             if self.counter < self.limit:
@@ -35,37 +32,37 @@ class TwitterAuthenticator():
         return auth
 
 
-class TweepyDAO():
+class TweepyGetDAO():
     def __init__(self):
         self.auth = TwitterAuthenticator().authenticate()
         self.twitter_api = API(self.auth, wait_on_rate_limit=True)
 
-    def get_tweets_by_timeframe_user(self, id, start_date, end_date, num_tweets=None):
+    def get_tweets_by_user(self, id, num_tweets=None, start_date=None, end_date=None):
+        """
+        Precondition: if a start_date is provided, then so must end_date(and vice versa)
+        """
+
         if num_tweets is None:
             total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items()
         else:
             total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items(num_tweets) 
-
+        
         def pred(tweet):
-                is_correct_date = tweet.created_at > start_date and tweet.created_at < end_date
-                is_correct_user = tweet.user.id == id or tweet.user.screen_name == id
-                return is_correct_date and is_correct_user
-
-        tweet_objects = list(filter(pred, total_tweets))
-        json_tweets = list(map(lambda t: t._json, tweet_objects))
-        return json_tweets
-
-    def get_tweets_by_user(self, id, num_tweets=None):
-        if num_tweets is None:
-            total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items()
-        else:
-            total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items(num_tweets) 
+            is_correct_date = tweet.created_at > start_date and tweet.created_at < end_date
+            is_correct_user = tweet.user.id == id or tweet.user.screen_name == id
+            return is_correct_date and is_correct_user
         
-        json_tweets = list(map(lambda t: t._json, total_tweets))
+        total_tweets = list(filter(pred, total_tweets)) if start_date and end_date else list(total_tweets)
+
+        retweets = list(filter(lambda t: 'retweeted_status' in t._json, total_tweets))
+        json_retweets = list(map(lambda t: t._json, retweets))
+
+        tweets = list(filter(lambda t: 'retweeted_status' not in t._json, total_tweets))
+        json_tweets = list(map(lambda t: t._json, tweets))
         
-        return json_tweets
+        return json_tweets, json_retweets
     
-    def get_random_tweets(self):
+    def get_random_tweet(self):
         listener = TweepyListener(1)
 
         stream = Stream(self.auth, listener)
@@ -97,16 +94,16 @@ class TweepyDAO():
         else:
             return [friend_id for friend_id in Cursor(self.twitter_api.friends_ids, user_id=id).items(num_friends)]
     
-    def get_following_by_screen_name(self, screen_name, num_following=None):
-        if num_following is None:
-            following_users_id = [following_id for following_id in Cursor(self.twitter_api.followers_ids, screen_name=screen_name).items()]
+    def get_followers_by_screen_name(self, screen_name, num_followers=None):
+        if num_followers is None:
+            followers_users_id = [followers_id for followers_id in Cursor(self.twitter_api.followers_ids, screen_name=screen_name).items()]
         else:
-            following_users_id = [following_id for following_id in Cursor(self.twitter_api.followers_ids, screen_name=screen_name).items(num_following)]
+            followers_users_id = [followers_id for followers_id in Cursor(self.twitter_api.followers_ids, screen_name=screen_name).items(num_followers)]
 
-        return [self.twitter_api.get_user(user_id=following_id).screen_name for following_id in following_users_id]
+        return [self.twitter_api.get_user(user_id=followers_id).screen_name for followers_id in followers_users_id]
     
-    def get_following_by_id(self, id, num_following=None):
-        if num_following is None:     
-            return [following_id for following_id in Cursor(self.twitter_api.followers_ids, user_id=id).items()]
+    def get_followers_by_id(self, id, num_followers=None):
+        if num_followers is None:     
+            return [followers_id for followers_id in Cursor(self.twitter_api.followers_ids, user_id=id).items()]
         else: 
-            return [following_id for following_id in Cursor(self.twitter_api.followers_ids, user_id=id).items(num_following)]
+            return [followers_id for followers_id in Cursor(self.twitter_api.followers_ids, user_id=id).items(num_followers)]

@@ -15,6 +15,8 @@ tweepy = "*"
 nltk = "*"
 argparse = "*"
 numpy = "*"
+sklearn = "*"
+networkx = "*"
 snaces = {editable = true,path = "."}
 
 [requires]

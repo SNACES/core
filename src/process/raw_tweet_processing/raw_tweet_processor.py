@@ -6,7 +6,7 @@ class RawTweetProcessor():
     def __init__(self):
         nltk.download('stopwords')
 
-    def gen_processed_global_tweets(self, input_dao, output_dao):
+    def gen_processed_global_tweets(self, tweet_getter, tweet_setter, processed_tweet_setter):
         """
         Assume that the input dao contains a random stream of tweets. 
         The common format is: [tweet text].
@@ -14,14 +14,14 @@ class RawTweetProcessor():
         Update global tweet database to reflect processed tweet state.
         """
         
-        global_tweet_list = input_dao.get_global_tweets()
+        global_tweet_list = tweet_getter.get_global_tweets()
         processed_global_tweet_list = list(map(self._process_tweet_text, global_tweet_list))
-        output_dao.store_global_processed_tweets(processed_global_tweet_list)
-        output_dao.update_global_tweet_state()
+        processed_tweet_setter.store_global_processed_tweets(processed_global_tweet_list)
+        tweet_setter.update_global_tweet_state()
 
         return processed_global_tweet_list
 
-    def gen_processed_user_tweets(self, input_dao, output_dao):
+    def gen_processed_user_tweets(self, tweet_getter, tweet_setter, processed_tweet_setter):
         """
         Assume that the input dao contains tweets associated with users. 
         The common format is: {user: [tweet text]}.
@@ -29,7 +29,7 @@ class RawTweetProcessor():
         Update user tweet database to reflect processed tweet state.
         """
 
-        user_to_tweets = input_dao.get_user_tweets()
+        user_to_tweets = tweet_getter.get_user_tweets()
         user_to_processed_tweet_list = {}
 
         for user in user_to_tweets:
@@ -37,8 +37,8 @@ class RawTweetProcessor():
             processed_tweet_list = map(self._process_tweet_text, tweet_list)
             user_to_processed_tweet_list[user] = processed_tweet_list
 
-        output_dao.store_user_processed_tweets(user_to_processed_tweet_list)
-        output_dao.update_user_tweet_state()
+        processed_tweet_setter.store_user_processed_tweets(user_to_processed_tweet_list)
+        tweet_setter.update_user_tweet_state()
 
         return user_to_processed_tweet_list
 
@@ -68,7 +68,7 @@ class RawTweetProcessor():
         stopwords.add('amp')
         for word in stopwords:
             if word in processed_text_list:
-                # TODO: extract
+                # extract
                 while (processed_text_list.count(word)): 
                     processed_text_list.remove(word)
 

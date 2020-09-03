@@ -1,6 +1,6 @@
 # lazy mode: tweets should have field that indicates processed or not
 # lazy mode only returns tweets that have yet to be processed
-class TweetMongoInputDAO:
+class TweetMongoGetDAO:
     def __init__(self):
         self.global_tweets_collection = None
         self.user_tweets_collection = None
@@ -27,20 +27,20 @@ class TweetMongoInputDAO:
 
         return global_tweets
 
-    def get_user_tweets(self, lazy=True):
+    def get_user_tweets(self, get_retweets=False, lazy=True):
         """
         Return unprocessed user tweets when lazy mode is toggled, 
-        else return all user tweets in database.
+        else return all user tweets in database. Get retweets if get_tweets is toggled.
         Format: {user: [tweet text]}
         """
         
         user_to_tweets = {}
-
+        query_type = 'retweets' if get_retweets else 'tweets'
         if lazy:
             pipeline = ([{
                 '$project': {
                     'user': True,
-                    'tweets': {
+                    query_type: {
                         '$filter': {
                         'input': "$tweets",
                         'as': "t",
@@ -55,9 +55,18 @@ class TweetMongoInputDAO:
 
         for user_doc in user_tweet_doc_list:
             user = user_doc['user']
-            user_tweet_wrapper_list = user_doc['tweets']
+            user_tweet_wrapper_list = user_doc[query_type] 
             tweet_text = [tweet_wrapper['text'] for tweet_wrapper in user_tweet_wrapper_list]
 
             user_to_tweets[user] = tweet_text
 
         return user_to_tweets
+
+    # TODO:
+    def get_tweets_by_user_in_timeframe(self, user, start_date, end_date, get_retweets=False):
+        pass
+    
+    # TODO:
+    def get_tweets_by_user(self, user, get_retweets=False):
+        pass
+    

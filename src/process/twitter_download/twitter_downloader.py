@@ -1,28 +1,36 @@
 import functools
 import datetime
-import functools
+
 from typing import Union, List
 
 """
 Download Tweets for use in future algorithms.
 """
 class TwitterTweetDownloader():
-    def get_tweets_by_timeframe_user(self, id: Union[str, int], start_date: datetime,
-                                     end_date: datetime, input_dao, output_dao, num_tweets=None):
+    def gen_user_tweets(self, id: Union[str, int], tweepy_getter, tweet_setter, num_tweets=None, start_date=None, end_date=None) -> list:
         """
-        Return num_tweets tweets made by user with id(username or user id) id between start_date and end_date.
+        Return num_tweets tweets/retweets made by user with id(username or user id) id.
         """
+        if start_date and end_date:
+            tweets, retweets = tweepy_getter.get_tweets_by_user(id, num_tweets, start_date, end_date)
+        elif start_date or end_date:
+            raise Exception("Please provide valid start and end dates")
+        else:
+            tweets, retweets = tweepy_getter.get_tweets_by_user(id, num_tweets)
+        tweet_setter.store_tweet_by_user(id, tweets, retweets)
 
-        tweets = input_dao.get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
-        output_dao.store_tweet_by_timeframe_user(id, start_date, end_date, tweets)
+    # def gen_user_tweets_in_timeframe(self, id: Union[str, int], start_date: datetime,
+    #                                  end_date: datetime, get_dao, set_dao, num_tweets=None):
+    #     """
+    #     Return num_tweets tweets/retweets made by user with id(username or user id) id between start_date and end_date.
+    #     """
 
-    def get_tweets_by_user(self, id: Union[str, int], input_dao, output_dao, num_tweets=None) -> list:
-        tweets = input_dao.get_tweets_by_user(id, num_tweets)
-        output_dao.store_tweet_by_user(id, tweets)
-
-    def get_random_tweet(self, input_dao, output_dao):
-        tweet = input_dao.get_random_tweet()
-        output_dao.store_random_tweet(tweet)
+    #     tweets, retweets = get_dao.get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
+    #     set_dao.store_tweet_by_user(id, tweets, retweets)
+    
+    def gen_random_tweet(self, tweepy_getter, tweet_setter):
+        tweet = tweepy_getter.get_random_tweet()
+        tweet_setter.store_random_tweet(tweet)
 
         return tweet
 
@@ -31,44 +39,58 @@ class TwitterTweetDownloader():
 Download Twitter Friends for use in future algorithms.
 """
 class TwitterFriendsDownloader():
-    def get_friends_by_screen_name(self, screen_name: str, input_dao, output_dao, num_friends=None) -> list:
+    def gen_friends_by_screen_name(self, screen_name: str, tweepy_getter, user_friends_setter, num_friends=None) -> list:
         """
         Return a list of screen_names of friends of user with screen name screen_name.
         """
 
         assert type(screen_name) == str
 
-        friends = input_dao.get_friends_by_screen_name(screen_name, num_friends)
-        output_dao.store_friends_by_screen_name(screen_name, friends)
+        friends = tweepy_getter.get_friends_by_screen_name(screen_name, num_friends)
+        user_friends_setter.store_friends_by_screen_name(screen_name, friends)
 
         return friends
 
-    def get_friends_by_id(self, id: int, input_dao, output_dao, num_friends=None) -> list:
+    def gen_friends_by_id(self, id: int, tweepy_getter, user_friends_setter, num_friends=None) -> list:
         """
         Return a list of ids of friends of user with id id.
         """
 
         assert type(id) == int
 
-        friends = input_dao.get_friends_by_id(id, num_friends)
-        output_dao.store_friends_by_id(id, friends)
+        friends = tweepy_getter.get_friends_by_id(id, num_friends)
+        user_friends_setter.store_friends_by_id(id, friends)
+
+    # Implementation using tweepy - slow, API-constrained
+    def gen_user_local_neighborhood(self, user: str, tweepy_getter, user_friends_getter, user_friends_setter):
+        """
+        Note that user refers to screen name.
+        """
+        user_friends_list = user_friends_getter.get_friends_by_name(user)
+        if not user_friends_list:
+            user_friends_list = self.gen_friends_by_screen_name(user, tweepy_getter, user_friends_setter)
+
+        for friend in user_friends_list:
+            friend_friends_list = user_friends_getter.get_friends_by_name(friend)
+            if not friend_friends_list:
+                self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter) 
 
 
 """
-Download Twitter Following for use in future algorithms.
+Download Twitter Followers for use in future algorithms.
 """
-class TwitterFollowingDownloader():
-    def get_following_by_screen_name(self, screen_name: str, input_dao, output_dao, num_following=None) -> list:
+class TwitterFollowersDownloader():
+    def gen_followers_by_screen_name(self, screen_name: str, tweepy_getter, user_followers_setter, num_followers=None) -> list:
         assert type(screen_name) == str
 
-        following_users_screen_name = input_dao.get_following_by_screen_name(screen_name, num_following)
-        output_dao.store_following_by_screen_name(screen_name, following_users_screen_name)
+        followers_users_screen_name = tweepy_getter.get_followers_by_screen_name(screen_name, num_followers)
+        user_followers_setter.store_followers_by_screen_name(screen_name, followers_users_screen_name)
 
-    def get_following_by_id(self, id: int, input_dao, output_dao, num_following=None) -> list:
+    def gen_followers_by_id(self, id: int, tweepy_getter, user_followers_setter, num_followers=None) -> list:
         assert type(id) == int
 
-        following_users_ID = input_dao.get_following_by_id(id, num_following)
-        output_dao.store_following_by_id(id, following_users_ID)
+        followers_users_ID = tweepy_getter.get_followers_by_id(id, num_followers)
+        user_followers_setter.store_followers_by_id(id, followers_users_ID)
 
 
 # def rate_limited_functions() -> str:
@@ -94,26 +116,3 @@ class TwitterFollowingDownloader():
 #             li.append(user)
 
 #     return li
-
-# TODO: rework this
-# class UserListProcessor:
-#     """
-#     Return a list of users given the path to a file containing a list of users.
-#     """
-
-#     def user_list_parser(self, user_list_file_path):
-#         with open(user_list_file_path, 'r') as stream:
-#             return [user.strip() for user in stream]
-
-#     """
-#     Precondition: argv matches the args for download_function
-#     """
-
-#     def download_function_by_user_list(self, download_function, user_list, *argv):
-#         def curried_operation(acc, id): return download_function(
-#             id, *argv)  # acc is a dummy var
-
-#         self.process_user_list(user_list, curried_operation)
-
-#     def process_user_list(self, user_list, curried_function):
-#         functools.reduce(curried_function, user_list)

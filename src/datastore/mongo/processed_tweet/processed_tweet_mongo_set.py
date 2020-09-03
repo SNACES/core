@@ -1,11 +1,9 @@
 from src.shared.lib import get_unique_list
 
-class TweetMongoOutputDAO:
+class ProcessedTweetMongoSetDAO:
     def __init__(self):
         self.global_processed_tweets_collection = None
-        self.global_tweets_collection = None
         self.user_processed_tweets_collection = None
-        self.user_tweets_collection = None
     
     def store_global_processed_tweets(self, processed_global_tweet_list):
         """
@@ -45,28 +43,30 @@ class TweetMongoOutputDAO:
                     'processed_tweets': processed_tweet_list
                 })
 
-    def update_global_tweet_state(self):
+    def update_global_processed_tweet_state(self):
         """
-        Assume that all tweets in the global raw tweets collection have been processed and stored.
-        Update processed field in global raw tweet docs to reflect this.
+        Assume that all tweets in the global processed tweets collection 
+        have their words counted and word count vectors stored.
+        Update is_counted field in global processed tweet docs to reflect this.
         """
 
-        for global_tweet_doc in self.global_tweets_collection.find():
+        for global_tweet_doc in self.global_processed_tweets_collection.find():
             id = global_tweet_doc['_id']
-            global_tweet_doc['is_processed'] = True
-            self.global_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
+            global_tweet_doc['is_counted'] = True
+            self.global_processed_tweets_collection.replace_one({'_id': id}, global_tweet_doc)
 
-    def update_user_tweet_state(self):
+    def update_user_processed_tweet_state(self):
         """
-        Assume that all tweets in the user raw tweets collection have been processed and stored.
-        Update processed field in user raw tweet docs to reflect this.
+        Assume that all tweets in the user processed tweets collection 
+        have their words counted and word count vectors stored.
+        Update is_counted field in user processed tweet docs to reflect this.
         """
 
-        for user_doc in self.user_tweets_collection.find():
+        for user_doc in self.user_processed_tweets_collection.find():
             user = user_doc['user']
-            tweet_list = user_doc['tweets']
+            processed_tweet_list = user_doc['processed_tweets']
 
-            for tweet in tweet_list:
-                tweet['is_processed'] = True
+            for tweet in processed_tweet_list:
+                tweet['is_counted'] = True
 
-            self.user_tweets_collection.replace_one({'user': user}, user_doc)
+            self.user_processed_tweets_collection.replace_one({'user': user}, user_doc)

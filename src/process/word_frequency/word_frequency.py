@@ -3,7 +3,7 @@ from collections import Counter
 from copy import copy
 
 class WordFrequency():
-    def gen_global_word_count_vector(self, input_dao, output_dao):
+    def gen_global_word_count_vector(self, processed_tweet_getter, processed_tweet_setter, wf_setter):
         """
         Assume that the input dao contains tweets.
         The common format is a list of words from the tweets.
@@ -11,14 +11,14 @@ class WordFrequency():
         Return and store the global word count vector. 
         """
         
-        tweet_word_list = input_dao.get_global_tweet_words()
+        tweet_word_list = processed_tweet_getter.get_global_tweet_words()
         global_wc_vector = self._process_global_word_count_vector(tweet_word_list)
-        output_dao.store_global_word_count_vector(global_wc_vector)
-        output_dao.update_global_processed_tweet_state()
+        wf_setter.store_global_word_count_vector(global_wc_vector)
+        processed_tweet_setter.update_global_processed_tweet_state()
 
         return global_wc_vector
     
-    def gen_user_word_count_vector(self, input_dao, output_dao):
+    def gen_user_word_count_vector(self, processed_tweet_getter, processed_tweet_setter, wf_setter):
         """
         Assume that the input dao contains tweets for users.
         The common format is a {user: [words from user's tweets]}.
@@ -26,14 +26,14 @@ class WordFrequency():
         Return and store the user word count vector.
         """
         
-        user_to_tweet_word_list = input_dao.get_user_tweet_words()
+        user_to_tweet_word_list = processed_tweet_getter.get_user_tweet_words()
         user_wc_vector = self._process_user_word_count_vector(user_to_tweet_word_list)
-        output_dao.store_user_word_count_vector(user_wc_vector)
-        output_dao.update_user_processed_tweet_state()
+        wf_setter.store_user_word_count_vector(user_wc_vector)
+        processed_tweet_setter.update_user_processed_tweet_state()
 
         return user_wc_vector
 
-    def gen_global_word_frequency_vector(self, input_dao, output_dao):
+    def gen_global_word_frequency_vector(self, wf_getter, wf_setter):
         """
         Assume that the input dao contains the global word count vector.
         The common format is {word: num_times_used}.
@@ -41,13 +41,13 @@ class WordFrequency():
         Return and store the global word frequency vector. 
         """
 
-        global_wc_vector = input_dao.get_global_word_count_vector()
+        global_wc_vector = wf_getter.get_global_word_count_vector()
         global_wf_vector = self._process_global_word_frequency_vector(global_wc_vector)
-        output_dao.store_global_word_frequency_vector(global_wf_vector)
+        wf_setter.store_global_word_frequency_vector(global_wf_vector)
 
         return global_wf_vector
 
-    def gen_user_word_frequency_vector(self, input_dao, output_dao):
+    def gen_user_word_frequency_vector(self, wf_getter, wf_setter):
         """
         Assume that the input dao contains the user word count vector.
         The common format is {user: {word: num_times_used}}.
@@ -55,26 +55,26 @@ class WordFrequency():
         Return and store the user word frequency vector.
         """
 
-        user_wc_vector = input_dao.get_user_word_count_vector()
+        user_wc_vector = wf_getter.get_user_word_count_vector()
         user_wf_vector = self._process_user_word_frequency_vector(user_wc_vector)
-        output_dao.store_user_word_frequency_vector(user_wf_vector)
+        wf_setter.store_user_word_frequency_vector(user_wf_vector)
 
         return user_wf_vector
 
-    def gen_relative_user_word_frequency_vector(self, input_dao, output_dao):
+    def gen_relative_user_word_frequency_vector(self, wf_getter, wf_setter):
         """
         Assume that the input dao contains the global and user word frequency vectors.
         The common format is the global and user word frequency vectors specified previously.
         Return and store the relative user word frequency vector.
         """
 
-        global_wf_vector = input_dao.get_global_word_frequency_vector()
-        user_wf_vector = input_dao.get_user_word_frequency_vector()
-        user_to_wcv = input_dao.get_user_word_count_vector()
+        global_wf_vector = wf_getter.get_global_word_frequency_vector()
+        user_wf_vector = wf_getter.get_user_word_frequency_vector()
+        user_to_wcv = wf_getter.get_user_word_count_vector()
         relative_user_wf_vector = self._process_relative_user_word_frequency_vector(global_wf_vector,
                                                                                     user_wf_vector,
                                                                                     user_to_wcv)
-        output_dao.store_relative_user_word_frequency_vector(relative_user_wf_vector)
+        wf_setter.store_relative_user_word_frequency_vector(relative_user_wf_vector)
         
         return relative_user_wf_vector
 
