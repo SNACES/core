@@ -115,7 +115,7 @@ class MUISIRetweetData:
             #  doc['end'] == datetime.datetime(2019, 9, 1, 0, 0, 0) and user_handle == doc['handle']:
             #     words = []
 
-            for tweet_text in user_to_retweets[user]['retweets']:
+            for tweet_text in user_to_retweets[user]:
                 if tweet_text[0] not in retweet_to_id:
                     retweet_to_id[tweet_text[0]] = id
                     id += 1
@@ -129,7 +129,7 @@ class MUISIRetweetData:
             #  doc['end'] == datetime.datetime(2019, 9, 1, 0, 0, 0) and user_handle == doc['handle']:
             # words = []
 
-            for tweet_text in user_to_retweets[user]['retweets']:
+            for tweet_text in user_to_retweets[user]:
                 if user not in user_to_tweet_id:
                     user_to_tweet_id[user] = []
 

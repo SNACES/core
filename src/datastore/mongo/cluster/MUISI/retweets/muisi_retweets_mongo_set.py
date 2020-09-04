@@ -8,5 +8,5 @@ class MUISIRetweetsMongoSetDAO():
             'intersection_min': muisi_retweet_config.intersection_min,
             'popularity': muisi_retweet_config.popularity,
             'user_count': muisi_retweet_config.user_count,
-            'clusters': muisi_retweet_config.clusters
+            'clusters': clusters
         })

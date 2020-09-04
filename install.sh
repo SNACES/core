@@ -1,5 +1,5 @@
 #!/bin/bash
 
-sudo pip install pipenv
+sudo pip3 install pipenv
 pipenv install -e .
 pipenv shell

@@ -33,7 +33,7 @@ user_followers_set = UserFollowersMongoSetDAO()
 user_followers_set.user_followers_by_name_collection = db['UserFollowers']
 
 # Test methods
-# twitter_downloader.gen_user_tweets(id, tweepy_get, tweet_mongo_set, 50)
+# twitter_downloader.gen_user_tweets(id, tweepy_get, tweet_mongo_set, 20)
 # twitter_downloader.gen_user_tweets(id, tweepy_get, tweet_mongo_set, 50, start_date, end_date)
 # twitter_downloader.gen_random_tweet(tweepy_get, tweet_mongo_set)
 # friends_downloader.gen_friends_by_screen_name(id, tweepy_get, user_friends_set, 10)
