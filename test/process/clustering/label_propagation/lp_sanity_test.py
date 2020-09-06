@@ -1,4 +1,4 @@
-from src.process.twitter_download.twitter_downloader import TwitterFriendsDownloader
+from src.process.download.twitter_downloader import TwitterFriendsDownloader
 from src.datastore.tweepy.tweepy_get import TweepyGetDAO
 from src.process.clustering.label_propagation.label_propagation import LabelPropagation
 from src.process.social_graph.social_graph import SocialGraph

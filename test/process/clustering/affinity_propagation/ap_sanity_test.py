@@ -1,7 +1,6 @@
 from src.process.clustering.affinity_propagation.affinity_propagation import AffinityPropagation
 from src.datastore.mongo.word_frequency.word_freq_mongo_get import WordFrequencyMongoGetDAO
 from src.datastore.mongo.cluster.affinity_propagation.aff_prop_mongo_set import AffinityPropagationMongoSetDAO
-# from src.process.clustering.clustering_lib import cluster_relative_frequency
 
 aff_prop = AffinityPropagation()
 

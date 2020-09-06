@@ -1,4 +1,8 @@
 from datetime import datetime
+from pathlib import Path
+
+def get_project_root() -> Path:
+    return Path(__file__).parent.parent.parent
 
 def get_unique_list(l):
     return list(set(l))

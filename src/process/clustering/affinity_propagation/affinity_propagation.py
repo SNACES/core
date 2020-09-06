@@ -3,7 +3,7 @@ import numpy as np
 from pymongo import MongoClient
 from collections import Counter
 from sklearn.cluster import AffinityPropagation as AP
-from src.shared.lib import cosine_sim, word_overlap
+from src.shared.utils import cosine_sim, word_overlap
 from src.process.clustering.clustering_lib import *
 
 class AffinityPropagation():

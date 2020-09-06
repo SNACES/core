@@ -1,4 +1,4 @@
-from src.shared.lib import get_unique_list
+from src.shared.utils import get_unique_list
 
 class UserFollowersMongoSetDAO:
     def __init__(self):

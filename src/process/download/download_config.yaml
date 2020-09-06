@@ -1,0 +1,31 @@
+input-datastore:
+  Download-Source:
+    type: "Tweepy"
+    
+    
+output-datastore:
+  Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+
+  User-Friend:
+    type: "Mongo"
+    User-Friend-By-Name:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserFriends"
+      location: "mongodb://localhost:27017"
+
+  User-Follower:
+    type: "Mongo"
+    User-Follower-By-Name:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserFollowers"
+      location: "mongodb://localhost:27017"
