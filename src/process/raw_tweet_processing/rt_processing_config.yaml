@@ -1,0 +1,37 @@
+input-datastore:
+  Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+
+ 
+output-datastore:
+  Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+  Processed-Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"

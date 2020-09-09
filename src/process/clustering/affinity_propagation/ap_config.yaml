@@ -1,0 +1,15 @@
+input-datastore:
+  Word-Frequency:
+    type: "Mongo"
+    Relative-User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "RelativeUserWordFrequency"
+      location: "mongodb://localhost:27017"
+
+output-datastore:
+  Affinity-Propagation:
+    type: "Mongo"
+    Cluster:
+      datastore-name: "Cluster-Test"
+      collection-name: "AffinityPropagation"
+      location: "mongodb://localhost:27017"

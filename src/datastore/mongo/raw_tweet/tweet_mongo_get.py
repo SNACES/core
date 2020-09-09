@@ -2,8 +2,8 @@
 # lazy mode only returns tweets that have yet to be processed
 class TweetMongoGetDAO:
     def __init__(self):
-        self.global_tweets_collection = None
-        self.user_tweets_collection = None
+        self.global_tweet_collection = None
+        self.user_tweet_collection = None
     
     def get_global_tweets(self, lazy=True):
         """
@@ -15,11 +15,11 @@ class TweetMongoGetDAO:
         global_tweets = []
 
         if lazy:
-            global_tweet_doc_list = self.global_tweets_collection.find({
+            global_tweet_doc_list = self.global_tweet_collection.find({
                 'is_processed': {'$ne': True}
             })
         else:
-            global_tweet_doc_list = self.global_tweets_collection.find()
+            global_tweet_doc_list = self.global_tweet_collection.find()
 
         for global_tweet_doc in global_tweet_doc_list:
             tweet_text = global_tweet_doc['text']
@@ -49,9 +49,9 @@ class TweetMongoGetDAO:
                     }
                 }
             ])
-            user_tweet_doc_list = self.user_tweets_collection.aggregate(pipeline)
+            user_tweet_doc_list = self.user_tweet_collection.aggregate(pipeline)
         else:
-            user_tweet_doc_list = self.user_tweets_collection.find()
+            user_tweet_doc_list = self.user_tweet_collection.find()
 
         for user_doc in user_tweet_doc_list:
             user = user_doc['user']

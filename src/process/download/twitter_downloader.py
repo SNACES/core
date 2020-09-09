@@ -73,7 +73,7 @@ class TwitterFriendsDownloader():
         for friend in user_friends_list:
             friend_friends_list = user_friends_getter.get_friends_by_name(friend)
             if not friend_friends_list:
-                self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter) 
+                self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter)
 
 
 """

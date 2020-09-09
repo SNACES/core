@@ -1,0 +1,19 @@
+input-datastore:
+  Tweet:
+    type: "Mongo"
+    User-Tweet:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+
+
+output-datastore:
+  MUISI:
+    type: "Mongo"
+    is-retweets-mode: True
+    Cluster:
+      datastore-name: "Cluster-Test"
+      collection-name: "MUISIRetweetsClusters"
+      location: "mongodb://localhost:27017"
+

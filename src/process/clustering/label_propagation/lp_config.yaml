@@ -1,0 +1,16 @@
+input-datastore:
+  Social-Graph:
+    type: "Mongo"
+    User-Friend-Graph:
+      datastore-name: "SocialGraph-Test"
+      collection-name: "UserFriendsGraph"
+      location: "mongodb://localhost:27017"
+
+
+output-datastore:
+  Label-Propagation:
+    type: "Mongo"
+    Cluster:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters"
+      location: "mongodb://localhost:27017"

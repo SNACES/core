@@ -1,0 +1,16 @@
+input-datastore:
+  User-Friend:
+    type: "Mongo"
+    User-Friend-By-Name:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserFriends"
+      location: "mongodb://localhost:27017"
+
+
+output-datastore:
+  Social-Graph:
+    type: "Mongo"
+    User-Friend-Graph:
+      datastore-name: "SocialGraph-Test"
+      collection-name: "UserFriendsGraph"
+      location: "mongodb://localhost:27017"

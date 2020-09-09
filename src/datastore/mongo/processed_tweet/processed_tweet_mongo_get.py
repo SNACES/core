@@ -1,7 +1,7 @@
 class ProcessedTweetMongoGetDAO():
     def __init__(self):
-        self.global_processed_tweets_collection = None
-        self.user_processed_tweets_collection = None
+        self.global_processed_tweet_collection = None
+        self.user_processed_tweet_collection = None
     
     def get_global_tweet_words(self, lazy=True):
         """
@@ -11,11 +11,11 @@ class ProcessedTweetMongoGetDAO():
 
         global_tweet_words = []
         if lazy:
-            processed_tweet_list = self.global_processed_tweets_collection.find({
+            processed_tweet_list = self.global_processed_tweet_collection.find({
                 'is_counted': {'$ne': True}
             })
         else:
-            processed_tweet_list = self.global_processed_tweets_collection.find()
+            processed_tweet_list = self.global_processed_tweet_collection.find()
 
         # Run through tweets in collection and collect words from tweets
         for tweet_doc in processed_tweet_list:
@@ -45,9 +45,9 @@ class ProcessedTweetMongoGetDAO():
                     }
                 }
             ])
-            user_tweet_doc_list = self.user_processed_tweets_collection.aggregate(pipeline)
+            user_tweet_doc_list = self.user_processed_tweet_collection.aggregate(pipeline)
         else:
-            user_tweet_doc_list = self.user_processed_tweets_collection.find()
+            user_tweet_doc_list = self.user_processed_tweet_collection.find()
 
         # Run through tweets in collection and collect words from tweets
         for user_doc in user_tweet_doc_list:

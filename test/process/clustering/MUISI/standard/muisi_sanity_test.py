@@ -1,19 +1,12 @@
+from src.shared.utils import get_project_root
 from src.process.clustering.MUISI.standard.muisi import MUISI, MUISIConfig
-from src.datastore.mongo.word_frequency.word_freq_mongo_get import WordFrequencyMongoGetDAO
-from src.datastore.mongo.cluster.MUISI.standard.muisi_mongo_set import MUISIMongoSetDAO
+from src.process.clustering.MUISI.muisi_config_parser import MUISIConfigParser
 
 # Init input and output daos
-from pymongo import MongoClient
-client = MongoClient('mongodb://localhost:27017/')
-wf_db = client['WordFrequency-Test']
-muisi_db = client['MUISI-Test']
-
-wf_getter = WordFrequencyMongoGetDAO()
-wf_getter.user_word_frequency_vector_collection = wf_db['UserWordFrequency']
-wf_getter.relative_user_word_frequency_vector_collection = wf_db['RelativeUserWordFrequency'] 
-
-muisi_cluster_setter = MUISIMongoSetDAO()
-muisi_cluster_setter.muisi_cluster_collection = muisi_db['MUISIClusters']
+config_path = get_project_root() / 'src' / 'process' / 'clustering' / 'muisi' / 'standard' / 'muisi_config.yaml'
+muisi_config_parser = MUISIConfigParser(config_path, False)
+wf_getter = muisi_config_parser.create_getter_DAOs()
+muisi_cluster_setter = muisi_config_parser.create_setter_DAOs()
 
 # Run tests
 intersection_min = 2

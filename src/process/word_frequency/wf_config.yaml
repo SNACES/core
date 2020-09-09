@@ -1,0 +1,66 @@
+input-datastore:
+  Processed-Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+  Word-Frequency:
+    type: "Mongo"
+    Global-Word-Count:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "GlobalWordCount"
+      location: "mongodb://localhost:27017"
+    User-Word-Count:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "UserWordCount"
+      location: "mongodb://localhost:27017"
+    Global-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "GlobalWordFrequency"
+      location: "mongodb://localhost:27017"
+    User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "UserWordFrequency"
+      location: "mongodb://localhost:27017"
+
+ 
+output-datastore:
+  Processed-Tweet:
+    type: "Mongo"
+    Global-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "GlobalTweets"
+      location: "mongodb://localhost:27017"
+    User-Tweet:
+      datastore-name: "ProcessedTweet-Test"
+      collection-name: "UserTweets"
+      type: "Mongo"
+      location: "mongodb://localhost:27017"
+  Word-Frequency:
+    type: "Mongo"
+    Global-Word-Count:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "GlobalWordCount"
+      location: "mongodb://localhost:27017"
+    User-Word-Count:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "UserWordCount"
+      location: "mongodb://localhost:27017"
+    Global-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "GlobalWordFrequency"
+      location: "mongodb://localhost:27017"
+    User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "UserWordFrequency"
+      location: "mongodb://localhost:27017"
+    Relative-User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "RelativeUserWordFrequency"
+      location: "mongodb://localhost:27017"

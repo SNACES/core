@@ -2,6 +2,13 @@ input-datastore:
   Download-Source:
     type: "Tweepy"
     
+  User-Friend:
+    type: "Mongo"
+    User-Friend-By-Name:
+      datastore-name: "TwitterDownload-Test"
+      collection-name: "UserFriends"
+      location: "mongodb://localhost:27017"
+    
     
 output-datastore:
   Tweet:

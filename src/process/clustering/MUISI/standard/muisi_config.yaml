@@ -1,0 +1,21 @@
+input-datastore:
+  Word-Frequency:
+    type: "Mongo"
+    User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "UserWordFrequency"
+      location: "mongodb://localhost:27017"
+    Relative-User-Word-Frequency:
+      datastore-name: "WordFrequency-Test"
+      collection-name: "RelativeUserWordFrequency"
+      location: "mongodb://localhost:27017"
+
+output-datastore:
+  MUISI:
+    type: "Mongo"
+    is-retweets-mode: False
+    Cluster:
+      datastore-name: "Cluster-Test"
+      collection-name: "MUISIClusters"
+      location: "mongodb://localhost:27017"
+
