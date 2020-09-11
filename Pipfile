@@ -6,15 +6,14 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-pyCLI = "*"
-schedule = "*"
+click = "*"
 python-daemon = "*"
+schedule = "*"
 pyyaml = "*"
 pymongo = "*"
 datetime = "*"
 tweepy = "*"
 nltk = "*"
-argparse = "*"
 numpy = "*"
 sklearn = "*"
 networkx = "*"
