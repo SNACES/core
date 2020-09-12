@@ -1,6 +1,6 @@
-from src.config_parser.config_parser import ConfigParser
-from src.config_parser.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
-from src.config_parser.datastore_config_parser.clustering.affinity_propagation.ap_ds_config_parser import AffinityPropagationDSConfigParser
+from src.config.config_parser import ConfigParser
+from src.config.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
+from src.config.datastore_config_parser.clustering.affinity_propagation.ap_ds_config_parser import AffinityPropagationDSConfigParser
 
 class AffinityPropagationConfigParser(ConfigParser):
     def __init__(self, config_path):

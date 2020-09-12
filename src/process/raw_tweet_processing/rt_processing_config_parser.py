@@ -1,6 +1,6 @@
-from src.config_parser.config_parser import ConfigParser
-from src.config_parser.datastore_config_parser.raw_tweet.tweet_ds_config_parser import TweetDSConfigParser
-from src.config_parser.datastore_config_parser.processed_tweet.pt_ds_config_parser import ProcessedTweetDSConfigParser
+from src.config.config_parser import ConfigParser
+from src.config.datastore_config_parser.raw_tweet.tweet_ds_config_parser import TweetDSConfigParser
+from src.config.datastore_config_parser.processed_tweet.pt_ds_config_parser import ProcessedTweetDSConfigParser
 
 class RawTweetProcessingConfigParser(ConfigParser):
     def __init__(self, config_path):

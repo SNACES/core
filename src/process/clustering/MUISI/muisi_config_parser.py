@@ -1,7 +1,7 @@
-from src.config_parser.config_parser import ConfigParser
-from src.config_parser.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
-from src.config_parser.datastore_config_parser.raw_tweet.tweet_ds_config_parser import TweetDSConfigParser
-from src.config_parser.datastore_config_parser.clustering.muisi.muisi_ds_config_parser import MUISIDSConfigParser
+from src.config.config_parser import ConfigParser
+from src.config.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
+from src.config.datastore_config_parser.raw_tweet.tweet_ds_config_parser import TweetDSConfigParser
+from src.config.datastore_config_parser.clustering.muisi.muisi_ds_config_parser import MUISIDSConfigParser
 
 class MUISIConfigParser(ConfigParser):
     def __init__(self, config_path, is_retweets_mode):

@@ -21,7 +21,7 @@ tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config
 
 # Test download
 # twitter_downloader.gen_user_tweets(id, tweepy_getter, tweet_mongo_setter, 20)
-# twitter_downloader.gen_user_tweets(id, tweepy_getter, tweet_mongo_setter, 50, start_date, end_date)
+# twitter_downloader.gen_user_tweets(id, tweepy_getter, tweet_mongo_setter, 20, start_date, end_date)
 # twitter_downloader.gen_random_tweet(tweepy_getter, tweet_mongo_setter)
 # friends_downloader.gen_friends_by_screen_name(id, tweepy_getter, user_friends_setter, 10)
 # followers_downloader.gen_followers_by_screen_name(id, tweepy_getter, user_followers_setter, 10)

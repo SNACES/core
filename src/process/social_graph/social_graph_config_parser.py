@@ -1,6 +1,6 @@
-from src.config_parser.config_parser import ConfigParser
-from src.config_parser.datastore_config_parser.user_friend.user_friend_ds_config_parser import UserFriendDSConfigParser
-from src.config_parser.datastore_config_parser.social_graph.social_graph_ds_config_parser import SocialGraphDSConfigParser
+from src.config.config_parser import ConfigParser
+from src.config.datastore_config_parser.user_friend.user_friend_ds_config_parser import UserFriendDSConfigParser
+from src.config.datastore_config_parser.social_graph.social_graph_ds_config_parser import SocialGraphDSConfigParser
 
 class SocialGraphConfigParser(ConfigParser):
     def __init__(self, config_path):

@@ -1,6 +1,6 @@
-from src.config_parser.config_parser import ConfigParser
-from src.config_parser.datastore_config_parser.processed_tweet.pt_ds_config_parser import ProcessedTweetDSConfigParser
-from src.config_parser.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
+from src.config.config_parser import ConfigParser
+from src.config.datastore_config_parser.processed_tweet.pt_ds_config_parser import ProcessedTweetDSConfigParser
+from src.config.datastore_config_parser.word_frequency.wf_ds_config_parser import WordFrequencyDSConfigParser
 
 class WordFrequencyConfigParser(ConfigParser):
     def __init__(self, config_path):
