@@ -6,10 +6,9 @@ class UserListProcessor:
         with open(user_list_file_path, 'r') as stream:
             return [user.strip() for user in stream]
 
-    def download_function_by_user_list(self, download_function, user_list, *argv):
+    def run_function_by_user_list(self, function, user_list, *argv):
         """
-        Precondition: argv matches the args for download_function
+        Precondition: argv matches the args for function
         """
-        # def curried_download(id): return download_function(id, *argv) 
-        curried_download = lambda id: download_function(id, *argv)
-        return list(map(curried_download, user_list))
+        curried_func = lambda id: function(id, *argv)
+        return list(map(curried_func, user_list))

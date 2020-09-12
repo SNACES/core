@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from pathlib import Path
 
 def get_project_root() -> Path:
@@ -6,6 +6,10 @@ def get_project_root() -> Path:
 
 def get_unique_list(l):
     return list(set(l))
+
+def get_date(date_str):
+    year, month, day = map(int, date_str.split('-'))
+    return datetime.datetime(year, month, day)
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):

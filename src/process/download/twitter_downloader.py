@@ -61,19 +61,18 @@ class TwitterFriendsDownloader():
         friends = tweepy_getter.get_friends_by_id(id, num_friends)
         user_friends_setter.store_friends_by_id(id, friends)
 
-    # Implementation using tweepy - slow, API-constrained
     def gen_user_local_neighborhood(self, user: str, tweepy_getter, user_friends_getter, user_friends_setter):
         """
         Note that user refers to screen name.
         """
         user_friends_list = user_friends_getter.get_friends_by_name(user)
         if not user_friends_list:
-            user_friends_list = self.gen_friends_by_screen_name(user, tweepy_getter, user_friends_setter)
+            user_friends_list = self.gen_friends_by_screen_name(user, tweepy_getter, user_friends_setter, 5)
 
         for friend in user_friends_list:
             friend_friends_list = user_friends_getter.get_friends_by_name(friend)
             if not friend_friends_list:
-                self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter)
+                self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter, 5)
 
 
 """

@@ -33,6 +33,6 @@ tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config
 # Test user list processor on download
 # from src.tools.user_list_processor import UserListProcessor
 # ulp = UserListProcessor()
-# user_list_file_path = get_project_root() / 'test' / 'process' / 'download' / 'user_list'
+# user_list_file_path = get_project_root() / 'src' / 'tools' / 'user_list'
 # user_list = ulp.user_list_parser(user_list_file_path)
-# ulp.download_function_by_user_list(twitter_downloader.gen_user_tweets, user_list, tweepy_getter, tweet_mongo_setter, 5)
+# ulp.run_function_by_user_list(twitter_downloader.gen_user_tweets, user_list, tweepy_getter, tweet_mongo_setter, 5)

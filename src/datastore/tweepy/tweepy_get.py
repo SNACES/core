@@ -48,7 +48,7 @@ class TweepyGetDAO():
             total_tweets = Cursor(self.twitter_api.user_timeline, id=id).items(num_tweets) 
         
         def pred(tweet):
-            is_correct_date = tweet.created_at > start_date and tweet.created_at < end_date
+            is_correct_date = tweet.created_at >= start_date and tweet.created_at < end_date
             is_correct_user = tweet.user.id == id or tweet.user.screen_name == id
             return is_correct_date and is_correct_user
         
