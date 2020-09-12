@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.raw_tweet.tweet_mongo_set import TweetMongoSetDAO
-from src.dpi.datastore.mongo.raw_tweet.tweet_mongo_get import TweetMongoGetDAO
+from src.data_infrastructure.datastore.mongo.raw_tweet.tweet_mongo_set import TweetMongoSetDAO
+from src.data_infrastructure.datastore.mongo.raw_tweet.tweet_mongo_get import TweetMongoGetDAO
 
 class TweetMongoDAOFactory():
     def create_setter(self, tweet_config):

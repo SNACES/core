@@ -1,5 +1,5 @@
 from src.config.datastore_config_parser.ds_config_parser import DSConfigParser
-from src.dpi.dao_factory.mongo.clustering.muisi.muisi_mongo_dao_factory import MUISIMongoDAOFactory
+from src.data_infrastructure.dao_factory.mongo.clustering.muisi.muisi_mongo_dao_factory import MUISIMongoDAOFactory
 
 class MUISIDSConfigParser(DSConfigParser):
     def __init__(self):

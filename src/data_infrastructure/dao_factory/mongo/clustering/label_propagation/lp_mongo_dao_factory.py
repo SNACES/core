@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.cluster.label_propagation.label_prop_mongo_set import LabelPropagationMongoSetDAO
-from src.dpi.datastore.mongo.cluster.label_propagation.label_prop_mongo_get import LabelPropagationMongoGetDAO
+from src.data_infrastructure.datastore.mongo.cluster.label_propagation.label_prop_mongo_set import LabelPropagationMongoSetDAO
+from src.data_infrastructure.datastore.mongo.cluster.label_propagation.label_prop_mongo_get import LabelPropagationMongoGetDAO
 
 class LabelPropagationMongoDAOFactory():
     def create_setter(self, lp_config):

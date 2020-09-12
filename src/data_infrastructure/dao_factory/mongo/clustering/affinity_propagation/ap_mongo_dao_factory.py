@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.cluster.affinity_propagation.aff_prop_mongo_set import AffinityPropagationMongoSetDAO
-from src.dpi.datastore.mongo.cluster.affinity_propagation.aff_prop_mongo_get import AffinityPropagationMongoGetDAO
+from src.data_infrastructure.datastore.mongo.cluster.affinity_propagation.aff_prop_mongo_set import AffinityPropagationMongoSetDAO
+from src.data_infrastructure.datastore.mongo.cluster.affinity_propagation.aff_prop_mongo_get import AffinityPropagationMongoGetDAO
 
 class AffinityPropagationMongoDAOFactory:
     def create_setter(self, ap_config):

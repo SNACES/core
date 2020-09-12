@@ -1,5 +1,5 @@
 from src.config.datastore_config_parser.ds_config_parser import DSConfigParser
-from src.dpi.dao_factory.mongo.raw_tweet.tweet_mongo_dao_factory import TweetMongoDAOFactory
+from src.data_infrastructure.dao_factory.mongo.raw_tweet.tweet_mongo_dao_factory import TweetMongoDAOFactory
 
 class TweetDSConfigParser(DSConfigParser):
     def __init__(self):

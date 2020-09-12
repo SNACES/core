@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.word_frequency.wf_mongo_set import WordFrequencyMongoSetDAO
-from src.dpi.datastore.mongo.word_frequency.wf_mongo_get import WordFrequencyMongoGetDAO
+from src.data_infrastructure.datastore.mongo.word_frequency.wf_mongo_set import WordFrequencyMongoSetDAO
+from src.data_infrastructure.datastore.mongo.word_frequency.wf_mongo_get import WordFrequencyMongoGetDAO
 
 class WordFrequencyMongoDAOFactory:
     def create_setter(self, wf_config):

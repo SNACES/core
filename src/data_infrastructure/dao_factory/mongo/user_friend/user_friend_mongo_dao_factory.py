@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.user_friend.user_friends_mongo_set import UserFriendsMongoSetDAO
-from src.dpi.datastore.mongo.user_friend.user_friends_mongo_get import UserFriendsMongoGetDAO
+from src.data_infrastructure.datastore.mongo.user_friend.user_friends_mongo_set import UserFriendsMongoSetDAO
+from src.data_infrastructure.datastore.mongo.user_friend.user_friends_mongo_get import UserFriendsMongoGetDAO
 
 class UserFriendMongoDAOFactory():
     def create_setter(self, user_friends_config):

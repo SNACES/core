@@ -1,5 +1,5 @@
 from src.config.datastore_config_parser.ds_config_parser import DSConfigParser
-from src.dpi.dao_factory.mongo.clustering.affinity_propagation.ap_mongo_dao_factory import AffinityPropagationMongoDAOFactory
+from src.data_infrastructure.dao_factory.mongo.clustering.affinity_propagation.ap_mongo_dao_factory import AffinityPropagationMongoDAOFactory
 
 class AffinityPropagationDSConfigParser(DSConfigParser):
     def __init__(self):

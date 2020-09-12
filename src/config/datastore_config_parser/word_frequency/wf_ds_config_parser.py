@@ -1,5 +1,5 @@
 from src.config.datastore_config_parser.ds_config_parser import DSConfigParser
-from src.dpi.dao_factory.mongo.word_frequency.wf_mongo_dao_factory import WordFrequencyMongoDAOFactory
+from src.data_infrastructure.dao_factory.mongo.word_frequency.wf_mongo_dao_factory import WordFrequencyMongoDAOFactory
 
 class WordFrequencyDSConfigParser(DSConfigParser):
     def __init__(self):

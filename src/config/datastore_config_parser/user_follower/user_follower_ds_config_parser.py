@@ -1,5 +1,5 @@
 from src.config.datastore_config_parser.ds_config_parser import DSConfigParser
-from src.dpi.dao_factory.mongo.user_follower.user_follower_mongo_dao_factory import UserFollowerMongoDAOFactory
+from src.data_infrastructure.dao_factory.mongo.user_follower.user_follower_mongo_dao_factory import UserFollowerMongoDAOFactory
 
 class UserFollowerDSConfigParser(DSConfigParser):
     def __init__(self):

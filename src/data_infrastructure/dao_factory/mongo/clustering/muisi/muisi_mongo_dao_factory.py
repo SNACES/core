@@ -1,9 +1,9 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.word_frequency.wf_mongo_get import WordFrequencyMongoGetDAO
-from src.dpi.datastore.mongo.cluster.MUISI.standard.muisi_mongo_set import MUISIMongoSetDAO
-from src.dpi.datastore.mongo.cluster.MUISI.standard.muisi_mongo_get import MUISIMongoGetDAO
-from src.dpi.datastore.mongo.cluster.MUISI.retweets.muisi_retweets_mongo_set import MUISIRetweetsMongoSetDAO
-from src.dpi.datastore.mongo.cluster.MUISI.retweets.muisi_retweets_mongo_get import MUISIRetweetsMongoGetDAO
+from src.data_infrastructure.datastore.mongo.word_frequency.wf_mongo_get import WordFrequencyMongoGetDAO
+from src.data_infrastructure.datastore.mongo.cluster.MUISI.standard.muisi_mongo_set import MUISIMongoSetDAO
+from src.data_infrastructure.datastore.mongo.cluster.MUISI.standard.muisi_mongo_get import MUISIMongoGetDAO
+from src.data_infrastructure.datastore.mongo.cluster.MUISI.retweets.muisi_retweets_mongo_set import MUISIRetweetsMongoSetDAO
+from src.data_infrastructure.datastore.mongo.cluster.MUISI.retweets.muisi_retweets_mongo_get import MUISIRetweetsMongoGetDAO
 
 class MUISIMongoDAOFactory:
     def create_setter(self, muisi_config):

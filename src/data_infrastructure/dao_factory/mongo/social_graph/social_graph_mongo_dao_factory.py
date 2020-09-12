@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.social_graph.social_graph_mongo_set import SocialGraphMongoSetDAO
-from src.dpi.datastore.mongo.social_graph.social_graph_mongo_get import SocialGraphMongoGetDAO
+from src.data_infrastructure.datastore.mongo.social_graph.social_graph_mongo_set import SocialGraphMongoSetDAO
+from src.data_infrastructure.datastore.mongo.social_graph.social_graph_mongo_get import SocialGraphMongoGetDAO
 
 class SocialGraphMongoDAOFactory():
     def create_setter(self, social_graph_config):

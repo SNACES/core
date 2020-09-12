@@ -1,6 +1,6 @@
 from src.shared.mongo import get_collection_from_config
-from src.dpi.datastore.mongo.user_follower.user_followers_mongo_set import UserFollowersMongoSetDAO
-from src.dpi.datastore.mongo.user_follower.user_followers_mongo_get import UserFollowersMongoGetDAO
+from src.data_infrastructure.datastore.mongo.user_follower.user_followers_mongo_set import UserFollowersMongoSetDAO
+from src.data_infrastructure.datastore.mongo.user_follower.user_followers_mongo_get import UserFollowersMongoGetDAO
 
 class UserFollowerMongoDAOFactory:
     def create_setter(self, user_followers_config):

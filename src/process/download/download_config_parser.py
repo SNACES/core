@@ -1,4 +1,4 @@
-from src.dpi.datastore.tweepy.tweepy_get import TweepyGetDAO
+from src.data_infrastructure.datastore.tweepy.tweepy_get import TweepyGetDAO
 from src.config.config_parser import ConfigParser
 from src.config.datastore_config_parser.raw_tweet.tweet_ds_config_parser import TweetDSConfigParser
 from src.config.datastore_config_parser.user_friend.user_friend_ds_config_parser import UserFriendDSConfigParser
