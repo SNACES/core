@@ -164,8 +164,8 @@ def run_wf():
     word_freq = WordFrequency()
 
     click.echo("Word Vector Types")
-    click.echo("1. Word Count Vector")
-    click.echo("2. Word Frequency Vector")
+    click.echo("1. Global Word Count Vector")
+    click.echo("2. Global Word Frequency Vector")
     click.echo("3. User Word Count Vector")
     click.echo("4. User Word Frequency Vector")
     click.echo("5. Relative User Word Frequency Vector")
