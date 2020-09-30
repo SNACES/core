@@ -4,20 +4,20 @@ from src.shared.utils import get_project_root
 from src.process.download.twitter_downloader import TwitterTweetDownloader, TwitterFriendsDownloader, TwitterFollowersDownloader
 from src.process.download.download_config_parser import DownloadConfigParser
 
-twitter_downloader = TwitterTweetDownloader()
-friends_downloader = TwitterFriendsDownloader()
-followers_downloader = TwitterFollowersDownloader()
+# twitter_downloader = TwitterTweetDownloader()
+# friends_downloader = TwitterFriendsDownloader()
+# followers_downloader = TwitterFollowersDownloader()
 
 # Init query variables
-id = "animesh_garg"
-start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
-end_date = datetime.datetime(2020, 7, 17, 0, 0, 0)
+# id = "animesh_garg"
+# start_date = datetime.datetime(2019, 6, 1, 0, 0, 0)
+# end_date = datetime.datetime(2020, 7, 17, 0, 0, 0)
 
 # Init input and output daos
-config_path = get_project_root() / 'src' / 'process' / 'download' / 'download_config.yaml'
-download_config_parser = DownloadConfigParser(config_path)
-tweepy_getter, user_friends_getter = download_config_parser.create_getter_DAOs()
-tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config_parser.create_setter_DAOs()
+# config_path = get_project_root() / 'src' / 'process' / 'download' / 'download_config.yaml'
+# download_config_parser = DownloadConfigParser(config_path)
+# tweepy_getter, user_friends_getter = download_config_parser.create_getter_DAOs()
+# tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config_parser.create_setter_DAOs()
 
 # Test download
 # twitter_downloader.gen_user_tweets(id, tweepy_getter, tweet_mongo_setter, 20)

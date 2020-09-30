@@ -6,5 +6,4 @@ conf/credentials.py
 
 src/twitter-download/user_list
 src/clustering/label-propagation/label_propagation_results
-Pipfile.lock
 SNACES.egg-info/
