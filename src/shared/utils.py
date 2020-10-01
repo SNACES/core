@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Dict
+from typing import List, Dict, Iterator
 from pathlib import Path
 
 """
@@ -33,7 +33,7 @@ def get_date(date_str: str) -> datetime:
     year, month, day = map(int, date_str.split('-'))
     return datetime(year, month, day)
 
-def daterange(start_date: datetime, end_date: datetime) -> Generator[datetime]:
+def daterange(start_date: datetime, end_date: datetime) -> Iterator[datetime]:
     """
     Given a start date and end date, return a sequence containing every day in
     the range from the start to the end (not including the end date)
