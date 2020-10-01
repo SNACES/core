@@ -3,7 +3,7 @@ from collections import Counter
 
 class WordFrequencyMongoSetDAO():
     """
-    A class that store data collection into MongoDB.
+    A class that stores data collection into MongoDB.
 
     @private 
         global_word_count_vector_collection: global word count to be stored into MongoBD

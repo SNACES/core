@@ -46,7 +46,7 @@ class WordFrequency():
 
     def gen_global_word_frequency_vector(self, wf_getter, wf_setter):
         """
-        Generate the global word frequency
+        Generate the global word frequency.
         Assume that the input dao contains the global word count vector.
         The common format is {word: num_times_used}.
 

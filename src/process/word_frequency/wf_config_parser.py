@@ -10,7 +10,7 @@ class WordFrequencyConfigParser(ConfigParser):
         """
         initialize a new WordFrequencyConfigParser class.
         
-        @param config_path: the path of config file
+        @param config_path: the path of config file.
         """
         super().__init__(config_path)
         self.pt_ds_config_parser = ProcessedTweetDSConfigParser()
@@ -33,7 +33,7 @@ class WordFrequencyConfigParser(ConfigParser):
         Generate the WordFrequency SetDAO with the config file.
 
         @param parsed_setter_config: the path of config file.
-        @return: a word frequency SetDAO
+        @return: a word frequency SetDAO.
         """
         processed_tweet_setter = self.pt_ds_config_parser._get_processed_tweet_setter(parsed_setter_config)
         wf_setter = self.wf_ds_config_parser._get_wf_setter(parsed_setter_config)

@@ -17,7 +17,7 @@ class ProcessedTweetMongoSetDAO:
     
     def store_global_processed_tweets(self, processed_global_tweet_list):
         """
-        Store global processed tweets into database.
+        Store global processed tweets into the database.
         Format: {'tweet_words': [str]}
 
         @param processed_global_tweet_list: list of processed global tweet to be stored

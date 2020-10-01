@@ -10,7 +10,7 @@ class ProcessedTweetMongoDAOFactory:
         """
         Create a ProcessedTweet MongoSetDAO with the config file.
 
-        @param processed_tweet_config: the path of config file
+        @param processed_tweet_config: path of the config file
         @return: a required ProcessedTweetMongoSetDAO
         """
         return self._create_processed_tweet_dao(processed_tweet_config, True)

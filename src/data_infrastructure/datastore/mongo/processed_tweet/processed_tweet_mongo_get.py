@@ -16,7 +16,7 @@ class ProcessedTweetMongoGetDAO():
     def get_global_tweet_words(self, lazy=True):
         """
         Generate a list of all words from tweets in the global processed tweets collection.
-        Input database doc format: {'tweet_words': [str]}
+        Input database doc if of format: {'tweet_words': [str]}
 
         @param lazy: update the flag of data from uncounted to iscounted, if lazy is True
         @return: list of global tweet word count

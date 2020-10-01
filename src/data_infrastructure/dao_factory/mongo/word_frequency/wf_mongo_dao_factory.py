@@ -30,7 +30,7 @@ class WordFrequencyMongoDAOFactory:
         For a getter dao, get the required data collection from MongoDB.
         For a setter dao, set the data collection into MongoDB.
 
-        @param wf_config: the config file path
+        @param wf_config: path of the config file
         @param is_setter: True if WordFrequenceDao setter is required
         @return: a WordFrequencyDAO getter or a WordFrequenctDAO setter
         """

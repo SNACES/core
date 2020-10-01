@@ -17,7 +17,7 @@ class WordFrequencyMongoGetDAO():
     """
     def __init__(self):
         """
-        initialize a new WordFrequencyMongoGetDAO class.
+        Initialize a new WordFrequencyMongoGetDAO class.
         """
         self.global_word_count_vector_collection = None
         self.user_word_count_vector_collection = None
