@@ -1,7 +1,17 @@
 from src.shared.utils import get_unique_list
 
 class ProcessedTweetMongoSetDAO:
+    """
+    A class that stores processed tweet data collection from MongoDB.
+
+    @private 
+        global_processed_tweet_collection: list of global processed tweet data
+        user_processed_tweet_collection: list of processed tweet collection for each users
+    """
     def __init__(self):
+        """
+        Initialize a new ProcessedTweetMongoSetDAO class.
+        """
         self.global_processed_tweet_collection = None
         self.user_processed_tweet_collection = None
     
@@ -9,6 +19,8 @@ class ProcessedTweetMongoSetDAO:
         """
         Store global processed tweets into database.
         Format: {'tweet_words': [str]}
+
+        @param processed_global_tweet_list: list of processed global tweet to be stored
         """
         
         for tweet_words in processed_global_tweet_list:
@@ -21,6 +33,8 @@ class ProcessedTweetMongoSetDAO:
         """
         Store user processed tweets into database.
         Format: {'user': str, 'processed_tweets' [{'tweet_words': [str]}]}
+
+        @param user_to_processed_tweet_list: list of processed tweet of each user to be stored
         """
         
         for user in user_to_processed_tweet_list:

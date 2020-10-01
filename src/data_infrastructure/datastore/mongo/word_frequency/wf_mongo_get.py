@@ -5,7 +5,20 @@ from typing import Union, List
 # lazy mode: this makes sure that accurate wc and wf vectors are generated
 # to do this, need to keep track of which processed tweets have already had their words counted
 class WordFrequencyMongoGetDAO():
+    """
+    A class that gets data collection from MongoDB.
+
+    @private 
+        global_word_count_vector_collection: global word count from MongoBD
+        user_word_count_vector_collection: user word count from MongoDB
+        global_word_frequency_vector_collection: global word frequency from MongoDB
+        user_word_frequency_vector_collection: global word frequency of specific users
+        relative_user_word_frequency_vector_collection: relative word frequency of specific users
+    """
     def __init__(self):
+        """
+        initialize a new WordFrequencyMongoGetDAO class.
+        """
         self.global_word_count_vector_collection = None
         self.user_word_count_vector_collection = None
         self.global_word_frequency_vector_collection = None
@@ -14,8 +27,9 @@ class WordFrequencyMongoGetDAO():
 
     def get_global_word_count_vector(self):
         """
-        Return the global word count vector.
-        Format: {word: word count}
+        Generate the global word count vector of format: {word: word count}
+
+        @return: the global word count vector
         """
         
         # According to our database format, the global word count vector collection
@@ -26,8 +40,9 @@ class WordFrequencyMongoGetDAO():
 
     def get_user_word_count_vector(self):
         """
-        Return the user word count vector
-        Format: {user: {word: word count}}
+        Generate the user word count vector of the format: {user: {word: word count}}.
+
+        @return: user word count vector of the users
         """
         
         user_word_count_vector = {}
@@ -41,8 +56,9 @@ class WordFrequencyMongoGetDAO():
 
     def get_global_word_frequency_vector(self):
         """
-        Return the global word frequency vector.
-        Format: {word: word frequency}
+        Generate the global word frequency vector of the format: {word: word frequency}.
+
+        @return: global word frequency vector
         """
         
         # According to our database format, the global word frequency vector collection
@@ -53,8 +69,9 @@ class WordFrequencyMongoGetDAO():
 
     def get_user_word_frequency_vector(self):
         """
-        Return the user word frequency vector.
-        Format: {user: {word: word frequency}}
+        Generate the user word frequency vector of the format: {user: {word: word frequency}}.
+
+        @return: word frequency vector of users
         """
         
         user_word_frequency_vector = {}
@@ -68,8 +85,9 @@ class WordFrequencyMongoGetDAO():
     
     def get_relative_user_word_frequency_vector(self):
         """
-        Return the relative user word frequency vector.
-        Format: {user: {word: relative word frequency}}
+        Generate the relative user word frequency vector fo the format: {user: {word: relative word frequency}}
+        
+        @return: relative word frequency vector of the users
         """
         
         relative_user_word_frequency_vector = {}

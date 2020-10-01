@@ -1,12 +1,25 @@
 class ProcessedTweetMongoGetDAO():
+    """
+    A class that gets processed tweet data collection from MongoDB.
+
+    @private 
+        global_processed_tweet_collection: list of global processed tweet data
+        user_processed_tweet_collection: list of processed tweet collection for each users
+    """
     def __init__(self):
+        """
+        Initialize a new ProcessedTweetMongoGetDAO class.
+        """
         self.global_processed_tweet_collection = None
         self.user_processed_tweet_collection = None
     
     def get_global_tweet_words(self, lazy=True):
         """
-        Return a list of all words from tweets in the global processed tweets collection.
+        Generate a list of all words from tweets in the global processed tweets collection.
         Input database doc format: {'tweet_words': [str]}
+
+        @param lazy: update the flag of data from uncounted to iscounted, if lazy is True
+        @return: list of global tweet word count
         """
 
         global_tweet_words = []
@@ -25,9 +38,11 @@ class ProcessedTweetMongoGetDAO():
 
     def get_user_tweet_words(self, lazy=True): 
         """
-        Return for each user a list of all words from tweets in the user processed tweets collection.
+        Return for each user in a list of all words from tweets in the user processed tweets collection.
         Input database doc format: {'user': str, 'processed_tweets' [{'tweet_words': [str]}]}
-        Return format: {user: [words]}
+        
+        @lazy: update the flag of data from uncounted to iscounted, if lazy is True
+        @return: list of global tweet word count for each user, with output format: {user: [words]}
         """
 
         user_to_tweet_words = {}

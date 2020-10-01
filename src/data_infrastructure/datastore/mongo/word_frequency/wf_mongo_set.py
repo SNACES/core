@@ -2,8 +2,21 @@ from typing import Union, List
 from collections import Counter
 
 class WordFrequencyMongoSetDAO():
+    """
+    A class that store data collection into MongoDB.
+
+    @private 
+        global_word_count_vector_collection: global word count to be stored into MongoBD
+        user_word_count_vector_collection: user word count to be stored into MongoDB
+        global_word_frequency_vector_collection: global word frequency to be stored into MongoDB
+        user_word_frequency_vector_collection: global word frequency of specific users to be stored into MongoDB
+        relative_user_word_frequency_vector_collection: relative word frequency of specific users to be stored into MongoDB
+    """
     # Important to distinguish between new entry and update
     def __init__(self):
+        """
+        Initilize a new WordFrequencyMongoSetDAO class.
+        """
         self.global_word_count_vector_collection = None
         self.user_word_count_vector_collection = None
         self.global_word_frequency_vector_collection = None
@@ -13,6 +26,8 @@ class WordFrequencyMongoSetDAO():
     def store_global_word_count_vector(self, global_wc_vector):
         """
         Store global word count vector in descending order.
+
+        @param global_wc_vector: global word vector to be stored
         """
 
         # Check whether an existing entry exists, update if so
@@ -31,6 +46,8 @@ class WordFrequencyMongoSetDAO():
     def store_user_word_count_vector(self, user_wc_vector):
         """
         Store user word count vector in descending order.
+
+        @user_ec_vector: user word vector to be stored
         """
 
         for user in user_wc_vector:
@@ -61,6 +78,8 @@ class WordFrequencyMongoSetDAO():
     def store_global_word_frequency_vector(self, global_wf_vector):
         """
         Store global word frequency vector in descending order.
+
+        @param global_wf_vector: global word frequency vector to be stored
         """
 
         global_wf_vector = Counter(global_wf_vector)
@@ -78,6 +97,8 @@ class WordFrequencyMongoSetDAO():
     def store_user_word_frequency_vector(self, user_wf_vector):
         """
         Store user word frequency vector in descending order.
+
+        @param user_wf_vector: word frequency vector of specific users to be stored
         """
 
         for user in user_wf_vector:
@@ -105,6 +126,8 @@ class WordFrequencyMongoSetDAO():
     def store_relative_user_word_frequency_vector(self, relative_user_wf_vector):
         """
         Store relative user word frequency vector in descending order.
+
+        @param relative_user_wf_vector: list of relative word frequency of specific users
         """
 
         for user in relative_user_wf_vector:
