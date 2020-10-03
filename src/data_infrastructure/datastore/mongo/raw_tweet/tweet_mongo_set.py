@@ -1,11 +1,28 @@
 from src.shared.utils import get_unique_list
 
 class TweetMongoSetDAO():
+    """
+    A class that stores tweet data collection from MongoDB.
+
+    @private 
+        global__tweet_collection: list of global processed tweet data
+        user_tweet_collection: list of processed tweet collection for each users
+    """
     def __init__(self):
+        """
+        Initialize a new TweetMongoSetDAO class.
+        """
         self.global_tweet_collection = None
         self.user_tweet_collection = None
 
     def store_tweet_by_user(self, user, tweets, retweets):
+        """
+        Store user processed tweets into the database.
+
+        @param user: specific users
+        @param tweets: tweets of the users
+        @param retweets: retweets of the users
+        """
         user_doc = self.user_tweet_collection.find_one({
             'user': user
         })
@@ -28,6 +45,11 @@ class TweetMongoSetDAO():
             }) 
 
     def store_random_tweet(self, tweet):
+        """
+        Store global random tweets.
+
+        @param tweet: a list of global random tweets
+        """
         if tweet:
             self.global_tweet_collection.insert_one({
                 'text': tweet['text']
