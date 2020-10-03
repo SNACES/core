@@ -2,14 +2,25 @@ import functools
 import datetime
 
 from typing import Union, List
+from src.model.raw_tweet import RawTweet
 
-"""
-Download Tweets for use in future algorithms.
-"""
 class TwitterTweetDownloader():
-    def gen_user_tweets(self, id: Union[str, int], tweepy_getter, tweet_setter, num_tweets=None, start_date=None, end_date=None) -> list:
+    """
+    Download Tweets for use in future algorithms.
+    """
+
+    def gen_user_tweets(self, id: Union[str, int], tweepy_getter, tweet_setter, num_tweets=None, start_date=None, end_date=None) -> List[RawTweet]:
         """
-        Return num_tweets tweets/retweets made by user with id(username or user id) id.
+        Retrieves tweets from twitter from a given user, and stores them
+
+        @param id the id or username of the user
+        @param tweepy_getter the dao to retrieve tweets from tweepy
+        @param tweept_setter the dao to store tweets with
+        @param num_tweets the number of tweets to retrieve
+        @param start_date - Optional, the earliest date to pull tweets from
+        @param end_date - Optional, the end date to pull tweets from
+
+        @return a list of Tweets
         """
         if start_date and end_date:
             tweets, retweets = tweepy_getter.get_tweets_by_user(id, num_tweets, start_date, end_date)
@@ -27,21 +38,35 @@ class TwitterTweetDownloader():
 
     #     tweets, retweets = get_dao.get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
     #     set_dao.store_tweet_by_user(id, tweets, retweets)
-    
-    def gen_random_tweet(self, tweepy_getter, tweet_setter):
+
+    def gen_random_tweet(self, tweepy_getter, tweet_setter) -> RawTweet:
+        """
+        Retrieves a random tweet from Twitter
+
+        @param tweepy_getter the dao to retrieve tweets from tweepy
+        @param tweet_setter the dao to store the raw tweet in
+
+        @return the random tweet
+        """
         tweet = tweepy_getter.get_random_tweet()
         tweet_setter.store_random_tweet(tweet)
 
         return tweet
 
-
-"""
-Download Twitter Friends for use in future algorithms.
-"""
 class TwitterFriendsDownloader():
-    def gen_friends_by_screen_name(self, screen_name: str, tweepy_getter, user_friends_setter, num_friends=None) -> list:
+    """
+    Download Twitter Friends for use in future algorithms.
+    """
+    def gen_friends_by_screen_name(self, screen_name: str, tweepy_getter, user_friends_setter, num_friends=None) -> List[str]:
         """
-        Return a list of screen_names of friends of user with screen name screen_name.
+        Retrieves a list of screen_names of friends for the user with the given screen name
+
+        @param screen_name the screen name of the user to query on
+        @param tweepy_getter the getter to access twitter with
+        @param user_friends_setter the dao to store the output
+        @param num_friends Optional - if specified, the maximum number of friends to retrieve
+
+        @return a list of screen names of users
         """
 
         assert type(screen_name) == str
@@ -51,9 +76,16 @@ class TwitterFriendsDownloader():
 
         return friends
 
-    def gen_friends_by_id(self, id: int, tweepy_getter, user_friends_setter, num_friends=None) -> list:
+    def gen_friends_by_id(self, id: int, tweepy_getter, user_friends_setter, num_friends=None) -> List[int]:
         """
-        Return a list of ids of friends of user with id id.
+        Retrieves a list of ids of friends for the user with the given id
+
+        @param id the id of the user to query on
+        @param tweepy_getter the getter to access twitter with
+        @param user_friends_setter the dao to store the output in
+        @param num_friends Optional - if specified, the maximum number of friends to retreive
+
+        @return a list of ids of users friends with the given user
         """
 
         assert type(id) == int
@@ -63,7 +95,12 @@ class TwitterFriendsDownloader():
 
     def gen_user_local_neighborhood(self, user: str, tweepy_getter, user_friends_getter, user_friends_setter):
         """
-        Note that user refers to screen name.
+        Gets and stores friends, as well as friends of friends for a given user
+
+        @param user the screen name of the user to build the network for
+        @param tweepy_getter the dao to access twitter with
+        @param user_friends_getter the dao to access the given users friends with
+        @param user_friends_setter the dao to store the local network in
         """
         user_friends_list = user_friends_getter.get_friends_by_name(user)
         if not user_friends_list:
@@ -74,18 +111,38 @@ class TwitterFriendsDownloader():
             if not friend_friends_list:
                 self.gen_friends_by_screen_name(friend, tweepy_getter, user_friends_setter, 5)
 
-
-"""
-Download Twitter Followers for use in future algorithms.
-"""
 class TwitterFollowersDownloader():
-    def gen_followers_by_screen_name(self, screen_name: str, tweepy_getter, user_followers_setter, num_followers=None) -> list:
+    """
+    Download Twitter Followers for use in future algorithms.
+    """
+    
+    def gen_followers_by_screen_name(self, screen_name: str, tweepy_getter, user_followers_setter, num_followers=None) -> List[str]:
+        """
+        Gets a list of followers of a user by screen name
+
+        @param screen_name the screen name of the user to search for
+        @param tweepy_getter the dao to access twitter with
+        @param user_followers_setter the dao to store the users followers in
+        @param num_followers the maximum number of followers to retrieve
+
+        @return a list of screen names of followers for the given user
+        """
         assert type(screen_name) == str
 
         followers_users_screen_name = tweepy_getter.get_followers_by_screen_name(screen_name, num_followers)
         user_followers_setter.store_followers_by_screen_name(screen_name, followers_users_screen_name)
 
-    def gen_followers_by_id(self, id: int, tweepy_getter, user_followers_setter, num_followers=None) -> list:
+    def gen_followers_by_id(self, id: int, tweepy_getter, user_followers_setter, num_followers=None) -> List[int]:
+        """
+        Gets a list of followers of a user by id
+
+        @param id the id of the user to query on
+        @param tweepy_getter the dao to access twitter with
+        @param user_followers_setter the dao to store twitter followers in
+        @param num_followers the maximum number of followers to retrieve
+
+        @return a list of ids of followers for the given user
+        """
         assert type(id) == int
 
         followers_users_ID = tweepy_getter.get_followers_by_id(id, num_followers)
