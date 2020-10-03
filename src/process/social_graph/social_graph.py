@@ -1,18 +1,32 @@
 import networkx as nx
 
 class SocialGraph():
-    def gen_user_friends_graph(self, user, user_friends_getter, social_graph_setter):
+    """
+    Creates a graph of twitter friends representing a community
+    """
+
+    def gen_user_friends_graph(self, user: str, user_friends_getter, social_graph_setter):
+        """
+        Generates a user friends graph for a given user
+
+        @param user the user to generate the graph for
+        @param user_friends_getter the dao to retrieve the given users friends from
+        @param social_graph_setter the dao to store the computed social graph
+        """
         user_friends_graph = self.get_user_friends_graph(user, user_friends_getter)
         social_graph_setter.store_user_friends_graph(user, user_friends_graph)
 
         return user_friends_graph
 
-    def get_user_friends_graph(self, user: str, user_friends_getter) -> None:
+    def get_user_friends_graph(self, user: str, user_friends_getter) -> nx.Graph:
         """
-        Return the local graph with the local neighborhood of the given user.
+        Constructs the social graph of a given user, assuming that the users local 
+        neighbourhood has already been stored, and is accessible from user_friends_getter
         
-        Precondition: users in local neightborhood of given user are accessible 
-        through the user_friends_getter
+        @param user the user to generate the graph for
+        @param user_friends_getter the dao to retrieve the user's friends from
+
+        @return the social graph of the user's local neighbourhood
         """
         graph = nx.Graph()
         user_friends_list = user_friends_getter.get_friends_by_name(user)
