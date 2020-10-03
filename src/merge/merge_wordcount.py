@@ -1,16 +1,13 @@
 from pymongo import MongoClient
-from show_wordcount import wordcount
 
 
-def merge(dict1, dict2, wordcount1, wordcount2):
-    total_wordcount = wordcount1 + wordcount2
+def merge(dict1, dict2):
     for item in dict2.keys():
         if item in dict1:
-            dict1[item] = (dict1[item]*wordcount1 + dict2[item]*wordcount2) / total_wordcount
+            dict1[item] += dict2[item]
         else:
-            dict1[item] = dict2[item] * wordcount1 / total_wordcount
+            dict1[item] = dict2[item]
     return dict1
-
 
 
 if __name__ == "__main__":
@@ -19,7 +16,7 @@ if __name__ == "__main__":
     orig_db_name = "WordFrequency"
 
     #input dada collection
-    collection_name = "GlobalWordFrequency"
+    collection_name = "GlobalWordCount"
 
     #location in MongoDB
     client = MongoClient('mongodb://localhost:27017')
@@ -34,12 +31,8 @@ if __name__ == "__main__":
     new_wf = new_collection.find_one()
     orig_wf = orig_collection.find_one()
 
-    #wordcount
-    new_wordcount = wordcount(new_db_name)
-    orig_wordcount = wordcount(orig_db_name)
-
     #merge
-    merge_wf = merge(new_wf, orig_wf, new_wordcount, orig_wordcount)
+    merge_wf = merge(new_wf, orig_wf)
 
     #insert
     new_collection.insert_one(merge_wf)
