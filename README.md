@@ -30,8 +30,8 @@ you will get four keys: `consumer key`, `consumer secret`, `access token`, and
 1. The main program can be started by running `python ./SNACES.py`.
 1. This will trigger the main program to loop, which will then prompt you
 to input options for which process to trigger:
- 1. `Download` downloads information from twitter
- 1. `Raw Tweet Processing` processes raw tweets
- 1. `Word Frequency` performs word frequency operations on collected data
- 1. `Social Graph` constructs a social graph from downloaded friends
- 1. `Clustering` performs clustering algorithms on data
+   1. `Download` downloads information from twitter
+   1. `Raw Tweet Processing` processes raw tweets
+   1. `Word Frequency` performs word frequency operations on collected data
+   1. `Social Graph` constructs a social graph from downloaded friends
+   1. `Clustering` performs clustering algorithms on data

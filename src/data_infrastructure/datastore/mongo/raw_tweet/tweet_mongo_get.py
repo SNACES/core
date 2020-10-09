@@ -1,15 +1,27 @@
 # lazy mode: tweets should have field that indicates processed or not
 # lazy mode only returns tweets that have yet to be processed
 class TweetMongoGetDAO:
+    """
+    A class that gets processed tweet data collection from MongoDB.
+
+    @private 
+        global_tweet_collection: list of global tweet data
+        user_tweet_collection: list of tweet collection for each users
+    """
     def __init__(self):
+        """
+        Initialize a new TweetMongoGetDAO class.
+        """
         self.global_tweet_collection = None
         self.user_tweet_collection = None
     
     def get_global_tweets(self, lazy=True):
         """
-        Return unprocessed global tweets when lazy mode is toggled, 
-        else return all global tweets in database.
-        Format: [tweet text]
+        Generate a list of all words from tweets in the global tweets collection.
+        Input database doc if of format: [tweet text]
+
+        @param lazy: update the flag of data from uncounted to iscounted, if lazy is True
+        @return: list of global tweet word count
         """
 
         global_tweets = []
@@ -29,9 +41,11 @@ class TweetMongoGetDAO:
 
     def get_user_tweets(self, get_retweets=False, lazy=True):
         """
-        Return unprocessed user tweets when lazy mode is toggled, 
-        else return all user tweets in database. Get retweets if get_tweets is toggled.
-        Format: {user: [tweet text]}
+        Return for each user in a list of all words from tweets in the user tweets collection.
+        Input database doc format: {user: [tweet text]}
+        
+        @lazy: update the flag of data from uncounted to iscounted, if lazy is True
+        @return: list of global tweet word count for each user, with output format: {user: [words]}
         """
         
         user_to_tweets = {}
