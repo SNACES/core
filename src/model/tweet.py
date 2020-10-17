@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Optional, Dict
+from typing import Union, Optional
 import json
 
 class Tweet:
