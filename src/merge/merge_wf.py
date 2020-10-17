@@ -31,8 +31,8 @@ if __name__ == "__main__":
     new_collection = new_db[collection_name]
     orig_collection = orig_db[collection_name]
 
-    new_wf = new_collection.find_one()
-    orig_wf = orig_collection.find_one()
+    new_wf = new_collection.find_one({}, {'_id': 0})
+    orig_wf = orig_collection.find_one({}, {'_id': 0})
 
     #wordcount
     new_wordcount = wordcount(new_db_name)
@@ -42,4 +42,4 @@ if __name__ == "__main__":
     merge_wf = merge(new_wf, orig_wf, new_wordcount, orig_wordcount)
 
     #insert
-    new_collection.insert_one(merge_wf)
+    new_collection.replace_one({},merge_wf)
