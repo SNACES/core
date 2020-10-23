@@ -2,14 +2,14 @@ import functools
 import datetime
 
 from typing import Union, List
-from src.model.raw_tweet import RawTweet
+from src.model.tweet import Tweet
 
 class TwitterTweetDownloader():
     """
     Download Tweets for use in future algorithms.
     """
 
-    def gen_user_tweets(self, id: Union[str, int], tweepy_getter, tweet_setter, num_tweets=None, start_date=None, end_date=None) -> List[RawTweet]:
+    def gen_user_tweets(self, id: Union[str, int], tweepy_getter, tweet_setter, num_tweets=None, start_date=None, end_date=None) -> List[Tweet]:
         """
         Retrieves tweets from twitter from a given user, and stores them
 
@@ -39,7 +39,7 @@ class TwitterTweetDownloader():
     #     tweets, retweets = get_dao.get_tweets_by_timeframe_user(id, start_date, end_date, num_tweets)
     #     set_dao.store_tweet_by_user(id, tweets, retweets)
 
-    def gen_random_tweet(self, tweepy_getter, tweet_setter) -> RawTweet:
+    def gen_random_tweet(self, tweepy_getter, tweet_setter) -> Tweet:
         """
         Retrieves a random tweet from Twitter
 
@@ -115,7 +115,7 @@ class TwitterFollowersDownloader():
     """
     Download Twitter Followers for use in future algorithms.
     """
-    
+
     def gen_followers_by_screen_name(self, screen_name: str, tweepy_getter, user_followers_setter, num_followers=None) -> List[str]:
         """
         Gets a list of followers of a user by screen name
