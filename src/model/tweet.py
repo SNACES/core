@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import Union, Optional
 import json
 
@@ -9,7 +8,7 @@ class Tweet:
     def __init__(self, id: int, user_id: int, created_at: str, text: str,
             lang: str, retweet_id: Optional[int],
             retweet_user_id: Optional[int], quote_id: Optional[int],
-            quote_user_id: Optional[int]) -> Tweet:
+            quote_user_id: Optional[int]):
         """
         Default constructor for a tweet
 
@@ -47,7 +46,7 @@ class Tweet:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True,
             indent=4)
 
-    def fromJSON(json_in: str) -> Tweet:
+    def fromJSON(json_in: str):
         """
         Given a json representation of a tweet, returns the tweet object
 
@@ -69,7 +68,7 @@ class Tweet:
 
         return tweet
 
-    def fromTweepyJSON(json_in: Dict) -> Tweet:
+    def fromTweepyJSON(json_in: Dict):
         """
         Given a json representation of a tweet returned by Tweepy, returns the
         tweet object

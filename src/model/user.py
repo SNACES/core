@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 class User:
     """
     A class that represents a twitter user
@@ -7,7 +5,7 @@ class User:
     def __init__(self, id: int, screen_name: str, name: str, created_at: str,
             followers_count: int, friends_count: int, listed_count: int,
             favourites_count: int, statuses_count: int, default_profile: bool,
-            default_profile_image: bool) -> User:
+            default_profile_image: bool):
         """
         Constructor for a User object
 
