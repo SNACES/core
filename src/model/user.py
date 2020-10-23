@@ -36,7 +36,7 @@ class User:
         self.default_profile = default_profile
         self.default_profile_image = default_profile_image
 
-    def toJSON(self: User) -> str:
+    def toJSON(self) -> str:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True,
             indent=4)
 

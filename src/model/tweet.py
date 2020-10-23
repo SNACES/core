@@ -37,7 +37,7 @@ class Tweet:
         self.quote_id = quote_id
         self.quote_user_id = quote_user_id
 
-    def toJSON(self: Tweet) -> str:
+    def toJSON(self) -> str:
         """
         Returns a json corresponding to the given tweet object
 
