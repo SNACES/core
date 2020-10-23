@@ -1,7 +1,7 @@
 import nltk
 import re
 import datetime
-from src.model.raw_tweet import RawTweet
+from src.model.tweet import Tweet
 # from src.model.processed_tweet import ProcessedTweet
 
 class RawTweetProcessor():
@@ -42,7 +42,7 @@ class RawTweetProcessor():
         processed_tweet_setter.store_user_processed_tweets(user_to_processed_tweet_list)
         tweet_setter.update_user_tweet_state()
 
-    def _process_tweet_text(self, tweet: RawTweet): # -> ProcessedTweet:
+    def _process_tweet_text(self, tweet: Tweet): # -> ProcessedTweet:
         """
         Processes a given tweet
 
