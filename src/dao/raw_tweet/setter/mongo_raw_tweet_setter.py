@@ -13,6 +13,10 @@ class MongoRawTweetSetter(RawTweetSetter):
     def set_tweet_collection(self, tweet_collection: str) -> None:
         self.tweet_collection = tweet_collection
 
+    def store_tweets(self, tweets: List[Tweet]) -> None:
+        for tweet in tweets:
+            self.store_tweet(tweet)
+
     def store_tweet(self, tweet):
         if self._contains_tweet(tweet):
             # TODO: decide if this should be an exception

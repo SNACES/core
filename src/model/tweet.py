@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Dict, Union, Optional
 import json
 
 class Tweet:
@@ -82,6 +82,7 @@ class Tweet:
         created_at = json_in.get("created_at")
         text = json_in.get("text")
         lang = json_in.get("lang")
+
         retweet_id = json_in.get("retweeted_status").get("id") \
             if json_in.get("retweeted_status") is not None \
             else None
@@ -92,11 +93,12 @@ class Tweet:
             if json_in.get("quoted_status") is not None \
             else None
         quote_user_id = json_in.get("quoted_status").get("user").get("id") \
-            if json_in.get("retweeted_status") is not None \
+            if json_in.get("quoted_status") is not None \
             else None
 
-        return Tweet(id, user_id, created_at, text, lang, retweet_id,
-            retweet_user_id, quote_id, quote_user_id)
+        return Tweet(id=id, user_id=user_id, created_at=created_at, text=text,
+            lang=lang, retweet_id=retweet_id, retweet_user_id=retweet_user_id,
+            quote_id=quote_id, quote_user_id=quote_user_id)
 
 
 

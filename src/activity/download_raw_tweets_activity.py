@@ -4,7 +4,7 @@ from src.dao.raw_tweet.setter.mongo_raw_tweet_setter import MongoRawTweetSetter
 from src.process.download.tweet_downloader import TwitterTweetDownloader
 from typing import Dict
 
-class DownloadUserTweetsActivity():
+class DownloadTweetsActivity():
     def __init__(self, config: Dict):
         self.tweet_downloader = None
         self.configure(config)
@@ -18,7 +18,9 @@ class DownloadUserTweetsActivity():
 
             raw_tweet_setter.set_tweet_collection(collection)
 
-            self.tweet_downloader = TwitterTweetDownloader(tweepy_getter, raw_tweet_setter)
+            self.tweet_downloader = TwitterTweetDownloader(
+                tweepy_getter,
+                raw_tweet_setter)
 
-    def download_random_tweet(self):
-        self.tweet_downloader.download_random_tweet()
+    def stream_random_tweets(self, num_tweets):
+        self.tweet_downloader.stream_random_tweets(num_tweets=num_tweets)
