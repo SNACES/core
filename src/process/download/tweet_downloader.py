@@ -1,3 +1,4 @@
+import time
 import functools
 import datetime
 from typing import Union, List
@@ -7,17 +8,23 @@ from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
 
 class TwitterTweetDownloader():
     """
-    Downloads a twitter tweet downloader 
+    Downloads a twitter tweet downloader
     """
 
     def __init__(self, tweepy_getter: TweepyTwitterGetter, raw_tweet_setter: RawTweetSetter):
         self.tweepy_getter = tweepy_getter
         self.raw_tweet_setter = raw_tweet_setter
 
-    def download_random_tweet(self) -> None:
-        """
-        Retrieves a random tweet from Twitter, and stores it in using its
-        tweet dao
-        """
-        tweet = self.tweepy_getter.get_random_tweet()
-        self.raw_tweet_setter.store_tweet(tweet)
+    def stream_random_tweets(self, num_tweets=1) -> None:
+        subscriber = self.Subscriber(self.raw_tweet_setter)
+        tweets = self.tweepy_getter.stream_tweets(
+            num_tweets=num_tweets,
+            subscriber=subscriber)
+
+    class Subscriber():
+        def __init__(self, raw_tweet_setter: RawTweetSetter):
+            self.raw_tweet_setter = raw_tweet_setter
+
+        def on_status(self, data):
+            tweet = Tweet.fromTweepyJSON(data._json)
+            self.raw_tweet_setter.store_tweet(tweet)
