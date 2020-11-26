@@ -19,7 +19,7 @@ class TwitterTweetDownloader():
         before = self.raw_tweet_setter.get_num_tweets()
         subscriber = self.Subscriber(self.raw_tweet_setter)
         try:
-            tweets = self.tweepy_getter.stream_tweets(
+            self.tweepy_getter.buffered_stream_tweets(
                 num_tweets=num_tweets,
                 subscriber=subscriber)
         except Exception as e:
