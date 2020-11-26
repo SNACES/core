@@ -1,6 +1,6 @@
 from typing import Dict
-from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
-from src.dao.raw_tweet.raw_tweet_factory import RawTweetFactory
+from src.dao.twitter.twitter_dao_factory import TwitterDAOFactory
+from src.dao.raw_tweet.raw_tweet_dao_factory import RawTweetDAOFactory
 from src.process.download.tweet_downloader import TwitterTweetDownloader
 
 class DownloadTweetsActivity():
@@ -14,17 +14,13 @@ class DownloadTweetsActivity():
             input_datastore = config["input-datastore"]
             download_source = input_datastore["Download-Source"]
 
-            twitter_getter = None
-            if download_source["type"] == "Tweepy":
-                twitter_getter = TweepyTwitterGetter()
-            else:
-                raise Exception("Datastore type not supported")
+            twitter_getter = TwitterDAOFactory.create_getter(download_source)
 
             # Configure output datastore
             output_datastore = config["output-datastore"]
             raw_tweets = output_datastore["RawTweets"]
 
-            raw_tweet_setter = RawTweetFactory.create_getter(raw_tweets)
+            raw_tweet_setter = RawTweetDAOFactory.create_getter(raw_tweets)
 
             self.tweet_downloader = TwitterTweetDownloader(
                 twitter_getter,
