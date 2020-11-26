@@ -43,7 +43,7 @@ class BufferedTweepyListener(StreamListener):
             return False
 
     def do_work(self):
-        while self.running:
+        while self.running or not self.q.empty():
             try:
                 data = self.q.get(block=True, timeout=5)
                 if data is not None:
