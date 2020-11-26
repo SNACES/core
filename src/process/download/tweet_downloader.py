@@ -16,10 +16,13 @@ class TwitterTweetDownloader():
         self.raw_tweet_setter = raw_tweet_setter
 
     def stream_random_tweets(self, num_tweets=1) -> None:
+        before = self.raw_tweet_setter.get_num_tweets()
         subscriber = self.Subscriber(self.raw_tweet_setter)
         tweets = self.tweepy_getter.stream_tweets(
             num_tweets=num_tweets,
             subscriber=subscriber)
+        after = self.raw_tweet_setter.get_num_tweets()
+        print("Stored %d tweets" %(after - before))
 
     class Subscriber():
         def __init__(self, raw_tweet_setter: RawTweetSetter):

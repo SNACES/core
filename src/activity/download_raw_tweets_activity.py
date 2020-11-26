@@ -1,8 +1,8 @@
+from typing import Dict
 from src.shared.mongo import get_collection_from_config
 from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
 from src.dao.raw_tweet.setter.mongo_raw_tweet_setter import MongoRawTweetSetter
 from src.process.download.tweet_downloader import TwitterTweetDownloader
-from typing import Dict
 
 class DownloadTweetsActivity():
     def __init__(self, config: Dict):

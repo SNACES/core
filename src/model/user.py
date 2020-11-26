@@ -1,3 +1,6 @@
+from typing import Dict, Union, Optional
+import json
+
 class User:
     """
     A class that represents a twitter user
@@ -35,6 +38,60 @@ class User:
         self.statuses_count = statuses_count
         self.default_profile = default_profile
         self.default_profile_image = default_profile_image
+
+    def fromJSON(json_in: str):
+        """
+        Given a json representation of a tweet, returns the user object
+
+        @param json_in the json to convert to a User
+
+        @return the User object
+        """
+        obj = json.loads(json_in)
+        user = User(
+            obj.get("id"),
+            obj.get("screen_name"),
+            obj.get("name"),
+            obj.get("created_at"),
+            obj.get("followers_count"),
+            obj.get("friends_count"),
+            obj.get("listed_count"),
+            obj.get("favourites_count"),
+            obj.get("statuses_count"),
+            obj.get("default_profile"),
+            obj.get("default_profile_image"))
+
+        return user
+
+    def fromTweepyJSON(json_in: Dict):
+        """
+        Given a json representation of a user returned by Tweepy, returns the
+        user object
+
+        @param json_in the json to convert to a User
+
+        @return the User object
+        """
+        id = json_in.get("id")
+        screen_name = json_in.get("screen_name")
+        name = json_in.get("name")
+        created_at = json_in.get("created_at")
+        followers_count = json_in.get("followers_count")
+        friends_count = json_in.get("friends_count")
+        listed_count = json_in.get("listed_count")
+        favourites_count = json_in.get("favourites_count")
+        statuses_count = json_in.get("statuses_count")
+        default_profile = json_in.get("default_profile")
+        default_profile_image = json_in.get("default_profile_image")
+
+        user = User(id=id, name=name, screen_name=screen_name,
+            created_at=created_at, followers_count=followers_count,
+            friends_count=friends_count, listed_count=listed_count,
+            favourites_count=favourites_count, statuses_count=statuses_count,
+            default_profile=default_profile,
+            default_profile_image=default_profile_image)
+
+        return user
 
     def toJSON(self) -> str:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True,

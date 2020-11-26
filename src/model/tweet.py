@@ -5,7 +5,7 @@ class Tweet:
     """
     A class to represent a tweet
     """
-    def __init__(self, id: int, user_id: int, created_at: str, text: str,
+    def __init__(self, id: str, user_id: str, created_at: str, text: str,
             lang: str, retweet_id: Optional[int],
             retweet_user_id: Optional[int], quote_id: Optional[int],
             quote_user_id: Optional[int]):
@@ -68,6 +68,13 @@ class Tweet:
 
         return tweet
 
+    def fromDict(dict: Dict):
+        tweet = Tweet(dict["id"], dict["user_id"], dict["created_at"],
+            dict["text"], dict["lang"], dict["retweet_id"],
+            dict["retweet_user_id"], dict["quote_id"], dict["quote_user_id"])
+
+        return tweet
+
     def fromTweepyJSON(json_in: Dict):
         """
         Given a json representation of a tweet returned by Tweepy, returns the
@@ -96,11 +103,11 @@ class Tweet:
             if json_in.get("quoted_status") is not None \
             else None
 
-        return Tweet(id=id, user_id=user_id, created_at=created_at, text=text,
+        tweet = Tweet(id=id, user_id=user_id, created_at=created_at, text=text,
             lang=lang, retweet_id=retweet_id, retweet_user_id=retweet_user_id,
             quote_id=quote_id, quote_user_id=quote_user_id)
 
-
+        return tweet
 
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):

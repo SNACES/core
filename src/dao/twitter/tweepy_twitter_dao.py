@@ -19,7 +19,7 @@ class TweepyListener(StreamListener):
         self.subscriber.on_status(data)
         self.counter += 1
 
-        return self.counter <= self.limit
+        return self.counter < self.limit
 
 class TwitterAuthenticator():
     def authenticate(self):
@@ -50,8 +50,20 @@ class TweepyTwitterGetter():
         stream.filter(languages=["en"])
         stream.sample()
 
+    def get_tweets_by_screen_name(self, screen_name: str, num_tweets=0):
+        user = self.get_user_by_screen_name(screen_name)
+
+        return self.get_tweets_by_user_id(user.id)
+
+    def get_tweets_by_user_id(self, user_id, num_tweets=0):
+        tweets = [Tweet.fromTweepyJSON(data._json)
+            for data
+            in Cursor(self.twitter_api.user_timeline, user_id=user_id).items(limit=num_tweets)]
+
+        return tweets
+
     def get_user_by_id(self, user_id: str) -> User:
-        tweepy_user = api.get_user(user_id=user_id)
+        tweepy_user = self.twitter_api.get_user(user_id=user_id)
 
         if tweepy_user is not None:
             user = User.fromTweepyJSON(tweepy_user._json)
@@ -59,11 +71,11 @@ class TweepyTwitterGetter():
 
         return None
 
-    def get_user_by_user_id_list(self, user_id_list: List[str]) -> List[User]:
-        return [self.get_user_by_id(user_id) for user_id in user_id_list]
+    def get_users_by_user_id_list(self, user_id_list: List[str]) -> List[User]:
+        return [self.get_users_by_id(user_id) for user_id in user_id_list]
 
     def get_user_by_screen_name(self, screen_name: str) -> User:
-        tweepy_user = api.get_user(screen_name=screen_name)
+        tweepy_user = self.twitter_api.get_user(screen_name=screen_name)
 
         if tweepy_user is not None:
             user = User.fromTweepyJSON(tweepy_user._json)
@@ -71,14 +83,31 @@ class TweepyTwitterGetter():
 
         return None
 
-    def get_friends_by_user(self, user: User, num_friends=0) -> List[User]:
-        user_id = user.id
+    def get_friends_users_by_screen_name(self, screen_name: str, num_friends=0) -> List[User]:
+        user = self.get_user_by_screen_name(screen_name)
+
+        return self.get_friends_users_by_user_id(user.id, num_friends=num_friends)
+
+    def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> List[User]:
+        friends_tweepy_users = [user for user in Cursor(self.twitter_api.friends, user_id=user_id).items(limit=num_friends)]
+        friends_users = [User.fromTweepyJSON(tweepy_user._json) for tweepy_user in friends_tweepy_users]
+
+        return user_id, friends_users
+
+    def get_friends_ids_by_screen_name(self, screen_name: str, num_friends=0) -> List[str]:
+        user = self.get_user_by_screen_name(screen_name)
+        return self.get_friends_ids_by_user_id(user.id, num_friends=num_friends)
+
+    def get_friends_ids_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
         friends_user_ids = [follower_id for follower_id in Cursor(self.twitter_api.friends_ids, user_id=user_id).items(limit=num_friends)]
 
-        return friends_user_ids
+        return user_id, friends_user_ids
 
-    def get_followers_by_id(self, user: User, num_followers=0) -> List[User]:
-        user_id = user.id
-        followers_user_ids = [friend_id for friend_id in Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_friends)]
+    def get_followers_ids_by_id(self, user_id: str, num_followers=0) -> List[User]:
+        followers_user_ids = [friend_id for friend_id in Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_followers)]
 
-        return followers_user_ids
+        return user_id, followers_user_ids
+
+    def get_followers_ids_by_screen_name(self, screen_name: str, num_followers=0) -> List[User]:
+        user = self.get_user_by_screen_name(screen_name)
+        return self.get_followers_by_id(user.id, num_followers=num_followers)
