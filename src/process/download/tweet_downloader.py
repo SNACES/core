@@ -22,7 +22,7 @@ class TwitterTweetDownloader():
             tweets = self.tweepy_getter.stream_tweets(
                 num_tweets=num_tweets,
                 subscriber=subscriber)
-        except Error as e:
+        except Exception as e:
             after = self.raw_tweet_setter.get_num_tweets()
             print("Stored only %d tweets" %(after - before))
             raise e
