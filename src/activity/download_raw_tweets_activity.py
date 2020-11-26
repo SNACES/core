@@ -1,7 +1,6 @@
 from typing import Dict
-from src.shared.mongo import get_collection_from_config
 from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
-from src.dao.raw_tweet.setter.mongo_raw_tweet_setter import MongoRawTweetSetter
+from src.dao.raw_tweet.raw_tweet_factory import RawTweetFactory
 from src.process.download.tweet_downloader import TwitterTweetDownloader
 
 class DownloadTweetsActivity():
@@ -11,15 +10,24 @@ class DownloadTweetsActivity():
 
     def configure(self, config: Dict):
         if config is not None:
-            tweepy_getter = TweepyTwitterGetter()
-            raw_tweet_setter = MongoRawTweetSetter()
+            # Configure input datastore
+            input_datastore = config["input-datastore"]
+            download_source = input_datastore["Download-Source"]
 
-            collection = get_collection_from_config(config)
+            twitter_getter = None
+            if download_source["type"] == "Tweepy":
+                twitter_getter = TweepyTwitterGetter()
+            else:
+                raise Exception("Datastore type not supported")
 
-            raw_tweet_setter.set_tweet_collection(collection)
+            # Configure output datastore
+            output_datastore = config["output-datastore"]
+            raw_tweets = output_datastore["RawTweets"]
+
+            raw_tweet_setter = RawTweetFactory.create_getter(raw_tweets)
 
             self.tweet_downloader = TwitterTweetDownloader(
-                tweepy_getter,
+                twitter_getter,
                 raw_tweet_setter)
 
     def stream_random_tweets(self, num_tweets):
