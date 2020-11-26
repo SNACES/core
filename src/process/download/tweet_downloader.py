@@ -18,9 +18,15 @@ class TwitterTweetDownloader():
     def stream_random_tweets(self, num_tweets=1) -> None:
         before = self.raw_tweet_setter.get_num_tweets()
         subscriber = self.Subscriber(self.raw_tweet_setter)
-        tweets = self.tweepy_getter.stream_tweets(
-            num_tweets=num_tweets,
-            subscriber=subscriber)
+        try:
+            tweets = self.tweepy_getter.stream_tweets(
+                num_tweets=num_tweets,
+                subscriber=subscriber)
+        except Error as e:
+            after = self.raw_tweet_setter.get_num_tweets()
+            print("Stored only %d tweets" %(after - before))
+            raise e
+
         after = self.raw_tweet_setter.get_num_tweets()
         print("Stored %d tweets" %(after - before))
 
