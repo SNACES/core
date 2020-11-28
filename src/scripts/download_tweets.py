@@ -6,7 +6,7 @@ from src.shared.utils import get_project_root
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/download_tweets_config.yaml"
 
-def download_tweets(num, path=DEFAULT_PATH):
+def download_tweets(num: int, path=DEFAULT_PATH):
     config = parse_from_file(path)
 
     activity = DownloadTweetsActivity(config)

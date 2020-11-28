@@ -20,6 +20,9 @@ class TwitterGetter():
     def get_friends_ids_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
         raise NotImplementedError("Subclasses should implement this")
 
+    def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
+        raise NotImplementedError("Subclasses should implement this")
+
     def get_followers_ids_by_id(self, user_id: str, num_followers=0) -> List[User]:
         raise NotImplementedError("Subclasses should implement this")
 
@@ -40,5 +43,8 @@ class TwitterGetter():
 
     def get_friends_users_by_screen_name(self, screen_name: str, num_friends=0) -> List[User]:
         user = self.get_user_by_screen_name(screen_name)
-
         return self.get_friends_users_by_user_id(user.id, num_friends=num_friends)
+
+    def get_followers_users_by_screen_name(self, screen_name: str, num_followers=0) -> List[User]:
+        user = self.get_user_by_screen_name(screen_name)
+        return self.get_followers_users_by_id(user.id, num_followers=num_followers)
