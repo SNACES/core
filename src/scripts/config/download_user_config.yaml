@@ -3,7 +3,7 @@ input-datastore:
         type: "Tweepy"
         config: ~
 output-datastore:
-    RawTweets:
+    Users:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
