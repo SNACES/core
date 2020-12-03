@@ -1,0 +1,11 @@
+input-datastore:
+    Download-Source:
+        type: "Tweepy"
+        config: ~
+output-datastore:
+    UserTweets:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserTweets"

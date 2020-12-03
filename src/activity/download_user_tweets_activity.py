@@ -1,7 +1,7 @@
 from typing import Dict
 from src.shared.mongo import get_collection_from_config
-from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
-from src.dao.raw_tweet.setter.mongo_raw_tweet_setter import MongoRawTweetSetter
+from src.dao.twitter.twitter_dao_factory import TwitterDAOFactory
+from src.dao.raw_tweet.raw_tweet_dao_factory import RawTweetDAOFactory
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 
 class DownloadUserTweetsActivity():
@@ -11,15 +11,20 @@ class DownloadUserTweetsActivity():
 
     def configure(self, config: Dict):
         if config is not None:
-            tweepy_getter = TweepyTwitterGetter()
-            raw_tweet_setter = MongoRawTweetSetter()
+            # Configure input datastore
+            input_datastore = config["input-datastore"]
+            download_source = input_datastore["Download-Source"]
 
-            collection = get_collection_from_config(config)
+            twitter_getter = TwitterDAOFactory.create_getter(download_source)
 
-            raw_tweet_setter.set_tweet_collection(collection)
+            # Configure output datastore
+            output_datastore = config["output-datastore"]
+            user_tweets = output_datastore["UserTweets"]
+
+            raw_tweet_setter = RawTweetDAOFactory.create_setter(user_tweets)
 
             self.user_tweet_downloader = UserTweetDownloader(
-                tweepy_getter,
+                twitter_getter,
                 raw_tweet_setter)
 
     def download_user_tweets_by_user_id(self, user_id: str):
