@@ -26,6 +26,8 @@ class SocialGraph():
 
         social_graph = SocialGraph(graph, seed_id, params)
 
+        return social_graph
+
     def toBSON(self):
         bson = {
             "seed_id": bson.int64.Int64(self.seed_id),

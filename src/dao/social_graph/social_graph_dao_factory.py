@@ -11,7 +11,7 @@ class SocialGraphDAOFactory():
         social_graph_getter = None
         type = config["type"]
         if type == "Mongo":
-            social_graph_getter = MongoDAOFactory.create_getter(config["config"], MongoSocialGraphSetter)
+            social_graph_getter = MongoDAOFactory.create_getter(config["config"], MongoSocialGraphGetter)
         else:
             raise Excetpion("Datastore type not supported")
 
