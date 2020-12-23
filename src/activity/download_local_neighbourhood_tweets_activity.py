@@ -29,17 +29,18 @@ class DownloadLocalNeighbourhoodTweetsActivity():
             twitter_getter = TwitterDAOFactory.create_getter(download_source)
             local_neighbourhood_getter = LocalNeighbourhoodDAOFactory.create_getter(local_neighbourhood)
 
-            # Configure output datastore
-            output_datastore = config["output-datastore"]
-            user_tweets = output_datastore["UserTweets"]
+            # Configure inout datastore
+            inout_datastore = config["inout-datastore"]
+            user_tweets = inout_datastore["UserTweets"]
 
             raw_tweet_setter = RawTweetDAOFactory.create_setter(user_tweets)
+            raw_tweet_getter = RawTweetDAOFactory.create_getter(user_tweets)
 
             user_tweet_downloader = UserTweetDownloader(
                 twitter_getter,
                 raw_tweet_setter)
 
-            self.local_neighbourhood_tweet_downloader = LocalNeighbourhoodTweetDownloader(user_tweet_downloader, local_neighbourhood_getter)
+            self.local_neighbourhood_tweet_downloader = LocalNeighbourhoodTweetDownloader(user_tweet_downloader, local_neighbourhood_getter, raw_tweet_getter)
 
     def download_local_neighbourhood_tweets_by_user_id(self, user_id: str, params=None):
         self.local_neighbourhood_tweet_downloader.download_user_tweets_by_local_neighbourhood(user_id, params)

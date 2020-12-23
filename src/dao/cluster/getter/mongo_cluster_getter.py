@@ -11,7 +11,7 @@ class MongoClusterGetter():
     def set_collection(self, collection) -> None:
         self.collection = collection
 
-    def get_cluster(self, seed_id: str, params=None):
+    def get_clusters(self, seed_id: str, params=None):
         doc = None
         if params is None:
             doc = self.collection.find_one({"seed_id": bson.int64.Int64(seed_id)})
@@ -20,4 +20,4 @@ class MongoClusterGetter():
                 "seed_id": bson.int64.Int64(seed_id),
                 "params": params})
 
-        return Cluster.fromDict(doc)
+        return [Cluster.fromDict(cluster) for cluster in doc["clusters"]]

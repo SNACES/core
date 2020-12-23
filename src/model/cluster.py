@@ -13,5 +13,10 @@ class Cluster():
             users = [base_user] + users
         self.users = users
 
-    def fromDict():
-        pass
+    def fromDict(dict: Dict):
+        base_user = dict["base_user"]
+        users = dict["users"]
+
+        cluster = Cluster(base_user, users)
+
+        return cluster

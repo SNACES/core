@@ -1,0 +1,13 @@
+input-datastore:
+    Cluster:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Clusters"
+    RawTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserTweets"

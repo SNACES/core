@@ -4,6 +4,7 @@ from src.dao.twitter.twitter_dao_factory import TwitterDAOFactory
 from src.dao.raw_tweet.raw_tweet_dao_factory import RawTweetDAOFactory
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 
+
 class DownloadUserTweetsActivity():
     def __init__(self, config: Dict):
         self.user_tweet_downloader = None

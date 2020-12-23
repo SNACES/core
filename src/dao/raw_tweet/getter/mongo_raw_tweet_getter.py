@@ -4,10 +4,12 @@ from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.raw_tweet.getter.raw_tweet_getter import RawTweetGetter
 
+
 class MongoRawTweetGetter(RawTweetGetter):
     """
     Implementation of TweetGetter that retrieves tweets from MongoDB
     """
+
     def __init__(self):
         self.collection = None
 
@@ -46,12 +48,16 @@ class MongoRawTweetGetter(RawTweetGetter):
         @return a list of tweets by the given user
         """
 
-        tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
+        tweet_doc_list = list(self.collection.find({"user_id": bson.int64.Int64(user_id)}))
+
         if len(tweet_doc_list) > 0:
-            tweets = map(Tweet.fromJSON, tweet_doc_list)
+            tweets = map(Tweet.fromDict, tweet_doc_list)
             return list(tweets)
         else:
             return None
+
+    def contains_tweets_from_user(self, user_id: str):
+        return self.collection.find_one({"user_id": bson.int64.Int64(user_id)}) is not None
 
     def get_num_tweets(self) -> int:
         """
@@ -65,9 +71,10 @@ class MongoRawTweetGetter(RawTweetGetter):
         return self.collection.count({})
 
     def get_retweets_of_user_by_user_id(self, user_id: str) -> List[Tweet]:
-        tweet_doc_list = self.collection.find({"retweet_id": bson.int64.Int64(user_id)})
-        if len(tweet_doc_list) > 0:
-            tweets = map(Tweet.fromJSON, tweet_doc_list)
-            return list(tweets)
-        else:
-            return None
+        retweet_doc_list = self.collection.find({"retweet_user_id": bson.int64.Int64(user_id)})
+
+        retweets = []
+        for doc in retweet_doc_list:
+            retweets.append(Tweet.fromDict(doc))
+
+        return retweets

@@ -4,13 +4,16 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.dao.local_neighbourhood.getter.local_neighbourhood_getter import LocalNeighbourhoodGetter
 
+
 class LocalNeighbourhoodTweetDownloader():
     """
     Download tweets for a local neighbourhood
     """
-    def __init__(self, user_tweet_downloader: UserTweetDownloader, local_neighbourhood_getter: LocalNeighbourhoodGetter):
+
+    def __init__(self, user_tweet_downloader: UserTweetDownloader, local_neighbourhood_getter: LocalNeighbourhoodGetter, raw_tweet_getter):
         self.user_tweet_downloader = user_tweet_downloader
         self.local_neighbourhood_getter = local_neighbourhood_getter
+        self.raw_tweet_getter = raw_tweet_getter
 
     def download_user_tweets_by_local_neighbourhood(self, seed_id: str, params=None):
         print("starting")
@@ -19,4 +22,5 @@ class LocalNeighbourhoodTweetDownloader():
 
         for id in user_ids:
             print(id)
-            self.user_tweet_downloader.download_user_tweets_by_user_id(id)
+            if not self.raw_tweet_getter.contains_tweets_from_user(id):
+                self.user_tweet_downloader.download_user_tweets_by_user_id(id)

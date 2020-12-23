@@ -15,7 +15,7 @@ class MongoClusterSetter(ClusterSetter):
         if self._contains_cluster(seed_id, params):
             pass
         else:
-            self.collection.insert_one({"seed_id": seed_id,
+            self.collection.insert_one({"seed_id": int(seed_id),
                 "params": params,
                 "clusters": [cluster.__dict__ for cluster in clusters]})
 
