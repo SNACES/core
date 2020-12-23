@@ -63,6 +63,15 @@ class User:
 
         return user
 
+    def fromDict(dict: Dict):
+        user = User(dict["id"], dict["screen_name"], dict["name"],
+            dict["created_at"], dict["followers_count"], dict["friends_count"],
+            dict["listed_count"], dict["favourites_count"],
+            dict["statuses_count"], dict["default_profile"],
+            dict["default_profile_image"])
+
+        return user
+
     def fromTweepyJSON(json_in: Dict):
         """
         Given a json representation of a user returned by Tweepy, returns the
