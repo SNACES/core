@@ -1,0 +1,14 @@
+input-datastore:
+    LocalNeighbourhood:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "LocalNeighbourhoods"
+output-datastore:
+    SocialGraph:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "SocialGraphs"
