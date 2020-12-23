@@ -5,11 +5,12 @@ from src.dao.raw_tweet.getter.mongo_raw_tweet_getter import MongoRawTweetGetter
 from src.shared.mongo import get_collection_from_config
 from typing import Dict
 
+
 class RawTweetDAOFactory():
     def create_getter(raw_tweets: Dict) -> RawTweetGetter:
-        raw_tweet_better = None
+        raw_tweet_getter = None
         if raw_tweets["type"] == "Mongo":
-            raw_tweet_better = MongoRawTweetGetter()
+            raw_tweet_getter = MongoRawTweetGetter()
             collection = get_collection_from_config(raw_tweets["config"])
             raw_tweet_getter.set_tweet_collection(collection)
         else:

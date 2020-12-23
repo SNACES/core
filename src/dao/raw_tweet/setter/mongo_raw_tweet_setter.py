@@ -9,20 +9,20 @@ class MongoRawTweetSetter(RawTweetSetter):
     An implementation of RawTweetSetter that stores tweet in a MongoDB collection
     """
     def __init__(self):
-        self.tweet_collection = None
+        self.collection = None
 
     def set_tweet_collection(self, tweet_collection: str) -> None:
-        self.tweet_collection = tweet_collection
+        self.collection = tweet_collection
 
     def store_tweet(self, tweet):
         if self._contains_tweet(tweet):
             # TODO: decide if this should be an exception
             pass
         else:
-            self.tweet_collection.insert_one(tweet.__dict__)
+            self.collection.insert_one(tweet.__dict__)
 
     def _contains_tweet(self, tweet: Tweet) -> bool:
-        return self.tweet_collection.find_one({"id": bson.int64.Int64(tweet.id)}) is not None
+        return self.collection.find_one({"id": bson.int64.Int64(tweet.id)}) is not None
 
     def get_num_tweets(self) -> int:
         """
@@ -33,4 +33,4 @@ class MongoRawTweetSetter(RawTweetSetter):
         # We call count with a blank query {} so that it returns an accurate
         # result, rather than relying on the metadata which gives an approximate
         # result. However this is slower
-        return self.tweet_collection.count({})
+        return self.collection.count({})

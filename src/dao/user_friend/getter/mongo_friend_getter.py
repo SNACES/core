@@ -11,7 +11,7 @@ class MongoFriendGetter(FriendGetter):
         self.friend_collection = friend_collection
 
     def get_user_friends_ids(self, user_id: str) -> List[str]:
-        doc = self.friend_collection.find_one({"id": bson.int64.Int64(user_id)})
+        doc = self.friend_collection.find_one({"user_id": bson.int64.Int64(user_id)})
         if doc is not None:
             return doc["friends_ids"]
         else:

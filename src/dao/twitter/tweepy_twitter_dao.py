@@ -145,6 +145,7 @@ class TweepyTwitterGetter(TwitterGetter):
         return user_id, friends_users
 
     def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
+        # TODO Catch error, and set ids to []
         followers_user_ids = [friend_id for friend_id in Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_followers)]
 
         return user_id, followers_user_ids

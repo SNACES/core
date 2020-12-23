@@ -1,0 +1,21 @@
+from src.dao.social_graph.setter.social_graph_setter import SocialGraphSetter
+from src.model.social_graph.social_graph import SocialGraph
+import bson
+import networkx as nx
+
+
+class MongoSocialGraphSetter(SocialGraphSetter):
+    def __init__(self):
+        self.collection = None
+
+    def set_collection(self, collection) -> None:
+        self.collection = collection
+
+    def store_social_graph(self, social_graph: SocialGraph):
+        if self._contains_social_graph(social_graph):
+            pass
+        else:
+            self.collection.insert_one(social_graph.toBSON())
+
+    def _contains_social_graph(self, social_graph: SocialGraph):
+        return self.collection.find_one({"seed_id": bson.int64.Int64(social_graph.seed_id), "params": social_graph.params}) is not None
