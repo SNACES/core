@@ -1,0 +1,29 @@
+input-datastore:
+  Cluster:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters-David"
+      location: "mongodb://localhost:27017"
+
+  RelativeWordFrequency:
+    type: "Mongo"
+    config:
+      datastore-name: "WordFrequency-David"
+      collection-name: "RelativeUserWordFrequency"
+      location: "mongodb://localhost:27017"
+
+  TopWords:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters-David-Topwords"
+      location: "mongodb://localhost:27017"
+
+output-datastore:
+  TopUsers:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters-David-Topusers"
+      location: "mongodb://localhost:27017"
