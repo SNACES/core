@@ -1,0 +1,22 @@
+input-datastore:
+  User-Friend:
+    type: "Mongo"
+    config:
+      datastore-name: "productionFunction"
+      collection-name: "friends"
+      location: "mongodb://localhost:27017"
+
+  User-WordCount:
+    type: "Mongo"
+    config:
+      datastore-name: "WordFrequency-DavidMadras"
+      collection-name: "UserWordCount"
+      location: "mongodb://localhost:27017"
+
+output-datastore:
+  User-Friend:
+    type: "Mongo"
+    config:
+      datastore-name: "productionFunction"
+      collection-name: "cleanedFriends"
+      location: "mongodb://localhost:27017"
