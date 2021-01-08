@@ -1,20 +1,20 @@
 input-datastore:
-    Cluster:
-        type: "Mongo"
-        config:
-            location: "mongodb://localhost:27017"
-            datastore-name: "Data"
-            collection-name: "Clusters"
-    RawTweet:
+    UserTweet:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "UserTweets"
-output-datastore:
-    Ranking:
+    LocalNeighbourhood:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "Rankings"
+            collection-name: "LocalNeighbourhoods"
+output-datastore:
+    ProcessedTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ProcessedTweets"

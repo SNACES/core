@@ -48,13 +48,13 @@ class MongoRawTweetGetter(RawTweetGetter):
         @return a list of tweets by the given user
         """
 
-        tweet_doc_list = list(self.collection.find({"user_id": bson.int64.Int64(user_id)}))
+        tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
 
-        if len(tweet_doc_list) > 0:
-            tweets = map(Tweet.fromDict, tweet_doc_list)
-            return list(tweets)
-        else:
-            return None
+        tweets = []
+        for doc in tweet_doc_list:
+            tweets.append(Tweet.fromDict(doc))
+
+        return tweets
 
     def contains_tweets_from_user(self, user_id: str):
         return self.collection.find_one({"user_id": bson.int64.Int64(user_id)}) is not None

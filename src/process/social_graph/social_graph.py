@@ -20,9 +20,9 @@ class SocialGraph():
 
     def get_user_friends_graph(self, user: str, user_friends_getter) -> nx.Graph:
         """
-        Constructs the social graph of a given user, assuming that the users local 
+        Constructs the social graph of a given user, assuming that the users local
         neighbourhood has already been stored, and is accessible from user_friends_getter
-        
+
         @param user the user to generate the graph for
         @param user_friends_getter the dao to retrieve the user's friends from
 
@@ -45,17 +45,8 @@ class SocialGraph():
 
                 user1_friends_list = user_friends_getter.get_friends_by_name(user1)
                 user2_friends_list = user_friends_getter.get_friends_by_name(user2)
-            
+
                 if user1 in user2_friends_list and user2 in user1_friends_list:
                     graph.add_edge(li[j], li[i])
 
         return graph
-        
-        # if ratio is not None:
-        #     local = [friend for friend in db.filter_out_bots(db.get_friends(user), START_TIME, END_TIME)] + [user]
-        #     local = db.cut_ratio_users(local, START_TIME, END_TIME, ratio)
-
-        #     original_users = list(self.graph.nodes)
-        #     for user in original_users:
-        #         if user not in local:
-        #             self.graph.remove_node(user)

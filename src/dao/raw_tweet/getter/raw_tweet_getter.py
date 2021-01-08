@@ -2,6 +2,7 @@ from typing import List, Dict
 from src.model.tweet import Tweet
 from src.model.user import User
 
+
 class RawTweetGetter:
     """
     An abstract class representing an object that reads tweets in from a

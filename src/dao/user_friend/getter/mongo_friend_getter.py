@@ -3,6 +3,7 @@ import bson
 from src.model.user import User
 from src.dao.user_friend.getter.friend_getter import FriendGetter
 
+
 class MongoFriendGetter(FriendGetter):
     def __init__(self):
         self.friend_collection = None

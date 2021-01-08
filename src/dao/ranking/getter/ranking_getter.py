@@ -1,0 +1,2 @@
+class RankingGetter():
+    pass

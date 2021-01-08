@@ -1,16 +1,16 @@
+from src.model.ranking import Ranking
+from src.process.ranking.ranker import Ranker
+from typing import List
 
 
-class RetweetsRanker():
-    def __init__(self, cluster_getter, raw_tweet_getter):
+class RetweetsRanker(Ranker):
+    def __init__(self, cluster_getter, raw_tweet_getter, ranking_setter):
         self.cluster_getter = cluster_getter
         self.raw_tweet_getter = raw_tweet_getter
+        self.ranking_setter = ranking_setter
+        self.ranking_function_name = "retweets"
 
-    def rank(self, seed_id, params):
-        clusters = self.cluster_getter.get_clusters(seed_id, params)
-
-        cluster = clusters[0]
-        user_ids = cluster.users
-
+    def score_users(self, user_ids: List[str]):
         scores = {}
         for id in user_ids:
             retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id(id)
@@ -22,7 +22,4 @@ class RetweetsRanker():
 
             scores[id] = count
 
-        ranking = list(sorted(scores, key=scores.get))
-        print(ranking)
-        print(scores)
-        return ranking
+        return scores

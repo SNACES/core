@@ -8,9 +8,11 @@ from tweepy.streaming import StreamListener
 from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.twitter.twitter_dao import TwitterGetter
+from tweepy import TweepError
+
 
 class BufferedTweepyListener(StreamListener):
-    def __init__(self, num_tweets, subscriber, q = Queue()):
+    def __init__(self, num_tweets, subscriber, q=Queue()):
         super().__init__()
 
         self.running = True
@@ -32,7 +34,6 @@ class BufferedTweepyListener(StreamListener):
 
         self.subscriber = subscriber
 
-
     def on_status(self, data):
         self.q.put(data)
         self.counter += 1
@@ -49,9 +50,10 @@ class BufferedTweepyListener(StreamListener):
                 data = self.q.get(block=True, timeout=5)
                 if data is not None:
                     self.subscriber.on_status(data)
-            except Exception as e:
+            except Exception as ex:
                 # Exception is empty exception
                 pass
+
 
 class TweepyListener(StreamListener):
     def __init__(self, num_tweets, subscriber):
@@ -68,6 +70,7 @@ class TweepyListener(StreamListener):
 
         return self.counter < self.limit
 
+
 class TwitterAuthenticator():
     def authenticate(self):
         auth = OAuthHandler(credentials.CONSUMER_KEY,
@@ -76,6 +79,7 @@ class TwitterAuthenticator():
             credentials.ACCESS_TOKEN_SECRET)
 
         return auth
+
 
 class TweepyTwitterGetter(TwitterGetter):
     def __init__(self):
@@ -127,30 +131,54 @@ class TweepyTwitterGetter(TwitterGetter):
         return None
 
     def get_tweets_by_user_id(self, user_id, num_tweets=0):
-        tweets = [Tweet.fromTweepyJSON(data._json)
-            for data
-            in Cursor(self.twitter_api.user_timeline, user_id=user_id).items(limit=num_tweets)]
+        tweets = []
+        try:
+            cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id).items(limit=num_tweets)
+            for data in cursor:
+                tweets.append(Tweet.fromTweepyJSON(data._json))
+        except TweepError as ex:
+            print(ex)
 
         return tweets
 
     def get_friends_ids_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
-        friends_user_ids = [follower_id for follower_id in Cursor(self.twitter_api.friends_ids, user_id=user_id).items(limit=num_friends)]
+        cursor = Cursor(self.twitter_api.friends_ids, user_id=user_id).items(limit=num_friends)
+
+        friends_user_ids = []
+        try:
+            for id in cursor:
+                friends_user_ids.append(id)
+        except Exception as ex:
+            # TODO add handling/logging
+            pass
 
         return user_id, friends_user_ids
 
     def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> List[User]:
-        friends_tweepy_users = [user for user in Cursor(self.twitter_api.friends, user_id=user_id).items(limit=num_friends)]
-        friends_users = [User.fromTweepyJSON(tweepy_user._json) for tweepy_user in friends_tweepy_users]
+        cursor = Cursor(self.twitter_api.friends, user_id=user_id).items(limit=num_friends)
+
+        friends_users = []
+        for tweepy_user in cursor:
+            print(tweepy_user._json.get("id"))
+            friends_users.append(User.fromTweepyJSON(tweepy_user._json))
 
         return user_id, friends_users
 
     def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
         # TODO Catch error, and set ids to []
-        followers_user_ids = [friend_id for friend_id in Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_followers)]
+        cursor = Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_followers)
+
+        followers_user_ids = []
+        for id in cursor:
+            followers_user_ids.append(id)
 
         return user_id, followers_user_ids
 
     def get_followers_users_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
-        followers_users = [follower_id for follower_id in Cursor(self.twitter_api.followers, user_id=user_id).items(limit=num_followers)]
+        cursor = Cursor(self.twitter_api.followers, user_id=user_id).items(limit=num_followers)
+
+        followers_users = []
+        for follower_user in cursor:
+            follower_users.append(User.fromTweepyJSON(follower_user))
 
         return user_id, followers_users

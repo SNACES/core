@@ -4,6 +4,7 @@ from src.model.user import User
 from src.dao.twitter.twitter_dao import TwitterGetter
 from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
 
+
 class UserTweetDownloader():
     """
     Downloads tweets fow a particular user

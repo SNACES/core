@@ -3,6 +3,7 @@ import bson
 from src.model.user import User
 from src.dao.user_friend.setter.friend_setter import FriendSetter
 
+
 class MongoFriendSetter(FriendSetter):
     def __init__(self):
         self.friend_collection = None
@@ -11,7 +12,7 @@ class MongoFriendSetter(FriendSetter):
         self.friend_collection = friend_collection
 
     def store_friends(self, user_id: str, friends_ids: List[str]):
-        doc = { "user_id": int(user_id), "friends_ids": friends_ids }
+        doc = {"user_id": bson.int64.Int64(user_id), "friends_ids": friends_ids}
 
         if self._contains_user(user_id):
             self.friend_collection.find_one_and_replace({"user_id": bson.int64.Int64(user_id)}, doc)

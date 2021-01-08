@@ -1,6 +1,7 @@
 from src.dao.twitter.twitter_dao import TwitterGetter
 from src.dao.user.setter.user_setter import UserSetter
 
+
 class TwitterUserDownloader():
     """
     Downloads a twitter User

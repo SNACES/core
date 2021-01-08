@@ -6,6 +6,7 @@ from src.model.tweet import Tweet
 from src.dao.twitter.twitter_dao import TwitterGetter
 from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
 
+
 class TwitterTweetDownloader():
     """
     Downloads a twitter tweet downloader
@@ -24,11 +25,11 @@ class TwitterTweetDownloader():
                 subscriber=subscriber)
         except Exception as e:
             after = self.raw_tweet_setter.get_num_tweets()
-            print("Stored only %d tweets" %(after - before))
+            print("Stored only %d tweets" % (after - before))
             raise e
 
         after = self.raw_tweet_setter.get_num_tweets()
-        print("Stored %d tweets" %(after - before))
+        print("Stored %d tweets" % (after - before))
 
     class Subscriber():
         def __init__(self, raw_tweet_setter: RawTweetSetter):

@@ -1,20 +1,23 @@
 input-datastore:
-    Cluster:
+    Download-Source:
+        type: "Tweepy"
+        config: ~
+inout-datastore:
+    Users:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "Clusters"
-    RawTweet:
+            collection-name: "Users"
+    Friends:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "UserTweets"
-output-datastore:
-    Ranking:
+            collection-name: "Friends"
+    UserRawTweets:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "Rankings"
+            collection-name: "UserRawTweets"

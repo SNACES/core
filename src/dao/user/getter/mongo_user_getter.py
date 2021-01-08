@@ -3,6 +3,7 @@ import bson
 from src.model.user import User
 from src.dao.user.getter.user_getter import UserGetter
 
+
 class MongoUserGetter(UserGetter):
     def __init__(self):
         self.user_collection = None

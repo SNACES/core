@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
 from typing import List, Dict, Iterator
 from pathlib import Path
+import math
 
 """
 This file contains utility methods
 """
+
 
 def get_project_root() -> Path:
     """
@@ -13,6 +15,7 @@ def get_project_root() -> Path:
     @retun path of the project root
     """
     return Path(__file__).parent.parent.parent
+
 
 def get_unique_list(lst: List) -> List:
     """
@@ -23,6 +26,7 @@ def get_unique_list(lst: List) -> List:
     """
     return list(set(lst))
 
+
 def get_date(date_str: str) -> datetime:
     """
     Given a date format of the form "year-month-date", parses the string to a
@@ -32,6 +36,7 @@ def get_date(date_str: str) -> datetime:
     """
     year, month, day = map(int, date_str.split('-'))
     return datetime(year, month, day)
+
 
 def daterange(start_date: datetime, end_date: datetime) -> Iterator[datetime]:
     """
@@ -44,8 +49,9 @@ def daterange(start_date: datetime, end_date: datetime) -> Iterator[datetime]:
     @return a generator containing a datetime object for each day starting on
     start_date, and ending on end_date (not including end_date)
     """
-    for n in range(int ((end_date - start_date).days)):
-        yield start_date + timedelta(days = n)
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(days=n)
+
 
 def cosine_sim(counter1: Dict[str, int], counter2: Dict[str, int]) -> float:
     """
@@ -63,6 +69,7 @@ def cosine_sim(counter1: Dict[str, int], counter2: Dict[str, int]) -> float:
 
     return dot_product/(norm_c1*norm_c2) if norm_c1 != 0 and norm_c2 != 0 else -1
 
+
 def word_overlap(counter1: Dict[str, int], counter2: Dict[str, int]) -> int:
     """
     Find the number of overlapping words between two counters
@@ -78,6 +85,7 @@ def word_overlap(counter1: Dict[str, int], counter2: Dict[str, int]) -> int:
 
     return len(set.intersection(set1, set2))
 
+
 def parse_bool(input: str) -> bool:
     """
     Parses a string to a boolean
@@ -86,3 +94,16 @@ def parse_bool(input: str) -> bool:
     @return the parsed boolean
     """
     bool(distutils.util.strtobool(input))
+
+
+def passes_interval(i, total, interval):
+    current_percent = i/total * 100
+    previous_percent = (i - 1)/total * 100
+
+    return int(current_percent/interval) > int(previous_percent/interval)
+
+
+def print_progress(i, total):
+    percent_done = i/total * 100
+    if passes_interval(i, total, 2):
+        print("Done " + str(math.floor(percent_done)) + "% of process")

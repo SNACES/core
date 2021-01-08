@@ -20,4 +20,4 @@ class MongoClusterGetter():
                 "seed_id": bson.int64.Int64(seed_id),
                 "params": params})
 
-        return [Cluster.fromDict(cluster) for cluster in doc["clusters"]]
+        return [Cluster.fromDict(cluster) for cluster in doc["clusters"]], doc["params"]

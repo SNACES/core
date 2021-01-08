@@ -1,10 +1,12 @@
 from typing import Dict, Union, Optional
 import json
 
+
 class User:
     """
     A class that represents a twitter user
     """
+
     def __init__(self, id: int, screen_name: str, name: str, created_at: str,
             followers_count: int, friends_count: int, listed_count: int,
             favourites_count: int, statuses_count: int, default_profile: bool,

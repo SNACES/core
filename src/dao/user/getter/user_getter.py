@@ -1,6 +1,7 @@
 from typing import List, Dict
 from src.model.user import User
 
+
 class UserGetter:
     def get_user_by_id(self, user_id: str):
         raise NotImplementedError("Subclasses should implement this")

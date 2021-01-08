@@ -1,6 +1,7 @@
 from src.model.user import User
 from typing import Dict, List
 
+
 class TwitterGetter():
     def stream_tweets(self, num_tweets, subscriber) -> None:
         raise NotImplementedError("Subclasses should implement this")

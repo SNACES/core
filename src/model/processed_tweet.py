@@ -6,10 +6,12 @@ from src.model.tweet import Tweet
 import json
 import datetime
 
+
 class ProcessedTweet:
     """
     A class to represent a processed tweet
     """
+
     def __init__(self, id: int, user_id: int, text: Dict):
         """
         Default constructor for a processed tweet

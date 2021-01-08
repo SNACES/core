@@ -1,17 +1,13 @@
-input-datastore:
-    Download-Source:
-        type: "Tweepy"
-        config: ~
-    LocalNeighbourhoods:
-        type: "Mongo"
-        config:
-            location: "mongodb://localhost:27017"
-            datastore-name: "Data"
-            collection-name: "LocalNeighbourhoods"
 inout-datastore:
-    UserTweets:
+    SocialGraph:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "UserTweets"
+            collection-name: "SocialGraphs"
+    Cluster:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Clusters"
