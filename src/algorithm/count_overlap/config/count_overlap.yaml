@@ -1,0 +1,17 @@
+input-datastore:
+  Cluster1:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters-David"
+      location: "mongodb://localhost:27017"
+    
+  Cluster2:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "MaxModClusters-David"
+      location: "mongodb://localhost:27017"
+
+
+
