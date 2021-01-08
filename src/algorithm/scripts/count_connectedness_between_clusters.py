@@ -7,11 +7,11 @@ from src.shared.utils import get_project_root
 DEFAULT_PATH = str(get_project_root()) + "/src/algorithm/count_connect/config/count_connect.yaml"
 DEFAULT_METHOD = "Label Propagation"
 
-def top_words(cluster_num_1: int, cluster_num_2: int, base_user: str, cluster_type: str, path=DEFAULT_PATH):
+def count_connected(cluster_num_1: int, cluster_num_2: int, base_user: str, cluster_type: str, path=DEFAULT_PATH):
     config = parse_from_file(path)
 
     activity = CountConnectActivity(config)
-    activity.find_top_words(cluster_num_1, cluster_num_2, base_user,cluster_type)
+    activity.count_connect_between_cluster(cluster_num_1, cluster_num_2, base_user,cluster_type)
 
 if __name__ == "__main__":
     """
@@ -31,4 +31,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    top_words(args.cluster_num_1, args.cluster_num_2, args.base_user, args.cluster_type,args.path)
+    count_connected(args.cluster_num_1, args.cluster_num_2, args.base_user, args.cluster_type,args.path)

@@ -16,7 +16,7 @@ class CountConnectDAOFactory():
 
         return cluster_getter
 
-    def create_wordfrequency_getter(config: Dict):
+    def create_friends_getter(config: Dict):
         user_friends_getter = None
         if config["type"] == "Mongo":
             user_friends_getter = MongoUserNeighborhoodGetter()
