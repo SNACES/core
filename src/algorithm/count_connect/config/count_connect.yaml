@@ -1,0 +1,15 @@
+input-datastore:
+  Cluster:
+    type: "Mongo"
+    config:
+      datastore-name: "Cluster-Test"
+      collection-name: "LabelPropClusters-David"
+      location: "mongodb://localhost:27017"
+
+  User-Friends:
+    type: "Mongo"
+    config:
+      datastore-name: "productionFunction"
+      collection-name: "friends"
+      location: "mongodb://localhost:27017"
+
