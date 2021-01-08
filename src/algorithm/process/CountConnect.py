@@ -19,9 +19,9 @@ class CountConnect():
             elif users in cluster_2:
                 dict_2[users] = all_dict[users]
             
-        connect1 = self.connectivity(dict_1, dict_1)
-        connect2 = self.connectivity(dict_2, dict_2)
-        connect12 = self.connectivity(dict_1, dict_2)
+        connect1 = self.connectivity(dict_1, dict_1) *2 
+        connect2 = self.connectivity(dict_2, dict_2) *2
+        connect12 = self.connectivity(dict_1, dict_2) + self.connectivity(dict_2, dict_1)
 
         print("connectedness in cluster 1 is: ", connect1)
         print("connectedness in cluster 2 is: ", connect2)
