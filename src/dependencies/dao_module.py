@@ -36,59 +36,59 @@ class DAOModule():
 
     def get_cluster_getter(self):
         return ClusterDAOFactory.create_getter(
-            self.input_datastore["Clusters"])
+            self.input_datastore["Cluster"])
 
     def get_cluster_setter(self):
         return ClusterDAOFactory.create_setter(
-            self.output_datastore["Clusters"])
+            self.output_datastore["Cluster"])
 
     def get_local_neighbourhood_getter(self):
         return LocalNeighbourhoodDAOFactory.create_getter(
-            self.input_datastore["LocalNeighbourhoods"])
+            self.input_datastore["LocalNeighbourhood"])
 
     def get_local_neighbourhood_setter(self):
         return LocalNeighbourhoodDAOFactory.create_setter(
-            self.output_datastore["LocalNeighbourhoods"])
+            self.output_datastore["LocalNeighbourhood"])
 
     def get_processed_tweet_getter(self):
         return ProcessedTweetDAOFactory.create_getter(
-            self.input_datastore["ProcessedTweets"])
+            self.input_datastore["ProcessedTweet"])
 
     def get_processed_tweet_setter(self):
         return ProcessedTweetDAOFactory.create_setter(
-            self.output_datastore["ProcessedTweets"])
+            self.output_datastore["ProcessedTweet"])
 
     def get_ranking_getter(self):
         return RankingDAOFactory.create_getter(
-            self.input_datastore["Rankings"])
+            self.input_datastore["Ranking"])
 
     def get_ranking_setter(self):
         return RankingDAOFactory.create_setter(
-            self.output_datastore["Rankings"])
+            self.output_datastore["Ranking"])
 
     def get_raw_tweet_getter(self):
         return RawTweetDAOFactory.create_getter(
-            self.input_datastore["RawTweets"])
+            self.input_datastore["RawTweet"])
 
     def get_raw_tweet_setter(self):
         return RawTweetDAOFactory.create_setter(
-            self.output_datastore["RawTweets"])
+            self.output_datastore["RawTweet"])
 
     def get_user_tweet_getter(self):
         return RawTweetDAOFactory.create_getter(
-            self.input_datastore["UserTweets"])
+            self.input_datastore["UserTweet"])
 
     def get_user_tweet_setter(self):
         return RawTweetDAOFactory.create_setter(
-            self.output_datastore["UserTweets"])
+            self.output_datastore["UserTweet"])
 
     def get_social_graph_getter(self):
         return SocialGraphDAOFactory.create_getter(
-            self.input_datastore["SocialGraphs"])
+            self.input_datastore["SocialGraph"])
 
     def get_social_graph_setter(self):
         return SocialGraphDAOFactory.create_setter(
-            self.output_datastore["SocialGraphs"])
+            self.output_datastore["SocialGraph"])
 
     def get_user_getter(self):
         return UserDAOFactory.create_getter(

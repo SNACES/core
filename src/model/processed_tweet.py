@@ -3,6 +3,7 @@ import re
 import datetime
 from typing import Dict, List, Union, Optional
 from src.model.tweet import Tweet
+from src.model.word_frequency_vector import WordFrequencyVector
 import json
 import datetime
 
@@ -24,6 +25,25 @@ class ProcessedTweet:
         self.id = id
         self.user_id = user_id
         self.text = text
+        self.wf_vector = WordFrequencyVector.fromDict(text)
+
+    def toDict(self) -> Dict:
+        dict = {}
+
+        dict["id"] = self.id
+        dict["user_id"] = self.user_id
+        dict["text"] = self.text
+
+        return dict
+
+    def fromDict(dict: Dict):
+        processed_tweet = ProcessedTweet(
+            dict["id"],
+            dict["user_id"],
+            dict["text"]
+        )
+
+        return processed_tweet
 
     def toJSON(json_in: str) -> str:
         """

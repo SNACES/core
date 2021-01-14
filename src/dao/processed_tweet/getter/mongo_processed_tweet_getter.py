@@ -1,6 +1,7 @@
 from src.dao.processed_tweet.getter.processed_tweet_getter import ProcessedTweetGetter
 from src.dao.mongo.mongo_dao import MongoDAO
 from src.model.processed_tweet import ProcessedTweet
+import bson
 
 
 class MongoProcessedTweetGetter(ProcessedTweetGetter, MongoDAO):

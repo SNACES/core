@@ -1,6 +1,8 @@
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.download.user_downloader import TwitterUserDownloader
+from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
+
 
 class ProcessModule():
     """
@@ -79,8 +81,12 @@ class ProcessModule():
         pass
 
     # Processing
-    def tweet_processor(self):
-        pass
+    def get_tweet_processor(self):
+        raw_tweet_getter = self.dao_module.get_user_tweet_getter()
+        processed_tweet_setter = self.dao_module.get_processed_tweet_setter()
+
+        tweet_processor = TweetProcessor(raw_tweet_getter, processed_tweet_setter)
+        return tweet_processor
 
     # Social Graph
     def get_social_graph_constructor(self):
