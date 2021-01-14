@@ -1,7 +1,6 @@
 from src.dependencies.dao_module import DAOModule
-from src.dependencies.activity_module import ActivityModule
 from src.dependencies.process_module import ProcessModule
-
+from src.scripts.parser.parse_config import parse_from_file
 
 class Injector():
     """
@@ -14,7 +13,6 @@ class Injector():
 
         self.dao_module = None
         self.process_module = None
-        self.activity_module = None
 
     def get_dao_module(self) -> DAOModule:
         if self.dao_module is None:
@@ -29,11 +27,9 @@ class Injector():
 
         return self.process_module
 
-    def get_activity_module(self) -> ActivityModule:
-        if self.activity_module is None:
-            dao_module = self.get_dao_module()
-            process_module = self.get_process_module()
-            self.activity_module = ActivityModule(self, dao_module,
-                process_module)
 
-        return self.activity_module
+    def get_injector_from_file(path: str):
+        config = parse_from_file(path)
+        injector = Injector(config)
+
+        return injector
