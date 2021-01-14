@@ -5,7 +5,7 @@ from typing import List
 class Ranker():
     def __init__(self, cluster_getter, user_getter, ranking_setter):
         self.cluster_getter = cluster_getter
-        self.raw_tweet_getter = raw_tweet_getter
+        self.user_getter = user_getter
         self.ranking_setter = ranking_setter
         self.ranking_function_name = None
 
