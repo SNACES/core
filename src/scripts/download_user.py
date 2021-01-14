@@ -1,18 +1,18 @@
 from src.activity.download_user_activity import DownloadUserActivity
 import argparse
-import time
-from src.scripts.parser.parse_config import parse_from_file
 from src.shared.utils import get_project_root
+from src.dependencies.injector import Injector
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/download_user_config.yaml"
 
 
 def download_user(name: str, path=DEFAULT_PATH):
-    config = parse_from_file(path)
+    injector = Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
 
-    activity = DownloadUserActivity(config)
-    activity.download_user_by_screen_name(name)
+    user_downloader = process_module.get_user_downloader()
 
+    user_downloader.download_user_by_screen_name(name)
 
 if __name__ == "__main__":
     """
