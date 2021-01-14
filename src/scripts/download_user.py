@@ -1,4 +1,3 @@
-from src.activity.download_user_activity import DownloadUserActivity
 import argparse
 from src.shared.utils import get_project_root
 from src.dependencies.injector import Injector
