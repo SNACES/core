@@ -100,7 +100,8 @@ class ProcessModule():
         processed_tweet_getter = self.dao_module.get_processed_tweet_getter()
         user_word_frequency_getter = self.dao_module.get_user_word_frequency_getter()
         user_word_frequency_setter = self.dao_module.get_user_word_frequency_setter()
+        global_word_frequency_getter = self.dao_module.get_global_word_frequency_getter()
         
-        user_word_frequency_processor = UserWordFrequencyProcessor(processed_tweet_getter, 
-                                        user_word_frequency_getter, user_word_frequency_setter)
+        user_word_frequency_processor = UserWordFrequencyProcessor(processed_tweet_getter, user_word_frequency_getter, 
+                                        user_word_frequency_setter, global_word_frequency_getter)
         return user_word_frequency_processor

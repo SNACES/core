@@ -11,6 +11,12 @@ input-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "UserWordFrequency"
+    GlobalWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "GlobalWordFrequency"
             
 output-datastore:
     UserWordFrequency:
@@ -19,5 +25,11 @@ output-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "UserWordFrequency"
+    RelativeUserWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "RelativeUserWordFrequency"
 
 

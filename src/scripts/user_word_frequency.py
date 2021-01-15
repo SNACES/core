@@ -12,6 +12,7 @@ def get_user_word_frequency(id: str, path=DEFAULT_PATH):
     user_word_frequency_processor = process_module.get_user_word_frequency_processor()
 
     user_word_frequency_processor.process_user_word_frequency_vector(id)
+    user_word_frequency_processor.process_relative_user_word_frequency_vector(id)
 
 if __name__ == "__main__":
     """
