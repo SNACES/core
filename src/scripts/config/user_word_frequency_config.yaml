@@ -1,0 +1,23 @@
+input-datastore:
+    ProcessedTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ProcessedTweets"
+    UserWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserWordFrequency"
+            
+output-datastore:
+    UserWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserWordFrequency"
+
+

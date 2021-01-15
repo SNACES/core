@@ -24,9 +24,12 @@ class WordFrequencyVector():
             else:
                 result[word] = v2[word]
 
-        return result
+        return WordFrequencyVector.fromDict(result)
 
     def fromDict(dict: Dict):
         wf_vector = WordFrequencyVector(dict)
 
         return wf_vector
+
+    def get_words_dict(self):
+        return self.words
