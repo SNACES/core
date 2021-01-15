@@ -25,3 +25,8 @@ class Ranking():
         ranking = Ranking(seed_id, ids, params)
 
         return ranking
+    
+    def get_top_user_id(self):
+        return self.ids[0]
+    
+
