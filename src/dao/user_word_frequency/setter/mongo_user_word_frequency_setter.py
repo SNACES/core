@@ -1,8 +1,8 @@
 from typing import List, Dict
 from src.model.user_word_frequency_vector import UserWordFrequencyVector
-from src.dao.user_word_frequency.setter import UserWordFrequencySetter
+from src.dao.user_word_frequency.setter.user_word_frequency_setter import UserWordFrequencySetter
 
-class MongoUserWordFrequencyerSetter(UserWordFrequencySetter):
+class MongoUserWordFrequencySetter(UserWordFrequencySetter):
     def __init__(self):
         self.user_word_frequency_collection = None
         self.relative_user_word_frequency_collection = None

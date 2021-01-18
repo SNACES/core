@@ -11,7 +11,7 @@ class ClusterWordFrequencyDAOFactory():
         if config["type"] == "Mongo":
             cluster_word_frequency_setter = MongoClusterWordFrequencySetter()
             collection = get_collection_from_config(config["config"])
-            cluster_word_frequency_setter.set_user_word_frequency_collection(collection)
+            cluster_word_frequency_setter.set_cluster_word_frequency_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 
@@ -22,7 +22,7 @@ class ClusterWordFrequencyDAOFactory():
         if config["type"] == "Mongo":
             cluster_word_frequency_getter = MongoClusterWordFrequencyGetter()
             collection = get_collection_from_config(config["config"])
-            cluster_word_frequency_getter.set_user_word_frequency_collection(collection)
+            cluster_word_frequency_getter.set_cluster_word_frequency_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 
