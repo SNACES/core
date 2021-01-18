@@ -29,7 +29,7 @@ class UserWordFrequencyProcessor():
         global_word_count_vc = self.global_word_frequency_vector_getter.get_global_word_frequency()
         user_word_freq_vc = self.user_word_frequency_vector_getter.get_user_word_frequency_by_id(id)
 
-        relative_user_word_frequency = self._gen_relative_word_frequency(global_word_count_vc, user_word_freq_vc)
+        relative_user_word_frequency = self._gen_relative_word_frequency(user_word_freq_vc, global_word_count_vc)
         self.user_word_frequency_vector_setter.store_relative_user_word_frequency_vector(id, relative_user_word_frequency)
 
     def _gen_relative_word_frequency(self, user_word_count, global_word_count):

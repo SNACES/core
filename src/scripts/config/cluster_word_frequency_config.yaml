@@ -1,0 +1,27 @@
+input-datastore:
+    UserWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserWordFrequency"
+    RelativeUserWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "RelativeUserWordFrequency"
+            
+output-datastore:
+    ClusterWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ClusterWordFrequency"
+    RelativeClusterWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "RelativeClusterWordFrequency"
