@@ -10,11 +10,13 @@ class UserWordFrequencyProcessor():
     """
 
     def __init__(self, processed_tweet_getter, user_word_frequency_vector_getter,
-            user_word_frequency_vector_setter, global_word_frequency_vector_getter):
+            user_word_frequency_vector_setter, global_word_frequency_vector_getter,
+            user_relative_word_frequency_vector_setter):
         self.processed_tweet_getter = processed_tweet_getter
         self.user_word_frequency_vector_getter = user_word_frequency_vector_getter
         self.user_word_frequency_vector_setter = user_word_frequency_vector_setter
         self.global_word_frequency_vector_getter = global_word_frequency_vector_getter
+        self.user_relative_word_frequency_vector_setter = user_relative_word_frequency_vector_setter
 
     def process_user_word_frequency_vector(self, id: str):
         user_processed_tweets = self.processed_tweet_getter.get_user_processed_tweets(id)
@@ -30,7 +32,7 @@ class UserWordFrequencyProcessor():
         user_word_freq_vc = self.user_word_frequency_vector_getter.get_user_word_frequency_by_id(id)
 
         relative_user_word_frequency = self._gen_relative_word_frequency(user_word_freq_vc, global_word_count_vc)
-        self.user_word_frequency_vector_setter.store_relative_user_word_frequency_vector(id, relative_user_word_frequency)
+        self.user_relative_word_frequency_vector_setter.store_relative_user_word_frequency_vector(id, relative_user_word_frequency)
 
     def _gen_relative_word_frequency(self, user_word_count, global_word_count):
         merge_count = self._merge_word_count(user_word_count, global_word_count)

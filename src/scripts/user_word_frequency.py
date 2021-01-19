@@ -26,4 +26,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    get_user_word_frequency(args.name, args.path)
+    if isinstance(args.name, list):
+        for user_ids in args.name:
+            get_user_word_frequency(args.name, args.path)
+    else:
+        get_user_word_frequency(args.name, args.path)
