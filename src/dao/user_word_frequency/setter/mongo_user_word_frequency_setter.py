@@ -5,7 +5,6 @@ from src.dao.user_word_frequency.setter.user_word_frequency_setter import UserWo
 class MongoUserWordFrequencySetter(UserWordFrequencySetter):
     def __init__(self):
         self.user_word_frequency_collection = None
-        self.relative_user_word_frequency_collection = None
 
     def set_user_word_frequency_collection(self, user_word_frequency_collection: str) -> None:
         self.user_word_frequency_collection = user_word_frequency_collection
