@@ -11,7 +11,7 @@ class UserRelativeWordFrequencyDAOFactory():
         if config["type"] == "Mongo":
             user_relative_word_frequency_setter = MongoUserRelativeWordFrequencySetter()
             collection = get_collection_from_config(config["config"])
-            user_relative_word_frequency_setter.set_user_relative_word_frequency_collection(collection)
+            user_relative_word_frequency_setter.set_relative_user_word_frequency_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 
