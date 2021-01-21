@@ -14,8 +14,9 @@ class MongoClusterWordFrequencyGetter(ClusterWordFrequencyGetter):
     def get_cluster_word_frequency_by_ids(self, user_ids: str) -> ClusterWordFrequencyVector:
         doc = self.cluster_word_frequency_collection.find_one({"user_ids": [bson.int64.Int64(user_id)] for user_id in user_ids})
         if doc is not None:
-            users_dict = {"user_id": user_ids, "word_frequency_vector": doc["word_frequency_vector"] }
+            users_dict = {"user_ids": user_ids, "word_frequency_vector": doc["word_frequency_vector"] }
             return ClusterWordFrequencyVector.fromDict(users_dict)
         else:
-            return None
+            users_dict = {"user_ids": user_ids, "word_frequency_vector": {} }
+            return ClusterWordFrequencyVector.fromDict(users_dict)
     

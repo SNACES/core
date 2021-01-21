@@ -18,5 +18,5 @@ class Cluster():
         users = dict["users"]
 
         cluster = Cluster(base_user, users)
-
+        
         return cluster
