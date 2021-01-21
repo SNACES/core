@@ -3,14 +3,14 @@ from src.process.ranking.ranker import Ranker
 from typing import List
 
 
-class RetweetsRanker(Ranker):
+class ConsumptionUtilityRanker(Ranker):
     def __init__(self, cluster_getter, raw_tweet_getter, ranking_setter):
         self.cluster_getter = cluster_getter
         self.raw_tweet_getter = raw_tweet_getter
         self.ranking_setter = ranking_setter
         self.ranking_function_name = "retweets"
 
-    def socre_users(self, user_ids: List[str]):
+    def score_users(self, user_ids: List[str]):
         scores = {}
         for id in user_ids:
             scores[id] = 0
@@ -20,6 +20,6 @@ class RetweetsRanker(Ranker):
 
             for retweet in retweets:
                 if str(retweet.user_id) in user_ids:
-                    scores[id] += 1
+                    scores[retweet.user_id] += 1
 
         return scores
