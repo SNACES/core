@@ -127,6 +127,9 @@ class ProcessedTweet:
 
         return word_dict
 
+    def get_word_frequency_vector(self):
+        return self.wf_vector
+
     def __eq__(self, other) -> bool:
         if isinstance(other, self.__class__):
             return self.__dict__ == other.__dict__

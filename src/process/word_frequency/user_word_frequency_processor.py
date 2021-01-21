@@ -23,7 +23,7 @@ class UserWordFrequencyProcessor():
         user_word_freq_vc = self.user_word_frequency_vector_getter.get_user_word_frequency_by_id(id).get_word_frequency_vector()
 
         for processed_tweet in user_processed_tweets:
-            user_word_freq_vc += processed_tweet
+            user_word_freq_vc += processed_tweet.get_word_frequency_vector()
 
         self.user_word_frequency_vector_setter.store_user_word_frequency_vector(id, user_word_freq_vc.get_words_dict())
     
