@@ -44,3 +44,6 @@ class UserWordFrequencyVector():
 
     def get_word_frequency_vector(self):
         return self.word_frequency_vector
+
+    def get_words(self):
+        return self.words

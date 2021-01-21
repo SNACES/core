@@ -11,8 +11,11 @@ class MongoGlobalWordFrequencyGetter(GlobalWordFrequencyGetter):
         self.global_word_frequency_collection = global_word_frequency_collection
 
     def get_global_word_frequency(self) -> Dict:
-        doc = self.global_word_frequency_collection.find()
+        doc = self.global_word_frequency_collection.find({},{"global_word_frequency_vector":1})
         if doc is not None:
-            return doc["global_word_frequency_vector"]
+            result = None
+            for item in doc:
+                result = item["global_word_frequency_vector"]
+            return result
         else:
-            return None
+            return {}

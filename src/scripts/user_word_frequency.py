@@ -5,7 +5,7 @@ from src.dependencies.injector import Injector
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/user_word_frequency_config.yaml"
 
 
-def get_user_word_frequency(id: str, path=DEFAULT_PATH):
+def get_user_word_frequency(id, path=DEFAULT_PATH):
     injector = Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
 

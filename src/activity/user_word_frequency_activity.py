@@ -20,7 +20,7 @@ class UserWordFrequencyActivity():
             # Configure input datastore
             input_datastore = config["input-datastore"]
 
-            processed_tweets = input_datastore["ProcessedTweets"]
+            processed_tweets = input_datastore["ProcessedTweet"]
             user_word_frequency = input_datastore["UserWordFrequency"]
             global_word_frequency = input_datastore["GlobalWordFrequency"]
 
@@ -38,10 +38,10 @@ class UserWordFrequencyActivity():
             user_word_frequency_setter = UserWordFrequencyDAOFactory.create_setter(user_word_frequency_out)
             relative_user_word_frequency_setter = UserRelativeWordFrequencyDAOFactory.create_setter(relative_user_word_frequency_out)
 
-            self.ranker = UserWordFrequencyProcessor(processed_tweets_getter, user_word_frequency_getter,
+            self.user_word_frequency = UserWordFrequencyProcessor(processed_tweets_getter, user_word_frequency_getter,
                                             user_word_frequency_setter, global_word_frequency_getter,
                                             relative_user_word_frequency_setter)
 
-    def get_user_word_frequency(self, seed_id, params):
+    def get_user_word_frequency(self, seed_id):
         self.user_word_frequency.process_user_word_frequency_vector(seed_id)
         self.user_word_frequency.process_relative_user_word_frequency(seed_id)
