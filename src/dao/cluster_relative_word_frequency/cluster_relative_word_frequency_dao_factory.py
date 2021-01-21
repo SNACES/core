@@ -5,7 +5,7 @@ from src.dao.cluster_relative_word_frequency.getter.mongo_cluster_relative_word_
 from src.shared.mongo import get_collection_from_config
 from typing import Dict
 
-class ClusterWordFrequencyDAOFactory():
+class ClusterRelativeWordFrequencyDAOFactory():
     def create_setter(config: Dict) -> ClusterRelativeWordFrequencySetter:
         cluster_relative_word_frequency_setter = None
         if config["type"] == "Mongo":

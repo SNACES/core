@@ -8,7 +8,7 @@ class ConsumptionUtilityRanker(Ranker):
         self.cluster_getter = cluster_getter
         self.raw_tweet_getter = raw_tweet_getter
         self.ranking_setter = ranking_setter
-        self.ranking_function_name = "retweets"
+        self.ranking_function_name = "consumption utility"
 
     def score_users(self, user_ids: List[str]):
         scores = {}

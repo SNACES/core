@@ -8,6 +8,11 @@ from src.dao.twitter.twitter_dao_factory import TwitterDAOFactory
 from src.dao.user.user_dao_factory import UserDAOFactory
 from src.dao.user_follower.user_follower_dao_factory import UserFollowerDAOFactory
 from src.dao.user_friend.user_friend_dao_factory import UserFriendDAOFactory
+from src.dao.user_word_frequency.user_word_frequency_dao_factory import UserWordFrequencyDAOFactory
+from src.dao.user_relative_word_frequency.user_relative_word_frequency_dao_factory import UserRelativeWordFrequencyDAOFactory
+from src.dao.cluster_word_frequency.cluster_word_frequency_dao_factory import ClusterWordFrequencyDAOFactory
+from src.dao.cluster_relative_word_frequency.cluster_relative_word_frequency_dao_factory import ClusterRelativeWordFrequencyDAOFactory
+from src.dao.global_word_frequency.global_word_frequency_dao_factory import GlobalWordFrequencyDAOFactory
 
 
 class DAOModule():
@@ -113,3 +118,43 @@ class DAOModule():
     def get_user_friend_setter(self):
         return UserFriendDAOFactory.create_setter(
             self.output_datastore["Friends"])
+
+    def get_user_word_frequency_getter(self):
+        return UserWordFrequencyDAOFactory.create_getter(
+            self.input_datastore["UserWordFrequency"])
+
+    def get_user_word_frequency_setter(self):
+        return UserWordFrequencyDAOFactory.create_setter(
+            self.output_datastore["UserWordFrequency"])
+
+    def get_cluster_word_frequency_getter(self):
+        return ClusterWordFrequencyDAOFactory.create_getter(
+            self.input_datastore["ClusterWordFrequency"])
+
+    def get_cluster_word_frequency_setter(self):
+        return ClusterWordFrequencyDAOFactory.create_setter(
+            self.output_datastore["ClusterWordFrequency"])
+
+    def get_cluster_relative_word_frequency_getter(self):
+        return ClusterRelativeWordFrequencyDAOFactory.create_getter(
+            self.input_datastore["ClusterRelativeWordFrequency"])
+
+    def get_cluster_relative_word_frequency_setter(self):
+        return ClusterRelativeWordFrequencyDAOFactory.create_setter(
+            self.output_datastore["ClusterRelativeWordFrequency"])
+
+    def get_global_word_frequency_getter(self):
+        return GlobalWordFrequencyDAOFactory.create_getter(
+            self.input_datastore["GlobalWordFrequency"])
+
+    def get_global_word_frequency_setter(self):
+        return GlobalWordFrequencyDAOFactory.create_setter(
+            self.output_datastore["GlobalWordFrequency"])
+
+    def get_user_relative_word_frequency_getter(self):
+        return UserRelativeWordFrequencyDAOFactory.create_getter(
+            self.input_datastore["UserRelativeWordFrequency"])
+
+    def get_user_relative_word_frequency_setter(self):
+        return UserRelativeWordFrequencyDAOFactory.create_setter(
+            self.output_datastore["UserRelativeWordFrequency"])
