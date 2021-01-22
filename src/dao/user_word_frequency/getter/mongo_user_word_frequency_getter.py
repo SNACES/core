@@ -18,5 +18,6 @@ class MongoUserWordFrequencyGetter(UserWordFrequencyGetter):
             user_dict = {"user_id": user_id, "word_frequency_vector": doc["word_frequency_vector"] }
             return UserWordFrequencyVector.fromDict(user_dict)
         else:
-            return None
+            user_dict = {"user_id": user_id, "word_frequency_vector": {} }
+            return UserWordFrequencyVector.fromDict(user_dict)
 

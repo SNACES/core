@@ -10,7 +10,7 @@ class MongoUserWordFrequencySetter(UserWordFrequencySetter):
         self.user_word_frequency_collection = user_word_frequency_collection
 
     def store_user_word_frequency_vector(self, user_id:str, user_word_freq_vc: Dict):
-        doc = { "user_id": user_id, "word_count": sum(user_word_freq_vc.keys()),"word_frequency_vector": user_word_freq_vc}
+        doc = { "user_id": user_id, "word_count": sum(user_word_freq_vc.values()),"word_frequency_vector": user_word_freq_vc}
 
         if self._contains_user(user_id):
             self.user_word_frequency_collection.find_one_and_replace({"user_id": user_id}, doc)

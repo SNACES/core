@@ -10,7 +10,7 @@ class MongoClusterWordFrequencySetter(ClusterWordFrequencySetter):
         self.cluster_word_frequency_collection = cluster_word_frequency_collection
 
     def store_cluster_word_frequency_vector(self, user_ids: List[str], cluster_word_freq_vc: Dict):
-        doc = { "user_ids": user_ids, "word_count": sum(cluster_word_freq_vc.keys()),"word_frequency_vector": cluster_word_freq_vc}
+        doc = { "user_ids": user_ids, "word_count": sum(cluster_word_freq_vc.values()),"word_frequency_vector": cluster_word_freq_vc}
 
         if self._contains_user(user_ids):
             self.cluster_word_frequency_collection.find_one_and_replace({"user_ids": user_ids}, doc)

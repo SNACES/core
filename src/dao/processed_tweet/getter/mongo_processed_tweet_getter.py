@@ -5,6 +5,12 @@ import bson
 
 
 class MongoProcessedTweetGetter(ProcessedTweetGetter, MongoDAO):
+    def __init__(self):
+        self.collection = None
+
+    def set_collection(self, collection) -> None:
+        self.collection = collection
+        
     def get_user_processed_tweets(id: str):
         tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
 

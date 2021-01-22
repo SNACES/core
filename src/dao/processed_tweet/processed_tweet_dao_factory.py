@@ -10,9 +10,10 @@ from typing import Dict
 class ProcessedTweetDAOFactory():
     def create_getter(config: Dict) -> ProcessedTweetGetter:
         processed_tweet_getter = None
-        type = config["type"]
-        if type == "Mongo":
-            processed_tweet_getter = MongoDAOFactory.create_getter(config["config"], MongoProcessedTweetGetter)
+        if config["type"] == "Mongo":
+            processed_tweet_getter = MongoProcessedTweetGetter()
+            collection = get_collection_from_config(config["config"])
+            processed_tweet_getter.set_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 
@@ -20,9 +21,10 @@ class ProcessedTweetDAOFactory():
 
     def create_setter(config: Dict) -> ProcessedTweetSetter:
         processed_tweet_setter = None
-        type = config["type"]
-        if type == "Mongo":
-            processed_tweet_setter = MongoDAOFactory.create_setter(config["config"], MongoProcessedTweetSetter)
+        if config["type"] == "Mongo":
+            processed_tweet_setter = MongoProcessedTweetSetter()
+            collection = get_collection_from_config(config["config"])
+            processed_tweet_setter.set_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 

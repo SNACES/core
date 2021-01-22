@@ -5,12 +5,18 @@ input-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "UserWordFrequency"
-    RelativeUserWordFrequency:
+    ClusterWordFrequency:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "RelativeUserWordFrequency"
+            collection-name: "ClusterWordFrequency"
+    GlobalWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "GlobalWordFrequency"
             
 output-datastore:
     ClusterWordFrequency:

@@ -19,7 +19,7 @@ class WordFrequencyVector():
 
         result = deepcopy(v1)
         for word in v2.keys():
-            if word in v2:
+            if word in result:
                 result[word] += v2[word]
             else:
                 result[word] = v2[word]

@@ -15,6 +15,7 @@ from src.process.word_frequency.user_word_frequency_processor import UserWordFre
 from src.process.word_frequency.cluster_word_frequency_processor import ClusterWordFrequencyProcessor
 
 
+
 class ProcessModule():
     """
     The process module is used to abstract the creation of processes, so they
@@ -174,8 +175,12 @@ class ProcessModule():
         cluster_word_frequency_getter = self.dao_module.get_cluster_word_frequency_getter()
         cluster_word_frequency_setter = self.dao_module.get_cluster_word_frequency_setter()
         cluster_relative_word_frequency_setter = self.dao_module.get_cluster_relative_word_frequency_setter()
+        global_word_frequency_getter = self.dao_module.get_global_word_frequency_getter()
 
-        cluster_word_frequency_processor = ClusterWordFrequencyProcessor(user_word_frequency_getter, cluster_word_frequency_getter,
-            cluster_word_frequency_setter, cluster_relative_word_frequency_setter)
+        cluster_word_frequency_processor = ClusterWordFrequencyProcessor(user_word_frequency_getter, cluster_word_frequency_getter, 
+                                                                    cluster_word_frequency_setter, global_word_frequency_getter,
+                                                                    cluster_relative_word_frequency_setter)
 
         return cluster_word_frequency_processor
+
+

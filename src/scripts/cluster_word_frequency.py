@@ -12,7 +12,7 @@ def get_cluster_word_frequency(ids: List[str], path=DEFAULT_PATH):
     cluster_word_frequency_processor = process_module.get_cluster_word_frequency_processor()
 
     cluster_word_frequency_processor.process_cluster_word_frequency_vector(ids)
-    cluster_word_frequency_processor.process_relative_cluster_word_frequency_vector(ids)
+    cluster_word_frequency_processor.process_relative_cluster_word_frequency(ids)
 
 if __name__ == "__main__":
     """
@@ -26,4 +26,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    get_cluster_word_frequency(args.users, args.path)
+    users = args.users.split(",")
+
+    get_cluster_word_frequency(users, args.path)
