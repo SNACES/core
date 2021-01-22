@@ -12,7 +12,7 @@ def get_user_word_frequency(id, path=DEFAULT_PATH):
     user_word_frequency_processor = process_module.get_user_word_frequency_processor()
 
     user_word_frequency_processor.process_user_word_frequency_vector(id)
-    user_word_frequency_processor.process_relative_user_word_frequency_vector(id)
+    user_word_frequency_processor.process_relative_user_word_frequency(id)
 
 if __name__ == "__main__":
     """
@@ -26,8 +26,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if isinstance(args.name, list):
-        for user_ids in args.name:
-            get_user_word_frequency(args.name, args.path)
-    else:
-        get_user_word_frequency(args.name, args.path)
+    users = args.users.split(",")
+    for user in users:
+        get_user_word_frequency(user, args.path)
+
+
+    # if isinstance(args.name, list):
+    #     for user_ids in args.name:
+    #         get_user_word_frequency(args.name, args.path)
+    # else:
+    #     get_user_word_frequency(args.name, args.path)
