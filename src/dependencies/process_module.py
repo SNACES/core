@@ -29,8 +29,8 @@ class ProcessModule():
         social_graph_getter = self.dao_module.get_social_graph_getter()
         cluster_setter = self.dao_module.set_social_graph_setter()
 
-        return ClustererFactory.create_clusterer("label_propogation",
-            [social_graph_getter, cluster_setter])
+        return ClustererFactory.create_clusterer("label_propagation",
+            social_graph_getter, cluster_setter)
 
     # Core Detection
     def get_core_detector(self):
