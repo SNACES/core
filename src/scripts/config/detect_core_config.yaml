@@ -2,7 +2,44 @@ input-datastore:
     Download-Source:
         type: "Tweepy"
         config: ~
+output-datastore: ~
 inout-datastore:
+    Cluster:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Clusters"
+    LocalNeighbourhood:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "LocalNeighbourhoods"
+    ProcessedTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ProcessedTweet"
+    Ranking:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Rankings"
+    UserTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserTweets"
+    SocialGraph:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "SocialGraphs"
     Users:
         type: "Mongo"
         config:
@@ -15,9 +52,27 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
-    UserRawTweets:
+    UserWordFrequency:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "UserRawTweets"
+            collection-name: "UserWordFrequency"
+    ClusterWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ClusterWordFrequency"
+    ClusterRelativeWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "ClusterRelativeWordFrequency"
+    GlobalWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "GlobalWordFrequency"
