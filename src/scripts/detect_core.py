@@ -1,17 +1,17 @@
-from src.activity.detect_core_activity import DetectCoreActivity
 import argparse
 import time
-from src.scripts.parser.parse_config import parse_from_file
+from src.dependencies.injector import Injector
 from src.shared.utils import get_project_root
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/detect_core_config.yaml"
 
 
 def detect_core(name: int, path=DEFAULT_PATH):
-    config = parse_from_file(path)
+    injector = Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
 
-    activity = DetectCoreActivity(config)
-    activity.detect_core_by_screen_name(name)
+    core_detector = process_module.get_core_detector()
+    core_detector.detect_core_by_screen_name(name)
 
 
 if __name__ == "__main__":
