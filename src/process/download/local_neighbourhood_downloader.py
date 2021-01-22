@@ -22,19 +22,14 @@ class LocalNeighbourhoodDownloader():
         self.user_friend_getter = user_friend_getter
         self.local_neighbourhood_setter = local_neighbourhood_setter
 
-    def download_local_neighbourhood_by_screen_name(self, screen_name: str, params=None):
-        print("Downloading local neighbourhood of " + screen_name)
-
-        self.user_downloader.download_user_by_screen_name(screen_name)
-        user = self.user_getter.get_user_by_screen_name(screen_name)
-
-        user_friends_ids = self.user_friend_getter.get_user_friends_ids(user.id)
+    def download_local_neighbourhood_by_id(self, user_id: str, params=None):
+        user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
         if user_friends_ids is None:
-            self.user_friends_downloader.download_friends_ids_by_id(user.id)
-            user_friends_ids = self.user_friend_getter.get_user_friends_ids(user.id)
+            self.user_friends_downloader.download_friends_ids_by_id(user_id)
+            user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
 
         user_dict = {}
-        user_dict[str(user.id)] = user_friends_ids
+        user_dict[str(user_id)] = user_friends_ids
 
         num_ids = len(user_friends_ids)
         for i in range(num_ids):
@@ -51,7 +46,15 @@ class LocalNeighbourhoodDownloader():
 
             print_progress(i, num_ids)
 
-        local_neighbourhood = LocalNeighbourhood(seed_id=user.id, params=params, users=user_dict)
+        local_neighbourhood = LocalNeighbourhood(seed_id=user_id, params=params, users=user_dict)
         self.local_neighbourhood_setter.store_local_neighbourhood(local_neighbourhood)
 
         print("Done")
+
+    def download_local_neighbourhood_by_screen_name(self, screen_name: str, params=None):
+        print("Downloading local neighbourhood of " + screen_name)
+
+        self.user_downloader.download_user_by_screen_name(screen_name)
+        user = self.user_getter.get_user_by_screen_name(screen_name)
+
+        self.download_local_neighbourhood_by_id(id, params)
