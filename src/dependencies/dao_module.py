@@ -17,8 +17,18 @@ from src.dao.global_word_frequency.global_word_frequency_dao_factory import Glob
 
 class DAOModule():
     def __init__(self, config):
-        input_datastore = config["input-datastore"]
-        output_datastore = config["output-datastore"]
+        input_datastore = {}
+        try:
+            input_datastore = config["input-datastore"]
+        except:
+            pass
+
+        output_datastore = {}
+        try:
+            output_datastore = config["input_datastore"]
+        except:
+            pass
+
         inout_datastore = {}
         try:
             inout_datastore = config["inout-datastore"]
