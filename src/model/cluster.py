@@ -9,8 +9,8 @@ class Cluster():
     def __init__(self, base_user: str, users: List[str]):
         self.base_user = base_user
 
-        if base_user not in users:
-            users = [base_user] + users
+        if str(base_user) not in users:
+            users = [str(base_user)] + users
         self.users = users
 
     def fromDict(dict: Dict):
@@ -18,5 +18,5 @@ class Cluster():
         users = dict["users"]
 
         cluster = Cluster(base_user, users)
-        
+
         return cluster

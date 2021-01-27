@@ -29,10 +29,10 @@ class SocialGraph():
         return social_graph
 
     def toBSON(self):
-        bson = {
+        doc = {
             "seed_id": bson.int64.Int64(self.seed_id),
             "params": self.params,
             "adj_list": list(nx.generate_adjlist(self.graph))
         }
 
-        return bson
+        return doc

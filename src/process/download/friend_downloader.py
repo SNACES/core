@@ -7,8 +7,9 @@ class FriendDownloader():
     Download Twitter Followers for use in future algorithms.
     """
 
-    def __init__(self, twitter_getter, user_friend_setter, user_setter):
+    def __init__(self, twitter_getter, user_friend_getter, user_friend_setter, user_setter):
         self.twitter_getter = twitter_getter
+        self.user_friend_getter = user_friend_getter
         self.user_friend_setter = user_friend_setter
         self.user_setter = user_setter
 
@@ -16,14 +17,16 @@ class FriendDownloader():
         """
         Gets a list of friends ids of a user by id
         """
-        id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
-        self.user_friend_setter.store_friends(id, friends_user_ids)
+        if not self.friend_getter.contains_user(user_id):
+            id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
+            self.user_friend_setter.store_friends(id, friends_user_ids)
 
     def download_friends_ids_by_screen_name(self, screen_name: str, num_friends=0) -> None:
         """
         """
-        id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name, num_friends=num_friends)
-        self.user_friend_setter.store_friends(id, friends_user_ids)
+        if not self.friend_getter.contains_user(user_id):
+            id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name, num_friends=num_friends)
+            self.user_friend_setter.store_friends(id, friends_user_ids)
 
     def download_friends_users_by_id(self, user_id: str, num_friends=0) -> None:
         """

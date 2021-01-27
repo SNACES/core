@@ -15,9 +15,10 @@ class MongoClusterSetter(ClusterSetter):
         if self._contains_cluster(seed_id, params):
             pass
         else:
-            self.collection.insert_one({"seed_id": int(seed_id),
+            doc = {"seed_id": int(seed_id),
                 "params": params,
-                "clusters": [cluster.__dict__ for cluster in clusters]})
+                "clusters": [cluster.__dict__ for cluster in clusters]}
+            self.collection.insert_one(doc)
 
     def _contains_cluster(self, seed_id, params):
         return self.collection.find_one({"seed_id": bson.int64.Int64(seed_id), "params": params}) is not None

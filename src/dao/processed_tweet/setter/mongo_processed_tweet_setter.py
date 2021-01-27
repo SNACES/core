@@ -2,6 +2,7 @@ from typing import List, Dict
 from src.dao.processed_tweet.setter.processed_tweet_setter import ProcessedTweetSetter
 from src.dao.mongo.mongo_dao import MongoDAO
 from src.model.processed_tweet import ProcessedTweet
+from src.model.tweet import Tweet
 import bson
 
 
@@ -19,3 +20,6 @@ class MongoProcessedTweetSetter(ProcessedTweetSetter, MongoDAO):
 
     def _contains_processed_tweet(self, processed_tweet: ProcessedTweet) -> bool:
         return self.collection.find_one({"id": bson.int64.Int64(processed_tweet.id)}) is not None
+
+    def contains_tweet(self, tweet: Tweet) -> bool:
+        return self.collection.find_one({"id": bson.int64.Int64(tweet.id)}) is not None

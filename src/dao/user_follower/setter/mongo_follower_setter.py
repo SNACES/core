@@ -1,6 +1,6 @@
 from typing import List, Dict
 from src.model.user import User
-from src.dao.user_follower.setter import FollowerSetter
+from src.dao.user_follower.setter.follower_setter import FollowerSetter
 
 class MongoFollowerSetter(FollowerSetter):
     def __init__(self):

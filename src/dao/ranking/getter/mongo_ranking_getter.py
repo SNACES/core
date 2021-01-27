@@ -19,11 +19,6 @@ class MongoRankingGetter(RankingGetter):
             doc = self.collection.find_one({
                 "seed_id": bson.int64.Int64(seed_id),
                 "params": params})
-        
-        new_doc = {"seed_id": seed_id, "ids": doc["ranking"].keys(), "params": params}
+
+        new_doc = {"seed_id": seed_id, "ids": doc["ids"], "params": params}
         return Ranking.fromDict(new_doc)
-
-
-
-
-

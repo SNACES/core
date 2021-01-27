@@ -10,7 +10,7 @@ class RetweetsRanker(Ranker):
         self.ranking_setter = ranking_setter
         self.ranking_function_name = "retweets"
 
-    def socre_users(self, user_ids: List[str]):
+    def score_users(self, user_ids: List[str]):
         scores = {}
         for id in user_ids:
             scores[id] = 0

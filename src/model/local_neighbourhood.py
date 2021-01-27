@@ -13,7 +13,7 @@ class LocalNeighbourhood():
         self.users = users
 
     def get_user_id_list(self) -> List:
-        return self.users.keys()
+        return list(self.users.keys())
 
     def get_user_friends(self, id):
         return self.users[id]

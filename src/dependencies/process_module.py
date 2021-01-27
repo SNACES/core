@@ -28,7 +28,7 @@ class ProcessModule():
     # Clustering
     def get_clusterer(self):
         social_graph_getter = self.dao_module.get_social_graph_getter()
-        cluster_setter = self.dao_module.get_social_graph_setter()
+        cluster_setter = self.dao_module.get_cluster_setter()
 
         return ClustererFactory.create_clusterer("label_propagation",
             social_graph_getter, cluster_setter)
@@ -42,6 +42,7 @@ class ProcessModule():
         local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader()
         local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
         tweet_processor = self.get_tweet_processor()
+        social_graph_constructor = self.get_social_graph_constructor()
         clusterer = self.get_clusterer()
         cluster_getter = self.dao_module.get_cluster_getter()
         cluster_word_frequency_processor = self.get_cluster_word_frequency_processor()
@@ -52,7 +53,7 @@ class ProcessModule():
         return CoreDetector(user_getter, user_downloader,
             friend_downloader, local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
-            tweet_processor, clusterer, cluster_getter,
+            tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             ranker, ranking_getter)
 
@@ -69,11 +70,12 @@ class ProcessModule():
 
     def get_friend_downloader(self):
         twitter_getter = self.dao_module.get_twitter_getter()
+        user_friend_getter = self.dao_module.get_user_friend_getter()
         user_friend_setter = self.dao_module.get_user_friend_setter()
         user_setter = self.dao_module.get_user_setter()
 
-        friend_downloader = FriendDownloader(twitter_getter, user_friend_setter,
-            user_setter)
+        friend_downloader = FriendDownloader(twitter_getter, user_friend_getter,
+            user_friend_setter, user_setter)
 
         return friend_downloader
 

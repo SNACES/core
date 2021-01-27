@@ -10,8 +10,8 @@ class LabelPropagationClusterer(Clusterer):
         clusters = []
         for data in clusters_data:
             users = list(data)
-            if seed_id in users:
-                users.remove(seed_id)
+            if str(seed_id) in users:
+                users.remove(str(seed_id))
 
             cluster = Cluster(seed_id, users)
             clusters.append(cluster)

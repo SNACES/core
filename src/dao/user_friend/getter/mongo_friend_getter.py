@@ -17,3 +17,6 @@ class MongoFriendGetter(FriendGetter):
             return doc["friends_ids"]
         else:
             return None
+
+    def contains_user(self, user_id: str) -> bool:
+        return self.friend_collection.find_one({"user_id": bson.int64.Int64(user_id)}) is not None

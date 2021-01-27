@@ -15,4 +15,5 @@ class MongoUserGetter(UserGetter):
         return User.fromDict(self.user_collection.find_one({"id": bson.int64.Int64(user_id)}))
 
     def get_user_by_screen_name(self, screen_name: str) -> User:
+        print(self.user_collection)
         return User.fromDict(self.user_collection.find_one({"screen_name": screen_name}))
