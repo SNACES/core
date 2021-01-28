@@ -46,7 +46,7 @@ class DownloadLocalNeighbourhoodActivity():
 
             user_downloader = TwitterUserDownloader(twitter_getter,
                 user_setter)
-            user_friends_downloader = FriendDownloader(twitter_getter,
+            user_friends_downloader = FriendDownloader(twitter_getter, user_friend_getter,
                 user_friend_setter, user_setter)
 
             local_neighbourhood_downloader = LocalNeighbourhoodDownloader(
