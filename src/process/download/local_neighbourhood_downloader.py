@@ -55,6 +55,7 @@ class LocalNeighbourhoodDownloader():
         print("Downloading local neighbourhood of " + screen_name)
 
         self.user_downloader.download_user_by_screen_name(screen_name)
-        user = self.user_getter.get_user_by_screen_name(screen_name)
+        # user = self.user_getter.get_user_by_screen_name(screen_name)
+        id = self.user_getter.get_user_by_screen_name(screen_name).get_id()
 
         self.download_local_neighbourhood_by_id(id, params)

@@ -116,3 +116,6 @@ class User:
 
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)
+
+    def get_id(self):
+        return self.id

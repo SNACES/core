@@ -31,7 +31,7 @@ class TwitterFollowerDownloader():
 
         @return a list of ids of followers for the given user
         """
-        id, followers_users = self.tweepy_getter.get_followers_users_by_id(id, num_followers)
+        id, followers_users = self.tweepy_getter.get_followers_users_by_id(user_id, num_followers)
 
         self.user_setter.store_users(followers_users)
 

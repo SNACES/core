@@ -17,16 +17,16 @@ class FriendDownloader():
         """
         Gets a list of friends ids of a user by id
         """
-        if not self.friend_getter.contains_user(user_id):
+        if not self.user_friend_getter.contains_user(user_id):
             id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
             self.user_friend_setter.store_friends(id, friends_user_ids)
 
     def download_friends_ids_by_screen_name(self, screen_name: str, num_friends=0) -> None:
         """
         """
-        if not self.friend_getter.contains_user(user_id):
-            id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name, num_friends=num_friends)
-            self.user_friend_setter.store_friends(id, friends_user_ids)
+        #if not self.user_friend_getter.contains_user(user_id):
+        id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name, num_friends=num_friends)
+        self.user_friend_setter.store_friends(id, friends_user_ids)
 
     def download_friends_users_by_id(self, user_id: str, num_friends=0) -> None:
         """
