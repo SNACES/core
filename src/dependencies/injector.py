@@ -1,6 +1,7 @@
 from src.dependencies.dao_module import DAOModule
 from src.dependencies.process_module import ProcessModule
 from src.scripts.parser.parse_config import parse_from_file
+from src.shared.logger_factory import LoggerFactory
 
 class Injector():
     """
@@ -31,5 +32,8 @@ class Injector():
     def get_injector_from_file(path: str):
         config = parse_from_file(path)
         injector = Injector(config)
+
+        log_config = config.get("Logging", {})
+        LoggerFactory.init_root_logger(log_config)
 
         return injector

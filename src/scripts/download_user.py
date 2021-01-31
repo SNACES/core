@@ -1,9 +1,11 @@
 import argparse
 from src.shared.utils import get_project_root
 from src.dependencies.injector import Injector
+from src.shared.logger_factory import LoggerFactory
+
+log = LoggerFactory.logger(__name__)
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/download_user_config.yaml"
-
 
 def download_user(name: str, path=DEFAULT_PATH):
     injector = Injector.get_injector_from_file(path)
@@ -11,7 +13,9 @@ def download_user(name: str, path=DEFAULT_PATH):
 
     user_downloader = process_module.get_user_downloader()
 
+    log.info("Starting Download user with name: %s" % (name))
     user_downloader.download_user_by_screen_name(name)
+    log.info("Done downloading user: %s" % (name))
 
 if __name__ == "__main__":
     """
