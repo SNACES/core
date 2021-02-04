@@ -3,7 +3,7 @@ conf/credentials.py
 **/.vscode
 **/log.txt
 **/*.pyc
-
+*.log
 src/twitter-download/user_list
 src/clustering/label-propagation/label_propagation_results
 SNACES.egg-info/
