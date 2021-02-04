@@ -25,7 +25,7 @@ class DAOModule():
 
         output_datastore = {}
         try:
-            output_datastore = config["input_datastore"]
+            output_datastore = config["output_datastore"]
         except:
             pass
 
