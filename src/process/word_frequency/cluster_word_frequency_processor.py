@@ -3,6 +3,9 @@ from src.model.word_frequency_vector import WordFrequencyVector
 from src.model.user_word_frequency_vector import UserWordFrequencyVector
 from src.model.cluster_word_frequency_vector import ClusterWordFrequencyVector
 from copy import deepcopy
+from src.shared.logger_factory import LoggerFactory
+
+log = LoggerFactory.logger(__name__)
 
 
 class ClusterWordFrequencyProcessor():
@@ -27,6 +30,8 @@ class ClusterWordFrequencyProcessor():
         # cluster_words = self.cluster_word_frequency_vector_getter.get_cluster_word_frequency_vector(ids)
         self.cluster_word_frequency_vector_setter.store_cluster_word_frequency_vector(ids, cluster_word_frequency_dict)     
 
+        log.debug("Done process cluster word frequency")
+
     def process_relative_cluster_word_frequency(self, ids: List[str]):
         cluster_word_frequency_vc = self.cluster_word_frequency_vector_getter.get_cluster_word_frequency_by_ids(ids).get_words()
         global_word_count_vc = self.global_word_frequency_vector_getter.get_global_word_frequency()
@@ -34,6 +39,8 @@ class ClusterWordFrequencyProcessor():
         relative_cluster_word_frequency = self._gen_relative_cluster_word_frequency(cluster_word_frequency_vc, global_word_count_vc)
         self.cluster_relative_word_frequency_vector_setter.store_cluster_relative_word_frequency_vector(ids, relative_cluster_word_frequency)
     
+        log.debug("Done process cluster relative word frequency")
+        
     def _gen_relative_cluster_word_frequency(self, user_relative_word_count, global_word_count):
         merge_count = self._merge_word_count(user_relative_word_count, global_word_count)
         user_word_frequency = self._gen_word_frequency(user_relative_word_count)
