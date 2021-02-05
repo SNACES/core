@@ -1,4 +1,5 @@
 import logging
+import math
 
 
 FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -24,4 +25,17 @@ class LoggerFactory():
 
         logger.addHandler(file_handler)
 
+        logger.log_progress = lambda self, i, total: _log_progress(self, i, total)
+
         return logger
+
+def _log_progress(log, i, total):
+    percent_done = i/total * 100
+    if _passes_interval(i, total, 2):
+        log.info("Done " + str(math.floor(percent_done)) + "% of process")
+
+def _passes_interval(i, total, interval):
+    current_percent = i/total * 100
+    previous_percent = (i - 1)/total * 100
+
+    return int(current_percent/interval) > int(previous_percent/interval)

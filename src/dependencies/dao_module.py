@@ -17,23 +17,9 @@ from src.dao.global_word_frequency.global_word_frequency_dao_factory import Glob
 
 class DAOModule():
     def __init__(self, config):
-        input_datastore = {}
-        try:
-            input_datastore = config["input-datastore"]
-        except:
-            pass
-
-        output_datastore = {}
-        try:
-            output_datastore = config["output-datastore"]
-        except:
-            pass
-
-        inout_datastore = {}
-        try:
-            inout_datastore = config["inout-datastore"]
-        except:
-            pass
+        input_datastore = config.get("input-datastore", {})
+        output_datastore = config.get("output-datastore", {})
+        inout_datastore = config.get("inout-datastore", {})
 
         # Set input datastore to be the union of input and inout
         # (with inout taking priority)

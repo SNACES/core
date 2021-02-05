@@ -7,6 +7,9 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 from src.shared.utils import print_progress
 from typing import Dict
 import math
+from src.shared.logger_factory import LoggerFactory
+
+log = LoggerFactory.logger(__name__)
 
 
 class LocalNeighbourhoodDownloader():
@@ -44,18 +47,17 @@ class LocalNeighbourhoodDownloader():
 
             user_dict[str(id)] = [id for id in user_friends if (id in user_friends_ids)]
 
-            print_progress(i, num_ids)
+            log.log_progress(log, i, num_ids)
 
         local_neighbourhood = LocalNeighbourhood(seed_id=user_id, params=params, users=user_dict)
         self.local_neighbourhood_setter.store_local_neighbourhood(local_neighbourhood)
 
-        print("Done")
+        log.debug("Done downloading local neighbourhood")
 
     def download_local_neighbourhood_by_screen_name(self, screen_name: str, params=None):
-        print("Downloading local neighbourhood of " + screen_name)
+        log.debug("Downloading local neighbourhood of " + str(screen_name))
 
         self.user_downloader.download_user_by_screen_name(screen_name)
-        # user = self.user_getter.get_user_by_screen_name(screen_name)
         id = self.user_getter.get_user_by_screen_name(screen_name).get_id()
 
         self.download_local_neighbourhood_by_id(id, params)
