@@ -69,7 +69,7 @@ class CoreDetector():
     def loop(self, user_id: str, prev_wf_vector=None, default_cluster=0, v=True):
         # TODO Add flag for skipping download step
         log.info("Downloading User")
-        self.user_downloader.download_user_by_id(user_id)
+        # self.user_downloader.download_user_by_id(user_id)
 
         log.info("Downloading User Friends")
         self.user_friends_downloader.download_friends_users_by_id(user_id)

@@ -11,7 +11,6 @@ from src.shared.logger_factory import LoggerFactory
 
 log = LoggerFactory.logger(__name__)
 
-
 class LocalNeighbourhoodDownloader():
     def __init__(self, user_downloader: TwitterUserDownloader,
             user_friends_downloader: FriendDownloader,
@@ -47,15 +46,16 @@ class LocalNeighbourhoodDownloader():
 
             user_dict[str(id)] = [id for id in user_friends if (id in user_friends_ids)]
 
+            log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
             log.log_progress(log, i, num_ids)
 
         local_neighbourhood = LocalNeighbourhood(seed_id=user_id, params=params, users=user_dict)
         self.local_neighbourhood_setter.store_local_neighbourhood(local_neighbourhood)
 
-        log.debug("Done downloading local neighbourhood")
+        log.info("Done downloading local neighbourhood")
 
     def download_local_neighbourhood_by_screen_name(self, screen_name: str, params=None):
-        log.debug("Downloading local neighbourhood of " + str(screen_name))
+        log.info("Downloading local neighbourhood of " + str(screen_name))
 
         self.user_downloader.download_user_by_screen_name(screen_name)
         id = self.user_getter.get_user_by_screen_name(screen_name).get_id()

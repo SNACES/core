@@ -34,6 +34,6 @@ class Injector():
         injector = Injector(config)
 
         log_config = config.get("Logging", {})
-        LoggerFactory.init_root_logger(log_config)
+        LoggerFactory.init_root_logger("snaces2.log")
 
         return injector
