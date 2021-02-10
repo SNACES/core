@@ -21,6 +21,7 @@ class TwitterUserDownloader():
 
     def download_user_by_id(self, user_id: int):
         log.debug("calling twitter getter with user id %s" % (str(user_id)))
-        user = self.twitter_getter.get_user_by_id(user_id)
-        log.debug("storing user %s" % (str(user)))
-        self.user_setter.store_user(user)
+        if not self.user_setter.contains(user_id):
+            user = self.twitter_getter.get_user_by_id(user_id)
+            log.debug("storing user %s" % (str(user)))
+            self.user_setter.store_user(user)

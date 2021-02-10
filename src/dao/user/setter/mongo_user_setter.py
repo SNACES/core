@@ -14,10 +14,10 @@ class MongoUserSetter(UserSetter):
     def store_user(self, user: User) -> None:
         doc = user.__dict__
 
-        if self._contains_user(user):
+        if self.contains_user(user):
             self.user_collection.find_one_and_replace({"id": bson.int64.Int64(user.id)}, doc)
         else:
             self.user_collection.insert_one(doc)
 
-    def _contains_user(self, user: User) -> bool:
+    def contains_user(self, user: User) -> bool:
         return self.user_collection.find_one({"id": bson.int64.Int64(user.id)}) is not None
