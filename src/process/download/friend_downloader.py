@@ -45,7 +45,7 @@ class FriendDownloader():
             friends_users_ids = self.user_friend_getter.get_user_friends_ids(user_id)
             assert friends_users_ids is not None
 
-            for user_id in friends_user_ids:
+            for user_id in friends_users_ids:
                 assert self.user_setter.contains_user(user_id)
             log.info("Skipping user friends download, since all users have been downloaded")
         except Exception as e:
