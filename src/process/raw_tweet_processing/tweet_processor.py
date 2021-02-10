@@ -22,7 +22,7 @@ class TweetProcessor():
             for tweet in tweets:
                 if not self.processed_tweet_setter.contains_tweet(tweet):
                     processed_tweet = ProcessedTweet.fromTweet(tweet)
-                    self.processed_tweet_setter.store_processed_tweets(processed_tweets)
+                    self.processed_tweet_setter.store_processed_tweet(processed_tweet)
 
     def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
         print("Starting")
