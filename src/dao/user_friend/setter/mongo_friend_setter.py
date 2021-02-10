@@ -14,10 +14,10 @@ class MongoFriendSetter(FriendSetter):
     def store_friends(self, user_id: str, friends_ids: List[str]):
         doc = {"user_id": bson.int64.Int64(user_id), "friends_ids": friends_ids}
 
-        if self._contains_user(user_id):
+        if self.contains_user(user_id):
             self.friend_collection.find_one_and_replace({"user_id": bson.int64.Int64(user_id)}, doc)
         else:
             self.friend_collection.insert_one(doc)
 
-    def _contains_user(self, user_id: str) -> bool:
+    def contains_user(self, user_id: str) -> bool:
         return self.friend_collection.find_one({"user_id": bson.int64.Int64(user_id)}) is not None
