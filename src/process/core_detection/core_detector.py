@@ -61,8 +61,12 @@ class CoreDetector():
             if curr_wf_vector is not None:
                 prev_wf_vectors.append(curr_wf_vector)
 
-            curr_user_id, curr_wf_vector = self.loop(curr_user_id,
-                prev_wf_vector=curr_wf_vector, default_cluster=0)
+            try:
+                curr_user_id, curr_wf_vector = self.loop(curr_user_id,
+                    prev_wf_vector=curr_wf_vector, default_cluster=0)
+            except Exception as e:
+                log.exception(e)
+                exit()
 
             # TODO: Add check for if wf vector is drifting
 

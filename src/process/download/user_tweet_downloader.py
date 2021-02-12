@@ -43,10 +43,7 @@ class UserTweetDownloader():
 
     def stream_tweets_by_user_list(self, user_ids: List[str]):
         subscriber = self.Subscriber(self.raw_tweet_setter)
-        try:
-            self.twitter_getter.stream_tweets_by_user_id_list(user_ids, subscriber)
-        except Exception as e:
-            raise e
+        self.twitter_getter.stream_tweets_by_user_id_list(user_ids, subscriber)
 
     class Subscriber():
         def __init__(self, raw_tweet_setter: RawTweetSetter):

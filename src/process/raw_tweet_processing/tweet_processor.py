@@ -3,8 +3,9 @@ from src.model.processed_tweet import ProcessedTweet
 from src.model.local_neighbourhood import LocalNeighbourhood
 from src.dao.raw_tweet.getter.raw_tweet_getter import RawTweetGetter
 from src.dao.processed_tweet.setter.processed_tweet_setter import ProcessedTweetSetter
-from src.shared.utils import print_progress
+from src.shared.logger_factory import LoggerFactory
 
+log = LoggerFactory.logger(__name__)
 
 class TweetProcessor():
     def __init__(self, raw_tweet_getter: RawTweetGetter, processed_tweet_setter: ProcessedTweetSetter):
@@ -23,15 +24,12 @@ class TweetProcessor():
                 if not self.processed_tweet_setter.contains_tweet(tweet):
                     processed_tweet = ProcessedTweet.fromTweet(tweet)
                     self.processed_tweet_setter.store_processed_tweet(processed_tweet)
+            log.info("Processed " + str(len(tweets)) + " Tweets for " + str(user_id))
 
     def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
-        print("Starting")
-
         user_ids = local_neighbourhood.get_user_id_list()
         num_ids = len(user_ids)
         for i in range(num_ids):
             user_id = user_ids[i]
             self.process_tweets_by_user_id(user_id)
-            print_progress(i, num_ids)
-
-        print("Done")
+            log.log_progress(log, i, num_ids)
