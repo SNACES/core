@@ -16,8 +16,8 @@ def detect_core(name: int, path=DEFAULT_PATH):
 
         core_detector = process_module.get_core_detector()
         core_detector.detect_core_by_screen_name(name)
-    except Error as e:
-        log.error(e)
+    except Exception as e:
+        log.exception(e)
         exit()
 
 
