@@ -7,12 +7,23 @@ from src.model.word_frequency_vector import WordFrequencyVector
 import json
 import datetime
 
+class Processor():
+    def __init__(self):
+        # Remove stop words
+        stopwords = set(nltk.corpus.stopwords.words('english'))
+        stopwords.add('amp')
 
+        sno = nltk.stem.SnowballStemmer('english')
+
+        self.stopwords = stopwords
+        self.sno = sno
+
+
+PROCESSOR = Processor()
 class ProcessedTweet:
     """
     A class to represent a processed tweet
     """
-
     def __init__(self, id: int, user_id: int, text: Dict):
         """
         Default constructor for a processed tweet
@@ -109,17 +120,12 @@ class ProcessedTweet:
         processed_text_list = list(filter(lambda x: x != '', processed_text_list))
 
         # Run stemming: it's important to run this first before stop words for cases such as that's
-        sno = nltk.stem.SnowballStemmer('english')
-        processed_text_list = [sno.stem(word) for word in processed_text_list]
-
-        # Remove stop words
-        stopwords = set(nltk.corpus.stopwords.words('english'))
-        stopwords.add('amp')
+        processed_text_list = [PROCESSOR.sno.stem(word) for word in processed_text_list]
 
         word_dict = {}
 
         for word in processed_text_list:
-            if word not in stopwords:
+            if word not in PROCESSOR.stopwords:
                 if word in word_dict:
                     word_dict[word] += 1
                 else:

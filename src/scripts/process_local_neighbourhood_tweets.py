@@ -1,18 +1,26 @@
 from src.activity.process_local_neighbourhood_tweets_activity import ProcessLocalNeighbourhoodTweetsActivity
 import argparse
 import time
-from src.scripts.parser.parse_config import parse_from_file
+from src.dependencies.injector import Injector
 from src.shared.utils import get_project_root
+from src.shared.logger_factory import LoggerFactory
+
+log = LoggerFactory.logger(__name__)
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/process_local_neighbourhood_tweets_config.yaml"
 
 
 def process_local_neighbourhood_tweets(id: str, path=DEFAULT_PATH):
-    config = parse_from_file(path)
+    injector = Injector.get_injector_from_file(path)
 
-    activity = ProcessLocalNeighbourhoodTweetsActivity(config)
-    activity.process_local_neighbourhood_tweets(id)
+    dao_module = injector.get_dao_module()
+    process_module = injector.get_process_module()
 
+    local_neighbourhood_getter = dao_module.get_local_neighbourhood_getter()
+    tweet_processor = process_module.get_tweet_processor()
+
+    local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(id)
+    tweet_processor.process_tweets_by_local_neighbourhood(local_neighbourhood)
 
 if __name__ == "__main__":
     """

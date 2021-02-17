@@ -74,7 +74,7 @@ class BufferedUserTweetGetter():
             self.api_threads_running -= 1
 
     def do_work(self):
-        while self.api_threads_running != 0:
+        while self.api_threads_running != 0 or not self.r.empty():
             try:
                 data = self.r.get(block=True, timeout=5)
                 self.subscriber.on_status(data)

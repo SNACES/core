@@ -20,10 +20,11 @@ class TweetProcessor():
     def process_tweets_by_user_id(self, user_id: str):
         tweets = self.raw_tweet_getter.get_tweets_by_user_id(user_id)
         if tweets is not None:
+            ids = self.processed_tweet_setter.get_ids_by_user(user_id)
             for tweet in tweets:
-                if not self.processed_tweet_setter.contains_tweet(tweet):
+                if tweet.id not in ids:
                     processed_tweet = ProcessedTweet.fromTweet(tweet)
-                    self.processed_tweet_setter.store_processed_tweet(processed_tweet)
+                    self.processed_tweet_setter.store_processed_tweet(processed_tweet, check=False)
             log.info("Processed " + str(len(tweets)) + " Tweets for " + str(user_id))
 
     def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
