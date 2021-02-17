@@ -24,6 +24,9 @@ class MongoRawTweetSetter(RawTweetSetter):
     def _contains_tweet(self, tweet: Tweet) -> bool:
         return self.collection.find_one({"id": bson.int64.Int64(tweet.id)}) is not None
 
+    def get_num_user_tweets(self, user_id) -> int:
+        return self.collection.count({"user_id": bson.int64.Int64(user_id)})
+
     def get_num_tweets(self) -> int:
         """
         Returns the number of tweets in the mongo collection
