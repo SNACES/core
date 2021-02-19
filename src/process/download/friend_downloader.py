@@ -45,11 +45,11 @@ class FriendDownloader():
             friends_users_ids = self.user_friend_getter.get_user_friends_ids(user_id)
             assert friends_users_ids is not None
 
-            for user_id in friends_users_ids:
-                assert self.user_setter.contains_user(user_id)
+            for id in friends_users_ids:
+                assert self.user_setter.contains_user(id)
             log.info("Skipping user friends download, since all users have been downloaded")
         except Exception as e:
-            log.info("Downloading user friends")
+            log.info("Downloading user friends for user " + str(user_id))
             id, friends_users = self.twitter_getter.get_friends_users_by_user_id(user_id, num_friends=num_friends)
 
             self.user_setter.store_users(friends_users)
