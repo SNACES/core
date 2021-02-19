@@ -64,7 +64,7 @@ class CoreDetector():
                 prev_wf_vectors.append(curr_wf_vector)
 
             try:
-                curr_user_id, curr_wf_vector = self.loop(curr_user_id,
+                curr_user_id, curr_wf_vector = self.loop(int(curr_user_id),
                     prev_wf_vector=curr_wf_vector, default_cluster=0)
             except Exception as e:
                 log.exception(e)
