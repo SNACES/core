@@ -1,6 +1,7 @@
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
+from src.process.data_cleaning.friends_cleaner import FriendsCleaner
 from src.process.download.follower_downloader import TwitterFollowerDownloader
 from src.process.download.friend_downloader import FriendDownloader
 from src.process.download.local_neighbourhood_downloader import LocalNeighbourhoodDownloader
@@ -38,6 +39,7 @@ class ProcessModule():
         user_getter = self.dao_module.get_user_getter()
         user_downloader = self.get_user_downloader()
         friend_downloader = self.get_friend_downloader()
+        friends_cleaner = self.get_friends_cleaner()
         local_neighbourhood_downloader = self.get_local_neighbourhood_downloader()
         local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader()
         local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
@@ -51,13 +53,24 @@ class ProcessModule():
         ranking_getter = self.dao_module.get_ranking_getter()
 
         return CoreDetector(user_getter, user_downloader,
-            friend_downloader, local_neighbourhood_downloader,
+            friend_downloader, friends_cleaner, local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             ranker, ranking_getter)
 
-    # Download
+    # Data Cleaning
+    def get_friends_cleaner(self):
+        user_friend_getter = self.dao_module.get_user_friend_getter()
+        cleaned_user_friend_setter = self.dao_module.get_cleaned_user_friend_setter()
+        user_getter = self.dao_module.get_user_getter()
+
+        friends_cleaner = FriendsCleaner(user_friend_getter,
+            cleaned_user_friend_setter, user_getter)
+
+        return friends_cleaner
+
+    # Downloaduser_setter
     def get_follower_downloader(self):
         twitter_getter = self.dao_module.get_twitter_getter()
         user_follower_setter = self.dao_module.get_user_follower_setter()
@@ -84,10 +97,11 @@ class ProcessModule():
         friend_downloader = self.get_friend_downloader()
         user_getter = self.dao_module.get_user_getter()
         user_friend_getter = self.dao_module.get_user_friend_getter()
+        cleaned_user_friend_getter = self.dao_module.get_cleaned_user_friend_getter()
         local_neighbourhood_setter = self.dao_module.get_local_neighbourhood_setter()
 
         local_neighbourhood_downloader = LocalNeighbourhoodDownloader(user_downloader,
-            friend_downloader, user_getter, user_friend_getter, local_neighbourhood_setter)
+            friend_downloader, user_getter, user_friend_getter, cleaned_user_friend_getter, local_neighbourhood_setter)
 
         return local_neighbourhood_downloader
 

@@ -11,6 +11,7 @@ class CoreDetector():
     """
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
+            friends_cleaner,
             local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
@@ -19,6 +20,7 @@ class CoreDetector():
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
+        self.friends_cleaner = friends_cleaner
         self.local_neighbourhood_downloader = local_neighbourhood_downloader
         self.local_neighbourhood_tweet_downloader = local_neighbourhood_tweet_downloader
         self.local_neighbourhood_getter = local_neighbourhood_getter
@@ -55,7 +57,7 @@ class CoreDetector():
 
         prev_wf_vectors = []
         curr_wf_vector = None
-        while curr_user_id not in prev_users:
+        while str(curr_user_id) not in prev_users:
 
             prev_users.append(str(curr_user_id))
             if curr_wf_vector is not None:
@@ -77,6 +79,9 @@ class CoreDetector():
 
         log.info("Downloading User Friends")
         self.user_friends_downloader.download_friends_users_by_id(user_id)
+
+        log.info("Cleaning Friends List")
+        self.friends_cleaner.clean_friends(user_id)
 
         log.info("Downloading Local Neighbourhood")
         self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)

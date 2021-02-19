@@ -4,8 +4,9 @@ import time
 from src.dependencies.injector import Injector
 from src.shared.utils import get_project_root
 from src.shared.logger_factory import LoggerFactory
+import logging
 
-log = LoggerFactory.logger(__name__)
+log = LoggerFactory.logger(__name__, logging.INFO)
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/default_config.yaml"
 

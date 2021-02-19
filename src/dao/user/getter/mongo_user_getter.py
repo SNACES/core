@@ -12,8 +12,11 @@ class MongoUserGetter(UserGetter):
         self.user_collection = user_collection
 
     def get_user_by_id(self, user_id: str) -> User:
-        return User.fromDict(self.user_collection.find_one({"id": bson.int64.Int64(user_id)}))
+        doc = self.user_collection.find_one({"id": bson.int64.Int64(user_id)})
+        if doc is not None:
+            return User.fromDict(doc)
+        else:
+            return None
 
     def get_user_by_screen_name(self, screen_name: str) -> User:
-        print(self.user_collection)
         return User.fromDict(self.user_collection.find_one({"screen_name": screen_name}))

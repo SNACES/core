@@ -16,17 +16,20 @@ class LocalNeighbourhoodDownloader():
             user_friends_downloader: FriendDownloader,
             user_getter: UserGetter,
             user_friend_getter: FriendGetter,
+            cleaned_user_friend_getter: FriendGetter,
             local_neighbourhood_setter: LocalNeighbourhoodSetter):
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
 
         self.user_getter = user_getter
         self.user_friend_getter = user_friend_getter
+        self.cleaned_user_friend_getter = cleaned_user_friend_getter
         self.local_neighbourhood_setter = local_neighbourhood_setter
 
     def download_local_neighbourhood_by_id(self, user_id: str, params=None):
-        user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
+        user_friends_ids = self.cleaned_user_friend_getter.get_user_friends_ids(user_id)
         if user_friends_ids is None:
+            log.info("Could not find user_friend list")
             self.user_friends_downloader.download_friends_ids_by_id(user_id)
             user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
 
@@ -40,13 +43,15 @@ class LocalNeighbourhoodDownloader():
             user_friends = self.user_friend_getter.get_user_friends_ids(id)
             if user_friends is None:
                 self.user_friends_downloader.download_friends_ids_by_id(id)
+                log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
                 user_friends = self.user_friend_getter.get_user_friends_ids(id)
+            else:
+                log.info("Already stored " + str(len(user_friends)) + " user friends for " + str(id))
 
             assert user_friends is not None
 
             user_dict[str(id)] = [id for id in user_friends if (id in user_friends_ids)]
 
-            log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
             log.log_progress(log, i, num_ids)
 
         local_neighbourhood = LocalNeighbourhood(seed_id=user_id, params=params, users=user_dict)

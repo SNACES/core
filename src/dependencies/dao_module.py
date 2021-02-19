@@ -115,6 +115,14 @@ class DAOModule():
         return UserFriendDAOFactory.create_setter(
             self.output_datastore["Friends"])
 
+    def get_cleaned_user_friend_getter(self):
+        return UserFriendDAOFactory.create_getter(
+            self.input_datastore["CleanedFriends"])
+
+    def get_cleaned_user_friend_setter(self):
+        return UserFriendDAOFactory.create_setter(
+            self.output_datastore["CleanedFriends"])
+
     def get_user_word_frequency_getter(self):
         return UserWordFrequencyDAOFactory.create_getter(
             self.input_datastore["UserWordFrequency"])

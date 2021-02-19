@@ -52,7 +52,7 @@ class UserTweetDownloader():
                 user = self.user_getter.get_user_by_id(user_id)
                 count = self.raw_tweet_setter.get_num_user_tweets(user_id)
 
-                if count >= 3000 or (user is not None and user.statuses_count >= count):
+                if count >= 3000 or (user is not None and user.statuses_count <= count):
                     log.info("Skipping " + str(user_id))
                 else:
                     modified_list.append(user_id)
