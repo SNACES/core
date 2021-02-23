@@ -1,0 +1,23 @@
+input-datastore:
+    Download-Source:
+        type: "Tweepy"
+        config: ~
+inout-datastore:
+    Users:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Users"
+    UserTweet:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserTweets"
+    Friends:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Friends"

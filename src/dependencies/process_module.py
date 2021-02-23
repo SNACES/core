@@ -1,6 +1,7 @@
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
+from src.process.community_detection.community_detection import CommunityDetector
 from src.process.data_cleaning.friends_cleaner import FriendsCleaner
 from src.process.download.follower_downloader import TwitterFollowerDownloader
 from src.process.download.friend_downloader import FriendDownloader
@@ -10,6 +11,8 @@ from src.process.download.tweet_downloader import TwitterTweetDownloader
 from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.retweets_ranker import RetweetsRanker
+from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
+from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
 from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
 from src.process.social_graph.social_graph_constructor import SocialGraphConstructor
 from src.process.word_frequency.user_word_frequency_processor import UserWordFrequencyProcessor
@@ -57,7 +60,19 @@ class ProcessModule():
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
-            ranker, ranking_getter)
+            ranker, ranking_getter)    
+
+    def get_community_detector(self):
+        user_getter = self.dao_module.get_user_getter()
+        user_downloader = self.get_user_downloader()
+        user_friends_downloader = self.get_friend_downloader()
+        user_friends_getter = self.dao_module.get_user_friend_getter()
+        user_tweets_downloader = self.get_user_tweet_downloader()
+
+        community_ranker = self.get_community_ranker()
+
+        return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
+            user_tweets_downloader, user_friends_getter, community_ranker)       
 
     # Data Cleaning
     def get_friends_cleaner(self):
@@ -151,6 +166,16 @@ class ProcessModule():
 
         ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
+        return ranker
+
+    def get_community_ranker(self, function_name = "tweet"):
+        user_tweets_getter = self.dao_module.get_user_follower_getter()
+        if function_name == "tweet":
+            ranker = CommunityTweetsRanker(user_tweets_getter)
+        elif function_name == "retweet":
+            ranker = CommunityRetweetsRanker(user_tweets_getter)
+        else:
+            raise NotImplementedError("function name not identified")
         return ranker
 
     def get_followers_ranker(self):
