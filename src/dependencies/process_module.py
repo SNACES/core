@@ -168,8 +168,8 @@ class ProcessModule():
 
         return ranker
 
-    def get_community_ranker(self, function_name = "tweet"):
-        user_tweets_getter = self.dao_module.get_user_follower_getter()
+    def get_community_ranker(self, function_name = "retweet"):
+        user_tweets_getter = self.dao_module.get_user_tweet_getter()
         if function_name == "tweet":
             ranker = CommunityTweetsRanker(user_tweets_getter)
         elif function_name == "retweet":
