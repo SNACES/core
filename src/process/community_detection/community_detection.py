@@ -28,7 +28,7 @@ class CommunityDetector():
         current_community = seed_set
         new_added_users = seed_set
 
-        for _ in iteration:
+        for _ in range(iteration):
             current_community, new_added_users = self.loop(current_community, new_added_users)
         return current_community
 
