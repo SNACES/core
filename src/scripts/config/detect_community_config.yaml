@@ -21,3 +21,11 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
+    Community:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Community"
+
+

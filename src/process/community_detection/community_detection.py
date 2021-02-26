@@ -9,13 +9,14 @@ class CommunityDetector():
     """
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_ranker):
+            user_tweets_downloader, user_friends_getter, community_ranker, community_setter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
         self.user_tweets_downloader = user_tweets_downloader
         self.user_friends_getter = user_friends_getter
         self.community_ranker = community_ranker
+        self.community_setter = community_setter
 
     def detect_community_by_screen_name(self, screen_names: List):
         user_ids = []
@@ -46,10 +47,12 @@ class CommunityDetector():
         added_users = []
 
         i = 0
-        while (len(added_users) <= 10) and (ranked_ids[i] not in current_community):
+        while (len(added_users) < 10) and (ranked_ids[i] not in current_community):
             added_users.append(ranked_ids[i])
             i += 1
-        
+
+        self.community_setter.store_community(i, added_users, current_community)
+
         current_community.extend(added_users)
 
         print(current_community)

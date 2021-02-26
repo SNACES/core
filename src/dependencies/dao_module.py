@@ -13,6 +13,7 @@ from src.dao.user_relative_word_frequency.user_relative_word_frequency_dao_facto
 from src.dao.cluster_word_frequency.cluster_word_frequency_dao_factory import ClusterWordFrequencyDAOFactory
 from src.dao.cluster_relative_word_frequency.cluster_relative_word_frequency_dao_factory import ClusterRelativeWordFrequencyDAOFactory
 from src.dao.global_word_frequency.global_word_frequency_dao_factory import GlobalWordFrequencyDAOFactory
+from src.dao.community.community_dao_factory import CommunityDAOFactory
 
 
 class DAOModule():
@@ -162,3 +163,7 @@ class DAOModule():
     def get_user_relative_word_frequency_setter(self):
         return UserRelativeWordFrequencyDAOFactory.create_setter(
             self.output_datastore["UserRelativeWordFrequency"])
+    
+    def get_community_setter(self):
+        return CommunityDAOFactory.create_setter(
+            self.output_datastore["Community"])
