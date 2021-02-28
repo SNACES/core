@@ -2,7 +2,7 @@ from typing import List
 
 
 class CommunityRanker():
-    def rank(self, user_ids:List, params):
+    def rank(self, user_ids:List):
         scores = self.score_users(user_ids)
 
         ranked_ids = list(sorted(scores, key=scores.get, reverse=True))

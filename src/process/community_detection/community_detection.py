@@ -40,7 +40,7 @@ class CommunityDetector():
         self.user_tweets_downloader.download_user_tweets_by_user_list(new_added_users)
 
         local_expansion = []
-        for user_id in new_added_users:
+        for user_id in current_community:
             local_expansion.extend(self.user_friends_getter.get_user_friends_ids(user_id))
 
         ranked_ids = self.community_ranker.rank(local_expansion)
