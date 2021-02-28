@@ -25,15 +25,15 @@ class CommunityDetector():
             user_ids.append(user.id)
         self.detect_community(user_ids)
 
-    def detect_community(self, seed_set: List, iteration = 1):
+    def detect_community(self, seed_set: List, iteration = 10):
         current_community = seed_set
         new_added_users = seed_set
 
-        for _ in range(iteration):
-            current_community, new_added_users = self.loop(current_community, new_added_users)
+        for index in range(iteration):
+            current_community, new_added_users = self.loop(current_community, new_added_users, index+1)
         return current_community
 
-    def loop(self, current_community: List, new_added_users: List):
+    def loop(self, current_community: List, new_added_users: List, iteration: int):
         for user_id in new_added_users:
             self.user_downloader.download_user_by_id(user_id)
             self.user_friends_downloader.download_friends_users_by_id(user_id)
@@ -51,7 +51,7 @@ class CommunityDetector():
             added_users.append(ranked_ids[i])
             i += 1
 
-        self.community_setter.store_community(i, added_users, current_community)
+        self.community_setter.store_community(iteration, added_users, current_community)
 
         current_community.extend(added_users)
 
