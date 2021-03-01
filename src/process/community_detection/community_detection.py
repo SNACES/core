@@ -47,8 +47,9 @@ class CommunityDetector():
         added_users = []
 
         i = 0
-        while (len(added_users) < 10) and (ranked_ids[i] not in current_community):
-            added_users.append(ranked_ids[i])
+        while len(added_users) < 10 and i < len(ranked_ids):
+            if ranked_ids[i] not in current_community:
+                added_users.append(ranked_ids[i])
             i += 1
 
         self.community_setter.store_community(iteration, added_users, current_community)
