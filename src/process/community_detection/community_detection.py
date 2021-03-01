@@ -1,6 +1,9 @@
 from src.model.user import User
 from src.shared.utils import cosine_sim
 from typing import Dict, List
+from src.shared.logger_factory import LoggerFactory
+
+log = LoggerFactory.logger(__name__)
 
 
 class CommunityDetector():
@@ -30,19 +33,25 @@ class CommunityDetector():
         new_added_users = seed_set
 
         for index in range(iteration):
+            log.info("iteration index")
             current_community, new_added_users = self.loop(current_community, new_added_users, index+1)
         return current_community
 
     def loop(self, current_community: List, new_added_users: List, iteration: int):
+        log.info("Downloading information for new added users")
         for user_id in new_added_users:
+            log.info("Downloading New Added User" + str(user_id))
             self.user_downloader.download_user_by_id(user_id)
+            log.info("Downloading User Friends")
             self.user_friends_downloader.download_friends_users_by_id(user_id)
+        log.info("Downloading User Tweets for new added users")
         self.user_tweets_downloader.download_user_tweets_by_user_list(new_added_users)
 
         local_expansion = []
         for user_id in current_community:
             local_expansion.extend(self.user_friends_getter.get_user_friends_ids(user_id))
 
+        log.info("Rank Users")
         ranked_ids = self.community_ranker.rank(local_expansion)
         added_users = []
 
@@ -52,6 +61,7 @@ class CommunityDetector():
                 added_users.append(ranked_ids[i])
             i += 1
 
+        log.info("Store information for community detection")
         self.community_setter.store_community(iteration, added_users, current_community)
 
         current_community.extend(added_users)
