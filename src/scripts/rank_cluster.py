@@ -1,17 +1,22 @@
 import argparse
 from src.shared.utils import get_project_root
 from src.scripts.parser.parse_config import parse_from_file
-from src.activity.rank_cluster_activity import RankClusterActivity
+from src.dependencies.injector import Injector
 
-DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/rank_cluster_config.yaml"
-
+DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/detect_core_config.yaml"
 
 def rank_cluster(seed_id: str, params=None, path=DEFAULT_PATH):
-    config = parse_from_file(path)
+    injector = Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
+    dao_module = injector.get_dao_module()
 
-    activity = RankClusterActivity(config)
-    activity.rank_cluster(seed_id, params)
+    cluster_getter = dao_module.get_cluster_getter()
+    ranker = process_module.get_ranker()
 
+    clusters, _ = cluster_getter.get_clusters(seed_id)
+
+    for cluster in clusters:
+        ranker.rank(seed_id, cluster)
 
 if __name__ == "__main__":
     """

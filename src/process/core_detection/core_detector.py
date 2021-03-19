@@ -49,7 +49,7 @@ class CoreDetector():
         log.info("Beginning Core detection algorithm with initial user " + str(screen_name))
         self.detect_core(user.id)
 
-    def detect_core(self, initial_user_id: str, default_cluster=0):
+    def detect_core(self, initial_user_id: str, default_cluster=1):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
         prev_users = []
@@ -65,29 +65,32 @@ class CoreDetector():
 
             try:
                 curr_user_id, curr_wf_vector = self.loop(int(curr_user_id),
-                    prev_wf_vector=curr_wf_vector, default_cluster=0)
+                    prev_wf_vector=curr_wf_vector, default_cluster=default_cluster)
             except Exception as e:
                 log.exception(e)
                 exit()
 
             # TODO: Add check for if wf vector is drifting
 
-    def loop(self, user_id: str, prev_wf_vector=None, default_cluster=0, v=True):
-        # TODO Add flag for skipping download step
-        log.info("Downloading User")
-        self.user_downloader.download_user_by_id(user_id)
+    def loop(self, user_id: str, prev_wf_vector=None, default_cluster=1, v=True, skip_download=True):
+        downloaded_users = ["876274407995527169"]
 
-        log.info("Downloading User Friends")
-        self.user_friends_downloader.download_friends_users_by_id(user_id)
+        if not skip_download or str(user_id) not in downloaded_users:
+            # TODO Add flag for skipping download step
+            log.info("Downloading User")
+            self.user_downloader.download_user_by_id(user_id)
 
-        log.info("Cleaning Friends List")
-        self.friends_cleaner.clean_friends(user_id)
+            log.info("Downloading User Friends")
+            self.user_friends_downloader.download_friends_users_by_id(user_id)
 
-        log.info("Downloading Local Neighbourhood")
-        self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
+            log.info("Cleaning Friends List")
+            self.friends_cleaner.clean_friends(user_id)
 
-        log.info("Downloading Local Neighbourhood Tweets")
-        self.local_neighbourhood_tweet_downloader.download_user_tweets_by_local_neighbourhood(user_id)
+            log.info("Downloading Local Neighbourhood")
+            self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
+
+            log.info("Downloading Local Neighbourhood Tweets")
+            self.local_neighbourhood_tweet_downloader.download_user_tweets_by_local_neighbourhood(user_id)
 
         log.info("Done downloading Beginning Processing")
         local_neighbourhood = self.local_neighbourhood_getter.get_local_neighbourhood(user_id)
@@ -133,7 +136,7 @@ class CoreDetector():
             curr_wf_vector = self.cluster_word_frequency_getter.get_cluster_word_frequency_by_ids(cluster.users)
 
         log.info("Ranking Cluster")
-        self.ranker.rank(user_id, params)
+        self.ranker.rank(user_id, curr_cluster)
         ranking = self.ranking_getter.get_ranking(user_id)
 
         curr_user_id = ranking.get_top_user_id()

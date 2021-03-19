@@ -8,7 +8,7 @@ class FriendsCleaner():
         self.cleaned_user_friends_setter = cleaned_user_friends_setter
         self.user_getter = user_getter
 
-    def clean_friends(self, user_id, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=30):
+    def clean_friends(self, user_id, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=40):
         friends_list = self.user_friends_getter.get_user_friends_ids(user_id)
 
         clean_friends_list = []
@@ -31,7 +31,31 @@ class FriendsCleaner():
                 clean_friends_list.append(id)
                 clean_users.append(user)
 
-        # TODO Remove more until it meets the percent threshold
+
+        target_num = int(len(friends_list) * (percent_threshold/100))
+
+        curr_tweet_thresh = tweet_threshold
+        curr_follower_thresh = follower_threshold
+        while len(clean_users) > target_num:
+            curr_tweet_thresh += 200
+            curr_follower_thresh += 100
+            log.info("Increasing Thresholds to " + str(curr_tweet_thresh)
+                + " tweets and " + str(curr_follower_thresh)
+                + " followers")
+
+            new_clean_users = []
+            for user in clean_users:
+                if user.followers_count < curr_follower_thresh:
+                    log.info("Removed user " + str(user.id) + " because they have " + str(user.followers_count) +" followers")
+                    clean_friends_list.remove(user.id)
+                elif user.statuses_count < curr_tweet_thresh:
+                    log.info("Removed user " + str(user.id) + " because they have " + str(user.statuses_count) + " tweets")
+                    clean_friends_list.remove(user.id)
+                else:
+                    new_clean_users.append(user)
+
+            clean_users = new_clean_users
+
 
         log.info("original friends: " + str(len(friends_list)) + " remaining friends: " + str(len(clean_friends_list)))
 

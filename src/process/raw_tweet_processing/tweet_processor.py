@@ -25,7 +25,7 @@ class TweetProcessor():
                 if tweet.id not in ids:
                     processed_tweet = ProcessedTweet.fromTweet(tweet)
                     self.processed_tweet_setter.store_processed_tweet(processed_tweet, check=False)
-            log.info("Processed " + str(len(tweets)) + " Tweets for " + str(user_id))
+        log.info("Processed " + str(len(tweets)) + " Tweets for " + str(user_id))
 
     def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
         user_ids = local_neighbourhood.get_user_id_list()

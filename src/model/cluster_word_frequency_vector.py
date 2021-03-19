@@ -9,12 +9,12 @@ class ClusterWordFrequencyVector():
         """
         Format is as follows:
         e.g. {
-            user_ids: [100001, 20003, 458429] 
+            user_ids: [100001, 20003, 458429]
             word_frequency_vector: {
                 "hello": 2,
                 "goodbye": 3
-             }
-             }
+            }
+          }
         """
         self.ids = ids
         self.word_frequency_vector = WordFrequencyVector.fromDict(word_frequency_vector)

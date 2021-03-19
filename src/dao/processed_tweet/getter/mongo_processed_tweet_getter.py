@@ -10,8 +10,8 @@ class MongoProcessedTweetGetter(ProcessedTweetGetter, MongoDAO):
 
     def set_collection(self, collection) -> None:
         self.collection = collection
-        
-    def get_user_processed_tweets(id: str):
+
+    def get_user_processed_tweets(self, user_id: str):
         tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
 
         tweets = []

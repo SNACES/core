@@ -13,13 +13,14 @@ class ConsumptionUtilityRanker(Ranker):
     def score_users(self, user_ids: List[str]):
         scores = {}
         for id in user_ids:
-            scores[id] = 0
+            scores[str(id)] = 0
 
         for id in user_ids:
-            retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id(id)
+            retweets = self.raw_tweet_getter.get_retweets_by_user_id(id)
 
             for retweet in retweets:
-                if str(retweet.user_id) in user_ids:
-                    scores[retweet.user_id] += 1
+                if str(retweet.retweet_user_id) in user_ids and str(retweet.retweet_user_id) != str(id):
+                    scores[str(id)] += 1
 
+        # print(scores)
         return scores

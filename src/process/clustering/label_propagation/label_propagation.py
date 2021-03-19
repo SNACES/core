@@ -14,7 +14,7 @@ class LabelPropagation():
 
         return cluster_list
 
-    def get_clusters(self, base_user, user_friends_graph, method="") -> Dict: # TODO: 
+    def get_clusters(self, base_user, user_friends_graph, method="") -> Dict: # TODO:
         """
         Return a dictionary representation of the clusters of the local graph.
         """
@@ -33,7 +33,10 @@ class LabelPropagation():
                 d[i] = [base_user] + list(community_data[i])
 
         # Flatten dict into cluster list
-        return [d[k] for k in d]
+        cluster_list = [d[k] for k in d]
+        print("Number of clusters " + str(len(cluster_list)))
+
+        return cluster_list
 
 
 
@@ -105,4 +108,3 @@ class LabelPropagation():
 #     lg.generate_from_user("animesh_garg")
 #     # clusters = lg.get_clusters(method='lprop')
 #     # print(clusters)
-  

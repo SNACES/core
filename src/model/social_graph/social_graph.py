@@ -9,7 +9,7 @@ class SocialGraph():
     A Wrapper class for a networkx graph representing a local neighbourhood
     """
 
-    def __init__(self, graph: nx.Graph, seed_id: str, params=None):
+    def __init__(self, graph: nx.DiGraph, seed_id: str, params=None):
         self.graph = graph
         self.seed_id = seed_id
         self.params = params

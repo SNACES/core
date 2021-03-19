@@ -3,8 +3,9 @@ from src.model.word_frequency_vector import WordFrequencyVector
 from src.model.user_word_frequency_vector import UserWordFrequencyVector
 from copy import deepcopy
 from src.shared.logger_factory import LoggerFactory
+import logging
 
-log = LoggerFactory.logger(__name__)
+log = LoggerFactory.logger(__name__, logging.DEBUG)
 
 
 class UserWordFrequencyProcessor():
@@ -23,13 +24,16 @@ class UserWordFrequencyProcessor():
 
     def process_user_word_frequency_vector(self, id: str):
         user_processed_tweets = self.processed_tweet_getter.get_user_processed_tweets(id)
+        log.info("Number of processed tweets " + str(len(user_processed_tweets)))
         user_word_freq_vc = self.user_word_frequency_vector_getter.get_user_word_frequency_by_id(id).get_word_frequency_vector()
+
+        user_word_freq_vc = WordFrequencyVector({})
 
         for processed_tweet in user_processed_tweets:
             user_word_freq_vc += processed_tweet.get_word_frequency_vector()
 
         self.user_word_frequency_vector_setter.store_user_word_frequency_vector(id, user_word_freq_vc.get_words_dict())
-    
+
         log.debug("Done processing user word frequency")
 
     def process_relative_user_word_frequency(self, id: str):
@@ -56,7 +60,7 @@ class UserWordFrequencyProcessor():
         for words in word_count:
             word_count[words] = word_count[words] / total_count
         return word_count
-    
+
     def _merge_word_count(self, user_word_count, global_word_counts):
         global_word_count = deepcopy(global_word_counts)
         for words in user_word_count:
@@ -65,13 +69,3 @@ class UserWordFrequencyProcessor():
             else:
                 global_word_count[words] = user_word_count[words]
         return global_word_count
-
-
-
-    
-
-
-        
-
-
-    

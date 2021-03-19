@@ -9,16 +9,13 @@ class Ranker():
         self.ranking_setter = ranking_setter
         self.ranking_function_name = None
 
-    def rank(self, seed_id, params):
-        clusters, cluster_params = self.cluster_getter.get_clusters(seed_id, params)
-
-        cluster = clusters[0]
+    def rank(self, seed_id, cluster):
         user_ids = cluster.users
 
         scores = self.score_users(user_ids)
 
         ranked_ids = list(sorted(scores, key=scores.get, reverse=True))
-        ranking = Ranking(seed_id, ranked_ids, self.ranking_function_name, cluster_params)
+        ranking = Ranking(seed_id, ranked_ids, self.ranking_function_name, {})
 
         self.ranking_setter.store_ranking(ranking)
 

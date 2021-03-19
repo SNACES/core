@@ -9,7 +9,7 @@ class UserWordFrequencyVector():
         """
         Format is as follows:
         e.g. {
-            user_id: 100001, 
+            user_id: 100001,
             word_frequency_vector: {
                 "hello": 2,
                 "goodbye": 3

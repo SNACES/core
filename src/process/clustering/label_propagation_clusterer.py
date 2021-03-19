@@ -1,11 +1,18 @@
 from src.process.clustering.clusterer import Clusterer
-from networkx.algorithms.community.label_propagation import label_propagation_communities
 from src.model.cluster import Cluster
+from src.shared.logger_factory import LoggerFactory
+
+from collections import Counter
+
+import networkx as nx
+from networkx.utils import groups, not_implemented_for, py_random_state
+
+log = LoggerFactory.logger(__name__)
 
 class LabelPropagationClusterer(Clusterer):
     def cluster(self, seed_id, params):
         social_graph = self.social_graph_getter.get_social_graph(seed_id, params)
-        clusters_data = label_propagation_communities(social_graph.graph)
+        clusters_data = [item for item in label_propagation_communities(social_graph.graph)]
 
         clusters = []
         for data in clusters_data:
@@ -16,4 +23,62 @@ class LabelPropagationClusterer(Clusterer):
             cluster = Cluster(seed_id, users)
             clusters.append(cluster)
 
+        log.info("Number of clusters " + str(len(clusters)))
+
         self.cluster_setter.store_clusters(seed_id, clusters, params)
+
+def label_propagation_communities(G):
+    coloring = color_network(G)
+    # Create a unique label for each node in the graph
+    labeling = {v: k for k, v in enumerate(G)}
+    while not labeling_complete(labeling, G):
+        for color, nodes in coloring.items():
+            for n in nodes:
+                update_label(n, labeling, G)
+
+    for label in set(labeling.values()):
+        yield {x for x in labeling if labeling[x] == label}
+
+def color_network(G):
+    """
+    Colors a network so that neighbouring nodes all have distinct colors.
+
+    Returns a dictionary where the keys are colors, and the values are sets
+    of nodes
+    """
+    coloring = dict()
+    colors = nx.coloring.greedy_color(G)
+    for node, color in colors.items():
+        if color in coloring:
+            coloring[color].add(node)
+        else:
+            coloring[color] = {node}
+    return coloring
+
+def labeling_complete(labeling, G):
+    """
+    Returns true if label propogation algorithm has completed
+    """
+    return all(
+        labeling[v] in most_frequent_labels(v, labeling, G) for v in G if len(G[v]) > 0
+    )
+
+def most_frequent_labels(node, labeling, G):
+    """
+    Returns a set of all labels with maximum frequency in 'labeling'.
+    """
+    if not G[node]:
+        return {labeling[node]}
+
+    freqs = Counter(labeling[q] for q in G[node])
+    max_freq = max(freqs.values())
+    return {label for label, freq in freqs.items() if freq == max_freq}
+
+def update_label(node, labeling, G):
+    high_labels = most_frequent_labels(node, labeling, G)
+    if len(high_labels) == 1:
+        labeling[node] = high_labels.pop()
+    elif len(high_labels) > 1:
+        # Prec-Max
+        if labeling[node] not in high_labels:
+            labeling[node] = max(high_labels)

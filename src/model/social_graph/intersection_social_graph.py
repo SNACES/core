@@ -6,7 +6,7 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 
 class IntersectionSocialGraph(SocialGraph):
     def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None):
-        graph = nx.Graph()
+        graph = nx.DiGraph()
 
         user_list = local_neighbourhood.get_user_id_list()
         for user in user_list:
