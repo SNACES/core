@@ -11,6 +11,7 @@ from src.process.download.tweet_downloader import TwitterTweetDownloader
 from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.retweets_ranker import RetweetsRanker
+from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
 from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
 from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
 from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
@@ -60,7 +61,7 @@ class ProcessModule():
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
-            ranker, ranking_getter)    
+            ranker, ranking_getter)
 
     def get_community_detector(self):
         user_getter = self.dao_module.get_user_getter()
@@ -73,7 +74,7 @@ class ProcessModule():
         community_ranker = self.get_community_ranker()
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_ranker, community_setter)       
+            user_tweets_downloader, user_friends_getter, community_ranker, community_setter)
 
     # Data Cleaning
     def get_friends_cleaner(self):
@@ -165,7 +166,8 @@ class ProcessModule():
         raw_tweet_getter = self.dao_module.get_user_tweet_getter()
         ranking_setter = self.dao_module.get_ranking_setter()
 
-        ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+        # ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+        ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
         return ranker
 
@@ -210,7 +212,7 @@ class ProcessModule():
         user_word_frequency_getter = self.dao_module.get_user_word_frequency_getter()
         user_word_frequency_setter = self.dao_module.get_user_word_frequency_setter()
         global_word_frequency_getter = self.dao_module.get_global_word_frequency_getter()
-        user_relative_word_frequency_setter = self.dao_module.get_relative_word_frequency_setter()
+        user_relative_word_frequency_setter = self.dao_module.get_user_relative_word_frequency_setter()
 
         user_word_frequency_processor = UserWordFrequencyProcessor(processed_tweet_getter, user_word_frequency_getter,
             user_word_frequency_setter, global_word_frequency_getter, user_relative_word_frequency_setter)
@@ -223,9 +225,10 @@ class ProcessModule():
         cluster_word_frequency_setter = self.dao_module.get_cluster_word_frequency_setter()
         cluster_relative_word_frequency_setter = self.dao_module.get_cluster_relative_word_frequency_setter()
         global_word_frequency_getter = self.dao_module.get_global_word_frequency_getter()
+        user_word_frequency_processor = self.get_user_word_frequency_processor()
 
         cluster_word_frequency_processor = ClusterWordFrequencyProcessor(user_word_frequency_getter, cluster_word_frequency_getter,
                                                                     cluster_word_frequency_setter, global_word_frequency_getter,
-                                                                    cluster_relative_word_frequency_setter)
+                                                                    cluster_relative_word_frequency_setter, user_word_frequency_processor)
 
         return cluster_word_frequency_processor
