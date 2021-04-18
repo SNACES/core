@@ -18,6 +18,7 @@ class Ranker():
         ranking = Ranking(seed_id, ranked_ids, self.ranking_function_name, {})
 
         self.ranking_setter.store_ranking(ranking)
+        return ranking, scores
 
     def score_users(self, user_ids: List[str]):
         raise NotImplementedError("This method should be implemented by subclasses")

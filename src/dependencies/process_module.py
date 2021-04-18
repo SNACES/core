@@ -12,6 +12,7 @@ from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.retweets_ranker import RetweetsRanker
 from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
+from src.process.ranking.followers_ranker import FollowerRanker
 from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
 from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
 from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
@@ -161,13 +162,18 @@ class ProcessModule():
         return user_tweet_downloader
 
     # Ranking TODO: Update to use ranker factory
-    def get_ranker(self):
+    def get_ranker(self, type=None):
         cluster_getter = self.dao_module.get_cluster_getter()
         raw_tweet_getter = self.dao_module.get_user_tweet_getter()
         ranking_setter = self.dao_module.get_ranking_setter()
+        user_getter = self.dao_module.get_user_getter()
 
-        # ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
-        ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+        if type == "Consumption":
+            ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+        elif type == "Follower":
+            ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
+        else:
+            ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
         return ranker
 

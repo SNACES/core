@@ -99,7 +99,7 @@ class CoreDetector():
         self.tweet_processor.process_tweets_by_local_neighbourhood(local_neighbourhood)
 
         log.info("Construct social graph")
-        self.social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id)
+        self.social_graph_constructor.construct_social_graph(user_id)
 
         log.info("Performing Clustering")
         self.clusterer.cluster(user_id, {})
@@ -129,7 +129,7 @@ class CoreDetector():
             curr_wf_vector = cluster_wf_vectors[closest_index]
         else:
             log.info("Picking Default Cluster")
-            cluster = clusters[default_cluster]
+            cluster = clusters[0]
             self.cluster_word_frequency_processor.process_cluster_word_frequency_vector(cluster.users)
 
             curr_cluster = cluster

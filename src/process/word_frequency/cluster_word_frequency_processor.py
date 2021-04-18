@@ -39,6 +39,7 @@ class ClusterWordFrequencyProcessor():
         self.cluster_word_frequency_vector_setter.store_cluster_word_frequency_vector(ids, cluster_wf_vector.get_words_dict())
 
         log.debug("Done process cluster word frequency")
+        return cluster_wf_vector
 
     def process_relative_cluster_word_frequency(self, ids: List[str]):
         cluster_word_frequency_vc = self.cluster_word_frequency_vector_getter.get_cluster_word_frequency_by_ids(ids).get_words()

@@ -22,5 +22,5 @@ class ConsumptionUtilityRanker(Ranker):
                 if str(retweet.retweet_user_id) in user_ids and str(retweet.retweet_user_id) != str(id):
                     scores[str(id)] += 1
 
-        # print(scores)
+        print(scores)
         return scores

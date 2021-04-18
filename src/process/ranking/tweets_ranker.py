@@ -20,6 +20,6 @@ class TweetsRanker(Ranker):
                 if str(tweet.user_id) in user_ids:
                     count += 1
 
-            scores[id] = count
+            scores[str(id)] = count
 
         return scores

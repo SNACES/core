@@ -5,10 +5,14 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 
 
 class IntersectionSocialGraph(SocialGraph):
-    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None):
+    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None, remove_unconnected_nodes=True):
         graph = nx.DiGraph()
 
         user_list = local_neighbourhood.get_user_id_list()
+
+        if remove_unconnected_nodes:
+            user_list = SocialGraph.remove_unconnected_nodes(local_neighbourhood)
+
         for user in user_list:
             graph.add_node(user)
 

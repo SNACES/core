@@ -15,6 +15,6 @@ class FollowerRanker(Ranker):
 
         scores = {}
         for user in users:
-            scores[user.id] = user.followers_count
+            scores[str(user.id)] = user.followers_count
 
         return scores

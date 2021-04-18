@@ -12,6 +12,9 @@ log = LoggerFactory.logger(__name__)
 class LabelPropagationClusterer(Clusterer):
     def cluster(self, seed_id, params):
         social_graph = self.social_graph_getter.get_social_graph(seed_id, params)
+        self.cluster_by_social_graph(seed_id, social_graph, params)
+
+    def cluster_by_social_graph(self, seed_id, social_graph, params):
         clusters_data = [item for item in label_propagation_communities(social_graph.graph)]
 
         clusters = []
@@ -26,6 +29,7 @@ class LabelPropagationClusterer(Clusterer):
         log.info("Number of clusters " + str(len(clusters)))
 
         self.cluster_setter.store_clusters(seed_id, clusters, params)
+        return clusters
 
 def label_propagation_communities(G):
     coloring = color_network(G)

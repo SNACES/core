@@ -10,7 +10,9 @@ class FriendsCleaner():
 
     def clean_friends(self, user_id, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=40):
         friends_list = self.user_friends_getter.get_user_friends_ids(user_id)
+        self.clean_friends_from_list(friends_list, tweet_threshold, follower_threshold, bot_threshold, percent_threshold)
 
+    def clean_friends_from_list(self, user_id, friends_list, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=40):
         clean_friends_list = []
         clean_users = []
         for id in friends_list:
@@ -19,7 +21,7 @@ class FriendsCleaner():
                 log.info("Removed user " + str(id) + " because they couldn't be downloaded")
                 continue
             elif user.followers_count < follower_threshold:
-                log.info("Removed user " + str(id) + " because they have " + str(user.followers_count) +" followers")
+                log.info("Removed user " + str(id) + " because they have " + str(user.followers_count) + " followers")
                 continue
             elif user.statuses_count < tweet_threshold:
                 log.info("Removed user " + str(id) + " because they have " + str(user.statuses_count) + " tweets")
@@ -59,4 +61,7 @@ class FriendsCleaner():
 
         log.info("original friends: " + str(len(friends_list)) + " remaining friends: " + str(len(clean_friends_list)))
 
-        self.cleaned_user_friends_setter.store_friends(user_id, clean_friends_list)
+        if self.cleaned_user_friends_setter is not None:
+            self.cleaned_user_friends_setter.store_friends(user_id, clean_friends_list)
+
+        return clean_friends_list

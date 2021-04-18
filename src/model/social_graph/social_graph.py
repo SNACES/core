@@ -14,8 +14,27 @@ class SocialGraph():
         self.seed_id = seed_id
         self.params = params
 
-    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params: Optional[Dict] = None):
+    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params: Optional[Dict] = None, remove_unconnected_nodes=True):
         raise NotImplementedError("Subclasses should implement this")
+
+    def remove_unconnected_nodes(local_neighbourhood):
+        count = 1
+        user_dict = local_neighbourhood.users
+        while count > 0:
+            count = 0
+            keys = list(user_dict.keys())
+            for user in keys:
+                if len(user_dict[user]) == 0:
+                    count += 1
+                    del user_dict[user]
+                    for key in user_dict.keys():
+                        if user in user_dict[key]:
+                            user_dict[key].remove(user)
+
+        local_neighbourhood.users = user_dict
+        user_list = list(user_dict.keys())
+
+        return user_list
 
     def fromDict(dict: Dict):
         adj_list = dict["adj_list"]

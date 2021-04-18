@@ -27,10 +27,13 @@ class TweetProcessor():
                     self.processed_tweet_setter.store_processed_tweet(processed_tweet, check=False)
         log.info("Processed " + str(len(tweets)) + " Tweets for " + str(user_id))
 
-    def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
-        user_ids = local_neighbourhood.get_user_id_list()
+    def process_tweets_by_user_list(self, user_ids):
         num_ids = len(user_ids)
         for i in range(num_ids):
             user_id = user_ids[i]
             self.process_tweets_by_user_id(user_id)
             log.log_progress(log, i, num_ids)
+
+    def process_tweets_by_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
+        user_ids = local_neighbourhood.get_user_id_list()
+        self.process_tweets_by_user_list(user_ids)

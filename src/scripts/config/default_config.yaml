@@ -51,12 +51,24 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
+    CleanedFriends:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "CleanedFriends"
     UserWordFrequency:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "UserWordFrequency"
+    UserRelativeWordFrequency:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "UserRelativeWordFrequency"
     ClusterWordFrequency:
         type: "Mongo"
         config:
