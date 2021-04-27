@@ -72,10 +72,12 @@ class ProcessModule():
         user_tweets_downloader = self.get_user_tweet_downloader()
         community_setter = self.dao_module.get_community_setter()
 
-        community_ranker = self.get_community_ranker()
+        community_tweet_ranker = self.get_community_ranker(function_name="tweet")
+        community_retweet_ranker = self.get_community_ranker(function_name="retweet")
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_ranker, community_setter)
+            user_tweets_downloader, user_friends_getter, community_retweet_ranker, 
+            community_tweet_ranker, community_setter)
 
     # Data Cleaning
     def get_friends_cleaner(self):
