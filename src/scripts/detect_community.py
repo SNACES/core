@@ -27,8 +27,10 @@ if __name__ == "__main__":
     Short script to download tweets
     """
     parser = argparse.ArgumentParser(description='Detect community from seed sets')
-    parser.add_argument('-n', '--name', dest='name', required=True,
-        help='The name of the user to start on', type=str)
+    # parser.add_argument('-n', '--name', dest='name', required=True,
+    #     help='The name of the user to start on', type=str)
+    parser.add_argument('-n', '--name', dest='name', required=True, 
+        type=str, nargs='*', help="The name of the user to start on")
     parser.add_argument('-p', '--path', dest='path', required=False,
         default=DEFAULT_PATH, help='The path of the config file', type=str)
 
