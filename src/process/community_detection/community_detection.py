@@ -81,4 +81,4 @@ class CommunityDetector():
 
         print(current_community)
 
-        return current_community, added_users
+        return current_community, added_users, local_expansion
