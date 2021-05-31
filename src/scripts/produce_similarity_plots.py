@@ -15,7 +15,7 @@ log = LoggerFactory.logger(__name__)
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/default_config.yaml"
 
 def produce_plots(seed_id: str, user_name: str, path=DEFAULT_PATH):
-    threshold = 40
+    threshold = 60
 
     injector = Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
@@ -98,30 +98,6 @@ def scatter_plot_from_scores(user_name, scores1, scores2, number, top_words, pre
     for key in keys:
         x.append(scores1[str(key)])
         y.append(scores2[str(key)])
-
-    x_mean = np.mean(x)
-    x_std = np.std(x)
-    y_mean = np.mean(y)
-    y_std = np.std(y)
-
-    n_std = 1
-    x = np.array(x)
-    y = np.array(y)
-
-    x_indices = (x <= (x_mean + n_std * x_std)).nonzero()
-    print(x_indices)
-    x = x[x_indices]
-    y = y[x_indices]
-    x_indices = (x >= (x_mean - n_std * x_std)).nonzero()
-    x = x[x_indices]
-    y = y[x_indices]
-
-    y_indices = (y <= (y_mean + n_std * y_std)).nonzero()
-    x = x[y_indices]
-    y = y[y_indices]
-    y_indices = (y >= (y_mean - n_std * y_std)).nonzero()
-    x = x[y_indices]
-    y = y[y_indices]
 
     top_words_str = str(top_words)[1:-1]
 
