@@ -20,16 +20,35 @@ class LabelPropagationClusterer(Clusterer):
         clusters = []
         for data in clusters_data:
             users = list(data)
-            if str(seed_id) in users:
+            if str(seed_id) in users: # Why is this needed?
                 users.remove(str(seed_id))
 
-            cluster = Cluster(seed_id, users)
+            cleaned_users = self.clean_cluster_users(users)
+
+            cluster = Cluster(seed_id, cleaned_users)
             clusters.append(cluster)
 
         log.info("Number of clusters " + str(len(clusters)))
 
         self.cluster_setter.store_clusters(seed_id, clusters, params)
         return clusters
+
+    def clean_cluster_users(self, users):
+        """
+        Removes all user in users who don't follow anyone else in the list
+        """
+        clean = False
+        while not clean:
+            new_friends = []
+            for user in users:
+                friends = self.user_friend_getter.get_user_friends_ids(user.get_id())
+                if [friend for friend in users if friend in friends]:
+                    new_friends.append(user)
+            if new_friends == users:
+                clean = True
+            users = new_friends
+        return users
+
 
 def label_propagation_communities(G):
     coloring = color_network(G)

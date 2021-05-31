@@ -35,9 +35,10 @@ class ProcessModule():
     def get_clusterer(self):
         social_graph_getter = self.dao_module.get_social_graph_getter()
         cluster_setter = self.dao_module.get_cluster_setter()
+        user_friends_getter = self.dao_module.get_user_friend_getter() # TODO check whether we want this or cleaned_user_friend_getter()
 
         return ClustererFactory.create_clusterer("label_propagation",
-            social_graph_getter, cluster_setter)
+            social_graph_getter, cluster_setter, user_friends_getter)
 
     # Core Detection
     def get_core_detector(self):
@@ -76,7 +77,7 @@ class ProcessModule():
         community_retweet_ranker = self.get_community_ranker(function_name="retweet")
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_retweet_ranker, 
+            user_tweets_downloader, user_friends_getter, community_retweet_ranker,
             community_tweet_ranker, community_setter)
 
     # Data Cleaning

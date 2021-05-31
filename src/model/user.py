@@ -66,6 +66,8 @@ class User:
         return user
 
     def fromDict(dict: Dict):
+        if dict is None:
+            return None
         user = User(dict["id"], dict["screen_name"], dict["name"],
             dict["created_at"], dict["followers_count"], dict["friends_count"],
             dict["listed_count"], dict["favourites_count"],

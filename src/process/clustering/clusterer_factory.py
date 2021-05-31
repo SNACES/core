@@ -3,7 +3,7 @@ from typing import Dict, List
 
 
 class ClustererFactory():
-    def create_clusterer(type, social_graph_getter, cluster_setter):
-        clusterer = LabelPropagationClusterer(social_graph_getter, cluster_setter)
+    def create_clusterer(type, social_graph_getter, cluster_setter, user_friends_getter):
+        clusterer = LabelPropagationClusterer(social_graph_getter, cluster_setter, user_friends_getter)
 
         return clusterer
