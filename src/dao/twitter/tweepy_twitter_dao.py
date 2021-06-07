@@ -262,9 +262,9 @@ class TweepyTwitterGetter(TwitterGetter):
                 log.info("Downloaded user " + str(tweepy_user._json.get("id")))
                 friends_users.append(User.fromTweepyJSON(tweepy_user._json))
             log.info("total friends {}".format(count))
-            return friends_users
         except Exception as e:
             log.error("error occurs")
+        return user_id, friends_users
 
     def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
         # TODO Catch error, and set ids to []
