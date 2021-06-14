@@ -57,6 +57,7 @@ class FriendDownloader():
             friend_user_ids = [user.id for user in friends_users]
             self.user_friend_setter.store_friends(id, friend_user_ids)
 
+
     def download_friends_users_by_screen_name(self, screen_name: str, num_friends=0) -> None:
         """
         Gets a list of friends of a user by id

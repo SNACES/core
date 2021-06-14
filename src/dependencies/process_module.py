@@ -15,6 +15,7 @@ from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRan
 from src.process.ranking.followers_ranker import FollowerRanker
 from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
 from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
+from src.process.community_ranking.linear_tweets_ranker import LinearCommunityRanker
 from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
 from src.process.social_graph.social_graph_constructor import SocialGraphConstructor
 from src.process.word_frequency.user_word_frequency_processor import UserWordFrequencyProcessor
@@ -75,10 +76,11 @@ class ProcessModule():
 
         community_tweet_ranker = self.get_community_ranker(function_name="tweet")
         community_retweet_ranker = self.get_community_ranker(function_name="retweet")
+        community_linear_ranker = self.get_community_ranker(function_name="linear")
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker,
-            community_tweet_ranker, community_setter)
+            community_tweet_ranker, community_setter, community_linear_ranker)
 
     # Data Cleaning
     def get_friends_cleaner(self):
@@ -180,12 +182,14 @@ class ProcessModule():
 
         return ranker
 
-    def get_community_ranker(self, function_name = "retweet"):
+    def get_community_ranker(self, function_name="retweet"):
         user_tweets_getter = self.dao_module.get_user_tweet_getter()
         if function_name == "tweet":
             ranker = CommunityTweetsRanker(user_tweets_getter)
         elif function_name == "retweet":
             ranker = CommunityRetweetsRanker(user_tweets_getter)
+        elif function_name == 'linear':
+            ranker = LinearCommunityRanker(user_tweets_getter)
         else:
             raise NotImplementedError("function name not identified")
         return ranker
