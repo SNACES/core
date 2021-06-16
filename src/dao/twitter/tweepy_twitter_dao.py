@@ -2,7 +2,7 @@ import datetime
 from queue import Queue
 from threading import Thread
 import conf.credentials as credentials
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Tuple
 from tweepy import OAuthHandler, Stream, API, Cursor
 from tweepy.streaming import StreamListener
 from src.model.tweet import Tweet
@@ -251,7 +251,10 @@ class TweepyTwitterGetter(TwitterGetter):
 
         return user_id, friends_user_ids
 
-    def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> List[User]:
+    def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> Tuple[str, list]:
+        """
+        @param num_friends: 0 means ALL friends, based on tweepy.Cursor.items()
+        """
         try:
             cursor = Cursor(self.twitter_api.friends, user_id=user_id).items(limit=num_friends)
 
@@ -261,10 +264,10 @@ class TweepyTwitterGetter(TwitterGetter):
                 count += 1
                 log.info("Downloaded user " + str(tweepy_user._json.get("id")))
                 friends_users.append(User.fromTweepyJSON(tweepy_user._json))
-            log.info("total friends {}".format(count))
-            return friends_users
+            log.info(f"total friends {count}")
         except Exception as e:
             log.error("error occurs")
+        return user_id, friends_users
 
     def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
         # TODO Catch error, and set ids to []
@@ -281,6 +284,6 @@ class TweepyTwitterGetter(TwitterGetter):
 
         followers_users = []
         for follower_user in cursor:
-            follower_users.append(User.fromTweepyJSON(follower_user))
+            follower_user.append(User.fromTweepyJSON(follower_user))
 
         return user_id, followers_users
