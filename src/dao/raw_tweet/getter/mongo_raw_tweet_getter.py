@@ -58,7 +58,7 @@ class MongoRawTweetGetter(RawTweetGetter):
 
     def get_retweets_by_user_id(self, user_id: str) -> List[Tweet]:
         """
-        Return a list of tweet with user_id that matches the given user_id
+        Return a list of retweet with user_id that matches the given user_id
 
         @param user_id the id of the user to retrieve tweets from
 
@@ -69,7 +69,7 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         retweets = []
         for tweet in tweets:
-            if tweet.retweet_user_id is not None:
+            if tweet.retweet_user_id is not None: # checks if it is a retweet
                 retweets.append(tweet)
 
         return retweets

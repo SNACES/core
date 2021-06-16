@@ -1,3 +1,3 @@
-from distutils.core import setup 
+from distutils.core import setup
 
-setup(name='SNACES', version='1.0')
+setup(name='SNACES', version='1.0', requires=['matplotlib'])

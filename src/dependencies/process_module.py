@@ -3,6 +3,7 @@ from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
 from src.process.community_detection.community_detection import CommunityDetector
 from src.process.data_cleaning.friends_cleaner import FriendsCleaner
+from src.process.data_cleaning.extended_friends_cleaner import ExtendedFriendsCleaner
 from src.process.download.follower_downloader import TwitterFollowerDownloader
 from src.process.download.friend_downloader import FriendDownloader
 from src.process.download.local_neighbourhood_downloader import LocalNeighbourhoodDownloader
@@ -90,6 +91,18 @@ class ProcessModule():
             cleaned_user_friend_setter, user_getter)
 
         return friends_cleaner
+
+    def get_extended_friends_cleaner(self):
+        user_friend_getter = self.dao_module.get_user_friend_getter()
+        cleaned_user_friend_setter = self.dao_module.get_cleaned_user_friend_setter()
+        user_getter = self.dao_module.get_user_getter()
+        consumption_ranker = self.get_ranker(type="Consumption")
+        retweets_ranker = self.get_ranker()
+
+        extended_friends_cleaner = ExtendedFriendsCleaner(user_friend_getter,
+                cleaned_user_friend_setter, user_getter, consumption_ranker, retweets_ranker)
+
+        return extended_friends_cleaner
 
     # Downloaduser_setter
     def get_follower_downloader(self):

@@ -23,10 +23,12 @@ class LabelPropagationClusterer(Clusterer):
             if str(seed_id) in users: # Why is this needed?
                 users.remove(str(seed_id))
 
-            cleaned_users = self.clean_cluster_users(users)
+            #cleaned_users = self.clean_cluster_users(users)
 
-            cluster = Cluster(seed_id, cleaned_users)
+            #cluster = Cluster(seed_id, cleaned_users)
+            cluster = Cluster(seed_id, users)
             clusters.append(cluster)
+            log.info(len(users))
 
         log.info("Number of clusters " + str(len(clusters)))
 
@@ -41,12 +43,13 @@ class LabelPropagationClusterer(Clusterer):
         while not clean:
             new_friends = []
             for user in users:
-                friends = self.user_friend_getter.get_user_friends_ids(user.get_id())
-                if [friend for friend in users if friend in friends]:
+                friends = self.user_friend_getter.get_user_friends_ids(user)
+                if len([friend for friend in users if (friend in friends)]) > 0:
                     new_friends.append(user)
-            if new_friends == users:
+            if set(new_friends) == set(users):
                 clean = True
-            users = new_friends
+            else:
+                users = new_friends
         return users
 
 
@@ -58,7 +61,7 @@ def label_propagation_communities(G):
         for color, nodes in coloring.items():
             for n in nodes:
                 update_label(n, labeling, G)
-
+    log.info(set(labeling.values()))
     for label in set(labeling.values()):
         yield {x for x in labeling if labeling[x] == label}
 

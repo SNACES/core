@@ -22,9 +22,9 @@ class SocialGraphConstructor():
     def construct_social_graph_from_local_neighbourhood(self, seed_id, local_neighbourhood, params=None, is_union=True, remove_unconnected_nodes=True):
         social_graph = None
         if is_union:
-            social_graph = UnionSocialGraph.fromLocalNeighbourhood(local_neighbourhood, remove_unconnected_nodes)
+            social_graph = UnionSocialGraph.fromLocalNeighbourhood(local_neighbourhood, remove_unconnected_nodes=remove_unconnected_nodes)
         else:
-            social_graph = IntersectionSocialGraph.fromLocalNeighbourhood(local_neighbourhood, remove_unconnected_nodes)
+            social_graph = IntersectionSocialGraph.fromLocalNeighbourhood(local_neighbourhood, remove_unconnected_nodes=remove_unconnected_nodes)
 
         self.social_graph_setter.store_social_graph(social_graph)
         return social_graph
