@@ -14,14 +14,13 @@ class ExtendedFriendsCleaner():
         self.retweets_ranker = retweets_ranker
 
     def clean_friends(self, user_id, tweet_threshold=50, follower_threshold=50,
-                      bot_threshold=50, local_follower=0,
+                      bot_threshold=0, local_follower=0,
                       local_following=10, consumption_threshold=20, production_threshold=50):
         friends_list = self.user_friends_getter.get_user_friends_ids(user_id)
         clean_friends_1 = self.clean_friends_global(user_id, friends_list, tweet_threshold, follower_threshold, bot_threshold)
         return self.clean_friends_local(user_id, clean_friends_1, local_follower, local_following)
 
-
-    def clean_friends_global(self, user_id, friends_list, tweet_threshold=200, follower_threshold=100, bot_threshold=0.5):
+    def clean_friends_global(self, user_id, friends_list, tweet_threshold, follower_threshold, bot_threshold):
         clean_friends_list = []
         clean_users = []
         for id in friends_list:
