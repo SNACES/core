@@ -14,6 +14,7 @@ from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.retweets_ranker import RetweetsRanker
 from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
 from src.process.ranking.followers_ranker import FollowerRanker
+from src.process.ranking.local_followers_ranker import LocalFollowersRanker
 from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
 from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
 from src.process.community_ranking.linear_tweets_ranker import LinearCommunityRanker
@@ -185,11 +186,14 @@ class ProcessModule():
         raw_tweet_getter = self.dao_module.get_user_tweet_getter()
         ranking_setter = self.dao_module.get_ranking_setter()
         user_getter = self.dao_module.get_user_getter()
+        friends_getter = self.dao_module.get_user_friend_getter()
 
         if type == "Consumption":
             ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
         elif type == "Follower":
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
+        elif type == "LocalFollowers":
+            ranker = LocalFollowersRanker(cluster_getter, user_getter, friends_getter, ranking_setter)
         else:
             ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 

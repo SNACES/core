@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Dict
 import bson
 from src.model.tweet import Tweet
@@ -56,6 +57,57 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         return tweets
 
+    def get_tweets_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
+        """
+        Return a list of tweet with user_id that matches the given user_id
+        since a certain time
+
+        @param user_id the id of the user to retrieve tweets from
+
+        @return a list of tweets by the given user
+        """
+        from_date = datetime(2020, 6, 30)
+        tweet_doc_list = self.collection.find({"$and": [{"user_id": bson.int64.Int64(user_id)},
+                                                        {"created_at": {"$gte": from_date}}]})
+        tweets = []
+        for doc in tweet_doc_list:
+            tweets.append(Tweet.fromDict(doc))
+
+        return tweets
+
+    def convert_dates(self):
+        """
+        Converts the string dates into date time objects
+        """
+        tweet_doc_list = self.collection.find({})
+        for tweet in tweet_doc_list:
+            date = tweet['created_at']
+            if type(date) != datetime:
+                proper_date = datetime.strptime(date, '%a %b %d %H:%M:%S +0000 %Y')
+                pointer = tweet['id']
+                self.collection.update({'id': pointer}, {'$set': {'created_at': proper_date}})
+                print('updated created_at to datetime\n')
+            else:
+                print('skipping as is already datetime...\n')
+
+    def get_retweets_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
+        """
+        Return a list of retweet with user_id that matches the given user_id
+        since a certain time
+
+        @param user_id the id of the user to retrieve tweets from
+
+        @return a list of tweets by the given user
+        """
+        tweets = self.get_tweets_by_user_id_time_restricted(user_id)
+
+        retweets = []
+        for tweet in tweets:
+            if tweet.retweet_user_id is not None: # checks if it is a retweet
+                retweets.append(tweet)
+
+        return retweets
+
     def get_retweets_by_user_id(self, user_id: str) -> List[Tweet]:
         """
         Return a list of retweet with user_id that matches the given user_id
@@ -91,6 +143,17 @@ class MongoRawTweetGetter(RawTweetGetter):
     def get_retweets_of_user_by_user_id(self, user_id: str) -> List[Tweet]:
         retweet_doc_list = self.collection.find({"retweet_user_id": bson.int64.Int64(user_id)})
 
+        retweets = []
+        for doc in retweet_doc_list:
+            retweets.append(Tweet.fromDict(doc))
+
+        return retweets
+
+    def get_retweets_of_user_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
+
+        from_date = datetime(2020, 6, 30)
+        retweet_doc_list = self.collection.find({"$and": [{"retweet_user_id": bson.int64.Int64(user_id)},
+                                                        {"created_at": {"$gte": from_date}}]})
         retweets = []
         for doc in retweet_doc_list:
             retweets.append(Tweet.fromDict(doc))
