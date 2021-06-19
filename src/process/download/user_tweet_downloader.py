@@ -6,6 +6,9 @@ from src.dao.user.getter.user_getter import UserGetter
 from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
 from src.shared.logger_factory import LoggerFactory
 from typing import Optional
+from datetime import date
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 log = LoggerFactory.logger(__name__)
 
@@ -20,23 +23,39 @@ class UserTweetDownloader():
         self.raw_tweet_setter = raw_tweet_setter
         self.user_getter = user_getter
 
-    def download_user_tweets_by_user(self, user: User) -> None:
-        self.download_user_tweets_by_user_id(user.id)
+    def download_user_tweets_by_user(self, user: User, months_back=12) -> None:
+        self.download_user_tweets_by_screen_name(user.screen_name, months_back)
 
-    def download_user_tweets_by_screen_name(self, screen_name: str) -> None:
-        tweets = self.twitter_getter.get_tweets_by_screen_name(screen_name)
+    def download_user_tweets_by_screen_name(self, screen_name: str, months_back=12) -> None:
+        all_tweets = self.twitter_getter.get_tweets_by_screen_name(screen_name)
+        tweets = []
+        startDate = date.today() + relativedelta(months=-months_back)
+        for tweet in all_tweets:
+            createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
+            createDate = datetime.strptime(createDate_str, '%b %d %Y')
+            if createDate.date() > startDate:
+                tweets.append(tweet)
+        log.info(f"Downloaded {len(tweets)} Tweets for user {screen_name}")
         self.raw_tweet_setter.store_tweets(tweets)
 
-    def download_user_tweets_by_user_id(self, user_id: str) -> None:
-        tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
-        log.info("Downloaded " + str(len(tweets)) + " Tweets for user " + str(user_id))
+    def download_user_tweets_by_user_id(self, user_id: str, months_back=12) -> None:
+        all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
+        print(f'len all tweets = {len(all_tweets)}')
+        tweets = []
+        startDate = date.today() + relativedelta(months=-months_back)
+        for tweet in all_tweets:
+            createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
+            createDate = datetime.strptime(createDate_str, '%b %d %Y')
+            if createDate.date() > startDate:
+                tweets.append(tweet)
+        log.info(f"Downloaded {len(tweets)} Tweets for user {user_id}")
         self.raw_tweet_setter.store_tweets(tweets)
 
-    def download_user_tweets_by_user_list(self, user_ids: List[str]):
+    def download_user_tweets_by_user_list(self, user_ids: List[str], months_back=12):
         num_ids = len(user_ids)
         count = 0
         for id in user_ids:
-            self.download_user_tweets_by_user_id(id)
+            self.download_user_tweets_by_user_id(id, months_back)
 
             count += 1
 
