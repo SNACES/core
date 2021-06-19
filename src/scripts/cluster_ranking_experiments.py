@@ -28,6 +28,7 @@ def ranking_distribution(user_name: str, thresh, path=DEFAULT_PATH):
 
     production_ranker = process_module.get_ranker()
     consumption_ranker = process_module.get_ranker("Consumption")
+    local_followers_ranker = process_module.get_ranker("LocalFollowers")
 
     user_getter = dao_module.get_user_getter()
 
@@ -41,7 +42,8 @@ def ranking_distribution(user_name: str, thresh, path=DEFAULT_PATH):
     for i in range(count):
 
         cluster = user_lists[i]
-        log.info('Scoring consumption...')
+        log.info(len(cluster))
+        log.info('Scoring Consumption...')
         consumption = consumption_ranker.score_users(cluster)
         ranked_consumption = list(sorted(consumption, key=consumption.get, reverse=True))
         consumptions = [consumption[user] for user in ranked_consumption]
@@ -50,6 +52,12 @@ def ranking_distribution(user_name: str, thresh, path=DEFAULT_PATH):
         production = production_ranker.score_users(cluster)
         ranked_production = list(sorted(production, key=production.get, reverse=True))
         productions = [production[user] for user in ranked_production]
+
+        log.info('Scoring Local Followers...')
+        local_followers = local_followers_ranker.score_users(cluster)
+        log.info(local_followers)
+        ranked_followers = list(sorted(local_followers, key=local_followers.get, reverse=True))
+        followers = [local_followers[user] for user in ranked_followers]
 
         titles = ['Distribution of Consumption at Local Threshold '
                   + str(thresh) + ' for Cluster ' + str(i+1), 'Distribution of Production at Local Threshold '
@@ -70,13 +78,39 @@ def ranking_distribution(user_name: str, thresh, path=DEFAULT_PATH):
         plt.title(title)
         plt.show()
 
-        # title = titles[2]
-        # plt.bar(user_names, global_tweets)
-        # plt.ylabel('Number of Tweets')
-        # plt.xlabel('Deleted Users')
-        # plt.title(title)
-        #
-        # plt.show()
+        title = titles[2]
+        plt.bar(ranked_followers, followers)
+        plt.ylabel('Local Followers')
+        plt.xlabel('Users in Cluster')
+        plt.title(title)
+        plt.show()
+
+        compare_top_users(ranked_consumption, ranked_production, ranked_followers, i+1, thresh)
+
+def compare_top_users(consumption, production, local_followers, cluster_num, thresh):
+    for i in range(1, 3):
+        top_consumption = consumption[:5*i]
+        top_production = production[:5*i]
+        top_followers = local_followers[:5*i]
+        # Take production to be reference set
+        similarities = []
+        consumption_sim = jaccard_similarity(top_production, top_consumption)
+        similarities.append(consumption_sim)
+        followers_sim = jaccard_similarity(top_production, top_followers)
+        similarities.append(followers_sim)
+        title = "Similarity of Top " + str(5*i) + " Users of Utility Functions for " \
+                                                  "Cluster " + str(cluster_num) + " at Local Threshold " + str(thresh)
+        plt.bar(['Consumption', 'Local Followers'], similarities)
+        plt.ylabel('Jaccard Similarity with Production Utility Top Users')
+        plt.ylabel('Utility Function')
+        plt.title(title)
+        plt.show()
+
+def jaccard_similarity(user_list1, user_list2):
+    intersection = len(list(set(user_list1).intersection(user_list2)))
+    union = (len(user_list1) + len(user_list2)) - intersection
+
+    return float(intersection) / union
 
 if __name__ == "__main__":
     """
