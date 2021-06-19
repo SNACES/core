@@ -27,6 +27,10 @@ class UserTweetDownloader():
         self.download_user_tweets_by_screen_name(user.screen_name, months_back)
 
     def download_user_tweets_by_screen_name(self, screen_name: str, months_back=12) -> None:
+        """
+        @param months_back: the number of months we are going to count back from the current date,
+        to get a new past date as our start date for downloading tweets. Any older tweets are ignored.
+        """
         all_tweets = self.twitter_getter.get_tweets_by_screen_name(screen_name)
         tweets = []
         startDate = date.today() + relativedelta(months=-months_back)
@@ -39,8 +43,11 @@ class UserTweetDownloader():
         self.raw_tweet_setter.store_tweets(tweets)
 
     def download_user_tweets_by_user_id(self, user_id: str, months_back=12) -> None:
+        """
+        @param months_back: the number of months we are going to count back from the current date,
+        to get a new past date as our start date for downloading tweets. Any older tweets are ignored.
+        """
         all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
-        print(f'len all tweets = {len(all_tweets)}')
         tweets = []
         startDate = date.today() + relativedelta(months=-months_back)
         for tweet in all_tweets:
