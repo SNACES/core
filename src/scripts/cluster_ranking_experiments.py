@@ -85,9 +85,10 @@ def ranking_distribution(user_name: str, thresh, path=DEFAULT_PATH):
         plt.title(title)
         plt.show()
 
-        compare_top_users(ranked_consumption, ranked_production, ranked_followers, i+1, thresh)
+        compare_top_users(ranked_consumption, ranked_production, ranked_followers, i+1, thresh, user_getter)
 
-def compare_top_users(consumption, production, local_followers, cluster_num, thresh):
+
+def compare_top_users(consumption, production, local_followers, cluster_num, thresh, user_getter):
     for i in range(1, 3):
         top_consumption = consumption[:5*i]
         top_production = production[:5*i]
@@ -98,13 +99,23 @@ def compare_top_users(consumption, production, local_followers, cluster_num, thr
         similarities.append(consumption_sim)
         followers_sim = jaccard_similarity(top_production, top_followers)
         similarities.append(followers_sim)
+        consumption_followers_sim = jaccard_similarity(top_consumption, top_followers)
+        similarities.append(consumption_followers_sim)
+        log.info(similarities)
         title = "Similarity of Top " + str(5*i) + " Users of Utility Functions for " \
                                                   "Cluster " + str(cluster_num) + " at Local Threshold " + str(thresh)
-        plt.bar(['Consumption', 'Local Followers'], similarities)
-        plt.ylabel('Jaccard Similarity with Production Utility Top Users')
-        plt.ylabel('Utility Function')
+        plt.bar(['Consumption and Production', 'Local Followers and Production', 'Consumption and Local Followers' ], similarities)
+        plt.ylabel('Jaccard Similarity')
+        plt.xlabel('Utility Functions')
         plt.title(title)
         plt.show()
+
+        top_consumption_names = [user.screen_name for user in user_getter.get_users_by_id_list(top_consumption)]
+        log.info(top_consumption_names)
+        top_production_names = [user.screen_name for user in user_getter.get_users_by_id_list(top_production)]
+        log.info(top_production_names)
+        top_followers_names = [user.screen_name for user in user_getter.get_users_by_id_list(top_followers)]
+        log.info(top_followers_names)
 
 def jaccard_similarity(user_list1, user_list2):
     intersection = len(list(set(user_list1).intersection(user_list2)))

@@ -16,11 +16,10 @@ class ConsumptionUtilityRanker(Ranker):
             scores[str(id)] = 0
 
         for id in user_ids:
-            retweets = self.raw_tweet_getter.get_retweets_by_user_id(id)
+            retweets = self.raw_tweet_getter.get_retweets_by_user_id_time_restricted(id)
 
             for retweet in retweets:
                 if str(retweet.retweet_user_id) in user_ids and str(retweet.retweet_user_id) != str(id): # retweeting your own tweet does not count
                     scores[str(id)] += 1
 
-        print(scores)
         return scores

@@ -16,12 +16,11 @@ class RetweetsRanker(Ranker):
             scores[str(id)] = 0
 
         for id in user_ids:
-            retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id(id)
+            retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id_time_restricted(id)
 
             for retweet in retweets:
                 # print(str(str(retweet.user_id) in user_ids) + " " + str(str(retweet.user_id) == id))
                 if str(retweet.user_id) in user_ids and str(retweet.user_id) != str(id):
                     scores[str(id)] += 1
 
-        print(scores)
         return scores
