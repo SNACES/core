@@ -82,7 +82,7 @@ class ProcessModule():
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker,
-            community_tweet_ranker, community_setter, community_linear_ranker)
+            community_tweet_ranker, community_setter)
 
     # Data Cleaning
     def get_friends_cleaner(self):
