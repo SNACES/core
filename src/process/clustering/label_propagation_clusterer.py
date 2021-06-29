@@ -35,6 +35,26 @@ class LabelPropagationClusterer(Clusterer):
         self.cluster_setter.store_clusters(seed_id, clusters, params)
         return clusters
 
+    def cluster_by_graph(self, seed_id, graph):
+        clusters_data = [item for item in label_propagation_communities(graph)]
+
+        clusters = []
+        for data in clusters_data:
+            users = list(data)
+            if str(seed_id) in users: # Why is this needed?
+                users.remove(str(seed_id))
+
+            #cleaned_users = self.clean_cluster_users(users)
+
+            #cluster = Cluster(seed_id, cleaned_users)
+            cluster = Cluster(seed_id, users)
+            clusters.append(cluster)
+            log.info(len(users))
+
+        log.info("Number of clusters " + str(len(clusters)))
+
+        return clusters
+
     def clean_cluster_users(self, users):
         """
         Removes all user in users who don't follow anyone else in the list

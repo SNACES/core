@@ -1,3 +1,4 @@
+from src.process.ranking.relative_production_ranker import RelativeProductionRanker
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
@@ -194,6 +195,8 @@ class ProcessModule():
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
         elif type == "LocalFollowers":
             ranker = LocalFollowersRanker(cluster_getter, user_getter, friends_getter, ranking_setter)
+        elif type == "RelativeProduction":
+            ranker = RelativeProductionRanker(cluster_getter, raw_tweet_getter, ranking_setter, user_getter)
         else:
             ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
