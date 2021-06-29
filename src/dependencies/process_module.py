@@ -81,9 +81,12 @@ class ProcessModule():
         community_retweet_ranker = self.get_community_ranker(function_name="retweet")
         community_linear_ranker = self.get_community_ranker(function_name="linear")
 
+        friends_cleaner = self.get_extended_friends_cleaner()
+        cleaned_friends_getter = self.dao_module.get_cleaned_user_friend_getter()
+
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker,
-            community_tweet_ranker, community_setter, community_linear_ranker)
+            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter)
 
     # Data Cleaning
     def get_friends_cleaner(self):

@@ -16,7 +16,7 @@ class CommunityDetector():
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker, 
-            community_tweet_ranker, community_setter, community_ranker):
+            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
@@ -25,13 +25,15 @@ class CommunityDetector():
         self.community_retweet_ranker = community_retweet_ranker
         self.community_tweet_ranker = community_tweet_ranker
         self.community_setter = community_setter
-        self.community_ranker = community_ranker
+        self.friends_cleaner = friends_cleaner
+        self.cleaned_friends_getter = cleaned_friends_getter
 
     def detect_community_by_screen_name(self, screen_names: List):
         """ detect community entrance method
         @param screen_names: a list of strings, being the seed users set of the community detection algorithm.
         """
         users = []
+        print(screen_names)
         for names in screen_names:
             user = self.user_getter.get_user_by_screen_name(names)
             users.append(user)
@@ -50,6 +52,7 @@ class CommunityDetector():
             log.info(f"iteration index: {index + 1} / {iteration}")
             current_community, new_added_users, expansion = self.loop(current_community,
                                                                       new_added_users, expansion, index + 1)
+            return
         return current_community
 
     def loop(self, current_community: List, new_added_users: List, expansion: List, iteration):
@@ -60,25 +63,23 @@ class CommunityDetector():
         """
         log.info(f"Start Downloading information for new added users")
         for user in new_added_users:
+            if self.cleaned_friends_getter.contains_user(user.id):
+                log.info(f"Friends of User {user.screen_name} have been cleaned, skip to the next")
+                continue
             log.info(f"Downloading New Added User: {user.screen_name}")
             self.user_downloader.download_user_by_id(user.id)
             log.info(f"Downloading User Friends of {user.screen_name}")
             self.user_friends_downloader.download_friends_users_by_id(user.id)
             log.info(f"Finished downloading friends of {user.screen_name}")
 
-        log.info(f'Finish downloading all user friends')
+            init_friend_list = self.user_friends_getter.get_user_friends_ids(user.id)
+            self.friends_cleaner.clean_friends_global(user.id, init_friend_list, tweet_threshold=100,
+                                                      follower_threshold=1000, friend_threshold=50, bot_threshold=0)
+            log.info(f"Finished cleaning friends of {user.screen_name}")
 
-        # Download tweets for users, no need now
-        # self.user_tweets_downloader.download_user_tweets_by_user_list(new_added_users)
-        # log.info("Downloading User Tweets for new added users")
-        # for user in new_added_users:
-        #     log.info(f'Start to download tweets of user {user.screen_name}')
-        #     self.user_tweets_downloader.download_user_tweets_by_user(user)
-        #     log.info(f'Finish downloading tweets of user {user.screen_name}')
-        #
-        # log.info('DONE!!!!!!!')
+        log.info(f'Finish downloading and cleaning all user friends')
 
-        # Do some data cleaning, eliminate users
+        # Do more data cleaning, eliminate users
         # Use Data.Friends, only keep those users appear most frequently in the friend_lists
         # We stop adding more users as long as we have got 500 users already
         friend_id_to_occurrence = dict()
@@ -104,9 +105,23 @@ class CommunityDetector():
                 break
         log.info(f'Finish expanding the community, {count} users are added to the candidate pool')
 
+
+        # Download tweets for users
+        self.user_tweets_downloader.download_user_tweets_by_user_list(local_expansion)
+        log.info("Downloading User Tweets for new added users")
+        for user in local_expansion:
+            log.info(f'Start to download tweets of user {user.screen_name}')
+            self.user_tweets_downloader.download_user_tweets_by_user(user)
+            log.info(f'Finish downloading tweets of user {user.screen_name}')
+
+        log.info('Finish downloading all tweets')
+
         # Rank candidates
         log.info("Start ranking users")
-        ranked_ids = self.community_ranker.rank(local_expansion, current_community)
+
+        score = self.community_retweet_ranker.score_users(local_expansion, current_community)
+        print(f'score = {score}')
+        return
 
         # pick top candidates
         added_users = []

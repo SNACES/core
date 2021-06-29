@@ -20,7 +20,8 @@ class ExtendedFriendsCleaner():
         clean_friends_1 = self.clean_friends_global(user_id, friends_list, tweet_threshold, follower_threshold, bot_threshold)
         return self.clean_friends_local(user_id, clean_friends_1, local_follower, local_following)
 
-    def clean_friends_global(self, user_id, friends_list, tweet_threshold, follower_threshold, bot_threshold):
+    def clean_friends_global(self, user_id, friends_list, tweet_threshold, follower_threshold, friend_threshold,
+                             bot_threshold):
         clean_friends_list = []
         clean_users = []
         for id in friends_list:
@@ -33,6 +34,9 @@ class ExtendedFriendsCleaner():
                 continue
             elif user.statuses_count < tweet_threshold:
                 log.info("Removed user " + str(id) + " because they have " + str(user.statuses_count) + " tweets")
+                continue
+            elif user.friends_count < friend_threshold:
+                log.info(f"Removed user {id} because they have {user.friends_count} friends")
                 continue
             elif user.followers_count < bot_threshold * user.friends_count:
                 log.info("Removed user " + str(id) + " because they have " + str(bot_threshold) + " times as many followers as people who they follow")
