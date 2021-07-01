@@ -28,3 +28,6 @@ class Ranking():
 
     def get_top_user_id(self):
         return self.ids[0]
+
+    def get_top_20_user_ids(self):
+        return self.ids[:20]

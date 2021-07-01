@@ -19,7 +19,8 @@ class ExtendedFriendsCleaner():
         friends_list = self.user_friends_getter.get_user_friends_ids(user_id)
         clean_friends_1 = self.clean_friends_global(user_id, friends_list, tweet_threshold, follower_threshold,
                                                     friend_threshold, bot_threshold)
-        return self.clean_friends_local(user_id, clean_friends_1, local_follower, local_following)
+        final = self.clean_friends_local(user_id, clean_friends_1, local_follower, local_following)
+        return final
 
     def clean_friends_global(self, user_id, friends_list, tweet_threshold, follower_threshold, friend_threshold,
                              bot_threshold):
@@ -48,8 +49,8 @@ class ExtendedFriendsCleaner():
 
         log.info("original friends: " + str(len(friends_list)) + " remaining friends: " + str(len(clean_friends_list)))
 
-        if self.cleaned_user_friends_setter is not None:
-            self.cleaned_user_friends_setter.store_friends(user_id, clean_friends_list)
+        # if self.cleaned_user_friends_setter is not None:
+        #     self.cleaned_user_friends_setter.store_friends(user_id, clean_friends_list)
 
         return clean_friends_list
 

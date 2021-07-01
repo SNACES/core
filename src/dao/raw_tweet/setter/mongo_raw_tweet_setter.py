@@ -3,6 +3,7 @@ import bson
 from src.model.tweet import Tweet
 from src.shared.utils import get_unique_list
 from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
+from datetime import datetime
 
 class MongoRawTweetSetter(RawTweetSetter):
     """
@@ -19,6 +20,11 @@ class MongoRawTweetSetter(RawTweetSetter):
             # TODO: decide if this should be an exception
             pass
         else:
+            date = tweet.created_at
+            if type(date) != datetime:
+                proper_date = datetime.strptime(date, '%a %b %d %H:%M:%S +0000 %Y')
+                tweet.created_at = proper_date
+                # print('updated created_at to datetime\n')
             self.collection.insert_one(tweet.__dict__)
 
     def _contains_tweet(self, tweet: Tweet) -> bool:

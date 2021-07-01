@@ -1,6 +1,9 @@
 import datetime
 from queue import Queue
 from threading import Thread
+
+import tweepy
+
 import conf.credentials as credentials
 from typing import Union, List, Dict, Tuple
 from tweepy import OAuthHandler, Stream, API, Cursor
@@ -58,7 +61,8 @@ class BufferedUserTweetGetter():
 
                 counter = 0
                 try:
-                    cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200).items()
+                    cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200,
+                                    since_id='1277627227954458624', exclude_replies=True).items()
                     for data in cursor:
                         self.r.put(data)
                         counter += 1
@@ -201,7 +205,7 @@ class TweepyTwitterGetter(TwitterGetter):
         Each time a tweet is downloaded, the subscriber is notified (their
         on_status method is called)
 
-        @param num_tweets the number of tweers to download
+        @param num_tweets the number of tweets to download
         @param subscriber the object to notify each time a tweet is downloaded
         """
         listener = TweepyListener(num_tweets=num_tweets, subscriber=subscriber)
@@ -231,7 +235,8 @@ class TweepyTwitterGetter(TwitterGetter):
     def get_tweets_by_user_id(self, user_id, num_tweets=0):
         tweets = []
         try:
-            cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200).items(limit=num_tweets)
+            cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200,
+                            since_id='1277627227954458624', exclude_replies=True).items()
             for data in cursor:
                 tweets.append(Tweet.fromTweepyJSON(data._json))
         except TweepError as e:

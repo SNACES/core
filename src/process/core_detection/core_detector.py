@@ -11,7 +11,7 @@ class CoreDetector():
     """
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
-            friends_cleaner,
+            extended_friends_cleaner,
             local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
@@ -20,7 +20,7 @@ class CoreDetector():
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
-        self.friends_cleaner = friends_cleaner
+        self.extended_friends_cleaner = extended_friends_cleaner
         self.local_neighbourhood_downloader = local_neighbourhood_downloader
         self.local_neighbourhood_tweet_downloader = local_neighbourhood_tweet_downloader
         self.local_neighbourhood_getter = local_neighbourhood_getter
@@ -52,14 +52,14 @@ class CoreDetector():
     def detect_core(self, initial_user_id: str, default_cluster=1):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
-        prev_users = []
+        # prev_users = []
         curr_user_id = initial_user_id
-
+        prev_user_id = None
         prev_wf_vectors = []
         curr_wf_vector = None
-        while str(curr_user_id) not in prev_users:
+        while str(curr_user_id) != str(prev_user_id):
 
-            prev_users.append(str(curr_user_id))
+            prev_user_id = curr_user_id
             if curr_wf_vector is not None:
                 prev_wf_vectors.append(curr_wf_vector)
 
@@ -72,7 +72,7 @@ class CoreDetector():
 
             # TODO: Add check for if wf vector is drifting
 
-    def loop(self, user_id: str, prev_wf_vector=None, default_cluster=1, v=True, skip_download=True):
+    def loop(self, user_id: str, prev_wf_vector=None, default_cluster=1, v=True, skip_download=False):
         downloaded_users = ["876274407995527169"]
 
         if not skip_download or str(user_id) not in downloaded_users:
@@ -84,7 +84,7 @@ class CoreDetector():
             self.user_friends_downloader.download_friends_users_by_id(user_id)
 
             log.info("Cleaning Friends List")
-            self.friends_cleaner.clean_friends(user_id)
+            self.extended_friends_cleaner.clean_friends(user_id)
 
             log.info("Downloading Local Neighbourhood")
             self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
@@ -135,12 +135,13 @@ class CoreDetector():
             curr_cluster = cluster
             curr_wf_vector = self.cluster_word_frequency_getter.get_cluster_word_frequency_by_ids(cluster.users)
 
+        log.info("The cluster chosen is ", cluster.users)
         log.info("Ranking Cluster")
         self.ranker.rank(user_id, curr_cluster)
         ranking = self.ranking_getter.get_ranking(user_id)
 
         curr_user_id = ranking.get_top_user_id()
-
+        log.info("Top 20 users are ", ranking.get_top_20_user_ids())
         log.info("Highest Ranking User is " + str(curr_user_id))
 
         return curr_user_id, curr_wf_vector
