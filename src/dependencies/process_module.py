@@ -1,3 +1,4 @@
+from src.process.ranking.relative_production_ranker import RelativeProductionRanker
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
@@ -48,7 +49,7 @@ class ProcessModule():
         user_getter = self.dao_module.get_user_getter()
         user_downloader = self.get_user_downloader()
         friend_downloader = self.get_friend_downloader()
-        friends_cleaner = self.get_friends_cleaner()
+        extended_friends_cleaner = self.get_extended_friends_cleaner()
         local_neighbourhood_downloader = self.get_local_neighbourhood_downloader()
         local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader()
         local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
@@ -58,11 +59,11 @@ class ProcessModule():
         cluster_getter = self.dao_module.get_cluster_getter()
         cluster_word_frequency_processor = self.get_cluster_word_frequency_processor()
         cluster_word_frequency_getter = self.dao_module.get_cluster_word_frequency_getter()
-        ranker = self.get_ranker()
+        ranker = self.get_ranker() # Production
         ranking_getter = self.dao_module.get_ranking_getter()
 
         return CoreDetector(user_getter, user_downloader,
-            friend_downloader, friends_cleaner, local_neighbourhood_downloader,
+            friend_downloader, extended_friends_cleaner, local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
@@ -198,6 +199,8 @@ class ProcessModule():
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
         elif type == "LocalFollowers":
             ranker = LocalFollowersRanker(cluster_getter, user_getter, friends_getter, ranking_setter)
+        elif type == "RelativeProduction":
+            ranker = RelativeProductionRanker(cluster_getter, raw_tweet_getter, ranking_setter, user_getter)
         else:
             ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
