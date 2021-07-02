@@ -82,10 +82,11 @@ class ProcessModule():
 
         friends_cleaner = self.get_extended_friends_cleaner()
         cleaned_friends_getter = self.dao_module.get_cleaned_user_friend_getter()
+        user_tweets_getter = self.dao_module.get_user_tweet_getter()
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker,
-            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter)
+            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter)
 
     # Data Cleaning
     def get_friends_cleaner(self):

@@ -2,6 +2,7 @@ from src.model.user import User
 from src.shared.utils import cosine_sim
 from typing import Dict, List
 from src.shared.logger_factory import LoggerFactory
+from tqdm import tqdm
 
 log = LoggerFactory.logger(__name__)
 
@@ -16,7 +17,7 @@ class CommunityDetector():
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
             user_tweets_downloader, user_friends_getter, community_retweet_ranker, 
-            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter):
+            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
@@ -27,6 +28,7 @@ class CommunityDetector():
         self.community_setter = community_setter
         self.friends_cleaner = friends_cleaner
         self.cleaned_friends_getter = cleaned_friends_getter
+        self.user_tweets_getter = user_tweets_getter
 
     def detect_community_by_screen_name(self, screen_names: List):
         """ detect community entrance method
@@ -97,7 +99,8 @@ class CommunityDetector():
         for key, value in friend_id_to_occurrence.items():
             occurrence_to_friend_id[value].append(key)
         count = 0
-        local_expansion = expansion
+        # local_expansion = expansion
+        local_expansion = []
         for i in range(len(new_added_users), 0, -1):
             count += len(occurrence_to_friend_id[i])
             local_expansion.extend(occurrence_to_friend_id[i])
@@ -105,14 +108,16 @@ class CommunityDetector():
                 break
         log.info(f'Finish expanding the community, {count} users are added to the candidate pool')
 
-
         # Download tweets for users
-        self.user_tweets_downloader.download_user_tweets_by_user_list(local_expansion)
+        # self.user_tweets_downloader.download_user_tweets_by_user_list(local_expansion)
         log.info("Downloading User Tweets for new added users")
-        for user in local_expansion:
-            log.info(f'Start to download tweets of user {user.screen_name}')
-            self.user_tweets_downloader.download_user_tweets_by_user(user)
-            log.info(f'Finish downloading tweets of user {user.screen_name}')
+        for userid in tqdm(local_expansion):
+            if self.user_tweets_getter.get_tweets_by_user_id(userid):
+                print(f'Tweets of user {userid} has been downloaded, skip to next')
+                continue
+            log.info(f'Start to download tweets of user {userid}')
+            self.user_tweets_downloader.download_user_tweets_by_user_id(userid)
+            log.info(f'Finish downloading tweets of user {userid}')
 
         log.info('Finish downloading all tweets')
 
