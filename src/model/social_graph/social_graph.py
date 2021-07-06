@@ -38,7 +38,7 @@ class SocialGraph():
 
     def fromDict(dict: Dict):
         adj_list = dict["adj_list"]
-        graph = nx.parse_adjlist(adj_list)
+        graph = nx.parse_adjlist(adj_list, create_using=nx.DiGraph)
 
         seed_id = dict["seed_id"]
         params = dict["params"]

@@ -17,6 +17,7 @@ class RetweetsRanker(Ranker):
 
         for id in user_ids:
             retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id_time_restricted(id)
+            #retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id(id)
 
             for retweet in retweets:
                 # print(str(str(retweet.user_id) in user_ids) + " " + str(str(retweet.user_id) == id))

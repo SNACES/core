@@ -13,7 +13,8 @@ class MongoSocialGraphSetter(SocialGraphSetter):
 
     def store_social_graph(self, social_graph: SocialGraph):
         if self._contains_social_graph(social_graph):
-            pass
+            self.collection.find_one_and_replace({"seed_id": bson.int64.Int64(social_graph.seed_id), "params": social_graph.params},
+                                                 social_graph.toBSON())
         else:
             self.collection.insert_one(social_graph.toBSON())
 
