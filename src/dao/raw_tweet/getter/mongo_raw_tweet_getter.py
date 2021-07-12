@@ -72,8 +72,6 @@ class MongoRawTweetGetter(RawTweetGetter):
         tweets = []
         for doc in tweet_doc_list:
             tweets.append(Tweet.fromDict(doc))
-        if len(tweets) >= 3200:
-            print('catch!')
         return tweets
 
     def convert_dates(self):
