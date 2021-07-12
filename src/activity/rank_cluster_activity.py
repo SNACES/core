@@ -1,7 +1,7 @@
 from src.dao.cluster.cluster_dao_factory import ClusterDAOFactory
 from src.dao.raw_tweet.raw_tweet_dao_factory import RawTweetDAOFactory
 from src.dao.ranking.ranking_dao_factory import RankingDAOFactory
-from src.process.ranking.retweets_ranker import RetweetsRanker
+from src.process.ranking.production_utility_ranker import ProductionUtilityRanker
 from typing import Dict
 
 
@@ -32,7 +32,7 @@ class RankClusterActivity():
 
             ranking_setter = RankingDAOFactory.create_setter(ranking)
 
-            self.ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+            self.ranker = ProductionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
     def rank_cluster(self, seed_id, params):
         self.ranker.rank(seed_id, params)

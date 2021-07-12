@@ -12,12 +12,12 @@ from src.process.download.local_neighbourhood_tweet_downloader import LocalNeigh
 from src.process.download.tweet_downloader import TwitterTweetDownloader
 from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
-from src.process.ranking.retweets_ranker import RetweetsRanker
+from src.process.ranking.production_utility_ranker import ProductionUtilityRanker
 from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
 from src.process.ranking.followers_ranker import FollowerRanker
 from src.process.ranking.local_followers_ranker import LocalFollowersRanker
-from src.process.community_ranking.retweets_ranker import CommunityRetweetsRanker
-from src.process.community_ranking.tweets_ranker import CommunityTweetsRanker
+from src.process.community_ranking.community_production_ranker import CommunityProductionRanker
+from src.process.community_ranking.community_consumption_ranker import CommunityConsumptionRanker
 from src.process.community_ranking.linear_tweets_ranker import LinearCommunityRanker
 from src.process.raw_tweet_processing.tweet_processor import TweetProcessor
 from src.process.social_graph.social_graph_constructor import SocialGraphConstructor
@@ -77,17 +77,16 @@ class ProcessModule():
         user_tweets_downloader = self.get_user_tweet_downloader()
         community_setter = self.dao_module.get_community_setter()
 
-        community_tweet_ranker = self.get_community_ranker(function_name="tweet")
-        community_retweet_ranker = self.get_community_ranker(function_name="retweet")
-        community_linear_ranker = self.get_community_ranker(function_name="linear")
+        community_production_ranker = self.get_community_ranker(function_name="Production")
+        community_consumption_ranker = self.get_community_ranker(function_name="Consumption")
 
         friends_cleaner = self.get_extended_friends_cleaner()
         cleaned_friends_getter = self.dao_module.get_cleaned_user_friend_getter()
         user_tweets_getter = self.dao_module.get_user_tweet_getter()
 
         return CommunityDetector(user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_retweet_ranker,
-            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter)
+            user_tweets_downloader, user_friends_getter, community_production_ranker,
+            community_consumption_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter)
 
     # Data Cleaning
     def get_friends_cleaner(self):
@@ -202,16 +201,16 @@ class ProcessModule():
         elif type == "RelativeProduction":
             ranker = RelativeProductionRanker(cluster_getter, raw_tweet_getter, ranking_setter, user_getter)
         else:
-            ranker = RetweetsRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+            ranker = ProductionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
         return ranker
 
-    def get_community_ranker(self, function_name="retweet"):
+    def get_community_ranker(self, function_name="Production"):
         user_tweets_getter = self.dao_module.get_user_tweet_getter()
-        if function_name == "tweet":
-            ranker = CommunityTweetsRanker(user_tweets_getter)
-        elif function_name == "retweet":
-            ranker = CommunityRetweetsRanker(user_tweets_getter)
+        if function_name == "Consumption":
+            ranker = CommunityConsumptionRanker(user_tweets_getter)
+        elif function_name == "Production":
+            ranker = CommunityProductionRanker(user_tweets_getter)
         elif function_name == 'linear':
             ranker = LinearCommunityRanker(user_tweets_getter)
         else:

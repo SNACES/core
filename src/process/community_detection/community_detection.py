@@ -16,15 +16,15 @@ class CommunityDetector():
     """
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
-            user_tweets_downloader, user_friends_getter, community_retweet_ranker, 
-            community_tweet_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter):
+            user_tweets_downloader, user_friends_getter, community_production_ranker,
+            community_consumption_ranker, community_setter, friends_cleaner, cleaned_friends_getter, user_tweets_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
         self.user_tweets_downloader = user_tweets_downloader
         self.user_friends_getter = user_friends_getter
-        self.community_retweet_ranker = community_retweet_ranker
-        self.community_tweet_ranker = community_tweet_ranker
+        self.community_production_ranker = community_production_ranker
+        self.community_consumption_ranker = community_consumption_ranker
         self.community_setter = community_setter
         self.friends_cleaner = friends_cleaner
         self.cleaned_friends_getter = cleaned_friends_getter
@@ -108,10 +108,36 @@ class CommunityDetector():
                 break
         log.info(f'Finish expanding the community, {count} users are added to the candidate pool')
 
+        # # plot
+        # import seaborn as sns
+        # from scipy.stats import norm
+        # norm.rvs()
+        # num_follower_list = []
+        # for key, value in occurrence_to_friend_id.items():
+        #     print(f'{len(value)} users are followed by {key} users in the initial set')
+
         # Download tweets for users
-        # self.user_tweets_downloader.download_user_tweets_by_user_list(local_expansion)
+        from datetime import datetime
+        cnt = 0
+        dic = {}
         log.info("Downloading User Tweets for new added users")
         for userid in tqdm(local_expansion):
+            # tweets = self.user_tweets_getter.get_tweets_by_user_id(userid)
+            # if len(tweets) >= 3200:
+            #     cnt += 1
+            #     try:
+            #         created_str = tweets[-1].created_at
+            #         mon = created_str[4:7]
+            #         if mon in dic:
+            #             dic[mon] += 1
+            #         else:
+            #             dic[mon] = 1
+            #
+            #         print(f'Mon = {mon}, User = {userid}')
+            #     except:
+            #         pass
+            #     continue
+
             if self.user_tweets_getter.get_tweets_by_user_id(userid):
                 print(f'Tweets of user {userid} has been downloaded, skip to next')
                 continue
@@ -120,14 +146,18 @@ class CommunityDetector():
             log.info(f'Finish downloading tweets of user {userid}')
 
         log.info('Finish downloading all tweets')
-
+        return
+        # print(f'{cnt} users out of {len(local_expansion)} has 3200 tweets')
+        # print(dic)
         # Rank candidates
         log.info("Start ranking users")
 
-        score = self.community_retweet_ranker.score_users(local_expansion, current_community)
-        print(f'score = {score}')
-        return
 
+        current_community_id_list = [user.id for user in current_community]
+        score = self.community_retweet_ranker.score_users(local_expansion, current_community_id_list)
+        print(f'score = {score}')
+
+        ranked_ids = self.community_retweet_ranker.rank(local_expansion, current_community_id_list)
         # pick top candidates
         added_users = []
         for id in ranked_ids:
