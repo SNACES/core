@@ -13,7 +13,7 @@ class MongoRankingSetter(RankingSetter, MongoDAO):
 
     def store_ranking(self, ranking):
         if self._contains_ranking(ranking):
-            pass
+            self.collection.find_one_and_replace({"seed_id": bson.int64.Int64(ranking.seed_id)}, ranking.__dict__)
         else:
             self.collection.insert_one(ranking.__dict__)
 

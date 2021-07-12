@@ -38,7 +38,7 @@ def produce_plots(user_name: str, thresh, i, path=DEFAULT_PATH):
     init_user_friends = user_friend_getter.get_user_friends_ids(seed_id)
     # tweet_processor.process_tweets_by_user_list(init_user_friends)
     global_clean = friends_cleaner.clean_friends_global(seed_id, init_user_friends, tweet_threshold=50,
-                                                      follower_threshold=50, bot_threshold=0)
+                                                      follower_threshold=50, friend_threshold=0, bot_threshold=0)
     clean_list, removed_list = friends_cleaner.clean_friends_local(seed_id, global_clean, local_following=thresh)
     clean_list = [str(id) for id in clean_list]
 
@@ -47,7 +47,7 @@ def produce_plots(user_name: str, thresh, i, path=DEFAULT_PATH):
     social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(seed_id, local_neighbourhood, remove_unconnected_nodes=True)
     clusters = clusterer.cluster_by_social_graph(seed_id, social_graph, {})
     log.info("Iteration: " + str(i))
-    write_clusters_to_file(user_name, clusters, i, thresh, "local_and_global")
+    #write_clusters_to_file(user_name, clusters, i, thresh, "local_and_global")
 
 
 def write_clusters_to_file(user_name, clusters, i, thresh, type):

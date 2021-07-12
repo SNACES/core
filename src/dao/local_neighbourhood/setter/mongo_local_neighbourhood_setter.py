@@ -12,7 +12,8 @@ class MongoLocalNeighbourhoodSetter(LocalNeighbourhoodSetter):
 
     def store_local_neighbourhood(self, local_neighbourhood: LocalNeighbourhood):
         if self._contains_local_neighbourhood(local_neighbourhood):
-            pass
+            self.collection.find_one_and_replace({"seed_id": bson.int64.Int64(local_neighbourhood.seed_id),
+                                                  "params": local_neighbourhood.params}, local_neighbourhood.__dict__)
         else:
             self.collection.insert_one(local_neighbourhood.__dict__)
 

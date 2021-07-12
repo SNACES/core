@@ -50,7 +50,7 @@ class LocalNeighbourhoodDownloader():
 
             assert user_friends is not None
 
-            user_dict[str(id)] = [id for id in user_friends if (id in user_friends_ids)]
+            user_dict[str(id)] = [str(id) for id in user_friends if (id in user_friends_ids)]
 
             log.log_progress(log, i, num_ids)
 

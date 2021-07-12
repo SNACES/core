@@ -10,7 +10,7 @@ class MongoSocialGraphGetter(SocialGraphGetter, MongoDAO):
     def get_social_graph(self, seed_id: str, params: Optional[Dict] = None):
         doc = None
 
-        if params is not None:
+        if params is None:
             doc = self.collection.find_one({"seed_id": bson.int64.Int64(seed_id)})
         else:
             doc = self.collection.find_one({
