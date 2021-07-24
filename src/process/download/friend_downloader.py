@@ -20,8 +20,7 @@ class FriendDownloader():
         """
         Gets a list of friends ids of a user by id
         """
-        if not len(self.user_friend_getter.get_user_friends_ids(user_id)) >= \
-               self.user_getter.get_user_by_id(user_id).friends_count:
+        if not self.user_friend_getter.contains_user(user_id):
             id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
             self.user_friend_setter.store_friends(id, friends_user_ids)
 
@@ -46,6 +45,7 @@ class FriendDownloader():
             assert self.user_friend_getter.contains_user(user_id)
             friends_users_ids = self.user_friend_getter.get_user_friends_ids(user_id)
             assert friends_users_ids is not None
+            assert len(friends_users_ids) >= self.user_getter.get_user_by_id(user_id).friends_count
 
             for id in friends_users_ids:
                 assert self.user_setter.contains_user(id)
