@@ -9,17 +9,19 @@ class FriendDownloader():
     Download Twitter Followers for use in future algorithms.
     """
 
-    def __init__(self, twitter_getter, user_friend_getter, user_friend_setter, user_setter):
+    def __init__(self, twitter_getter, user_friend_getter, user_friend_setter, user_setter, user_getter):
         self.twitter_getter = twitter_getter
         self.user_friend_getter = user_friend_getter
         self.user_friend_setter = user_friend_setter
         self.user_setter = user_setter
+        self.user_getter = user_getter
 
     def download_friends_ids_by_id(self, user_id: str, num_friends=0) -> None:
         """
         Gets a list of friends ids of a user by id
         """
-        if not self.user_friend_getter.contains_user(user_id):
+        if not len(self.user_friend_getter.get_user_friends_ids(user_id)) >= \
+               self.user_getter.get_user_by_id(user_id).friends_count:
             id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
             self.user_friend_setter.store_friends(id, friends_user_ids)
 

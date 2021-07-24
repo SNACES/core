@@ -1,3 +1,5 @@
+import os
+import json
 from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
 from src.model.user import User
 from typing import Dict
@@ -17,11 +19,12 @@ class CoreDetector():
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
-            ranker, ranking_getter, user_tweet_downloader):
+            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
         self.user_tweet_downloader = user_tweet_downloader
+        self.user_tweet_getter = user_tweet_getter
         self.extended_friends_cleaner = extended_friends_cleaner
         self.local_neighbourhood_downloader = local_neighbourhood_downloader
         self.local_neighbourhood_tweet_downloader = local_neighbourhood_tweet_downloader
@@ -32,7 +35,8 @@ class CoreDetector():
         self.cluster_getter = cluster_getter
         self.cluster_word_frequency_processor = cluster_word_frequency_processor
         self.cluster_word_frequency_getter = cluster_word_frequency_getter
-        self.ranker = ranker
+        self.prod_ranker = prod_ranker
+        self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
 
 
@@ -75,24 +79,42 @@ class CoreDetector():
                 log.exception(e)
                 exit()
 
+        log.info("The final user for initial user " + str(initial_user_id) + " is "
+                 + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
+
 
             # TODO: Add check for if wf vector is drifting
 
-    def loop(self, user_id: str, prev_cluster, prev_wf_vector=None, default_cluster=1, v=True, skip_download=False):
-        downloaded_users = ["876274407995527169"]
+    def loop(self, user_id: str, prev_cluster, prev_wf_vector=None, default_cluster=1, v=True, skip_download=True):
+        # downloaded_users = ["876274407995527169", "985158406125375488", "359831209"]
+        downloaded_users = []
 
         if not skip_download or str(user_id) not in downloaded_users:
             # TODO Add flag for skipping download step
             log.info("Downloading User")
             self.user_downloader.download_user_by_id(user_id)
 
+            log.info("Downloading User Tweets")
+            self.user_tweet_downloader.download_user_tweets_by_user_id(str(user_id))
+
             log.info("Downloading User Friends")
             self.user_friends_downloader.download_friends_users_by_id(user_id)
 
-            log.info("Cleaning Friends List")
-            self.extended_friends_cleaner.clean_friends(user_id)
+            log.info("Cleaning Friends List by Global Attributes")
+            user = self.user_getter.get_user_by_id(str(user_id))
+            follower_thresh = 0.1 * user.followers_count
+            friend_thresh = 0.1 * user.friends_count
+            tweet_thresh = 0.1 * len(self.user_tweet_getter.get_tweets_by_user_id_time_restricted(str(user_id)))
+            clean_list = self.extended_friends_cleaner.clean_friends_global(user_id,
+                            tweet_threshold=tweet_thresh, follower_threshold=follower_thresh, friend_threshold=friend_thresh)
 
             log.info("Downloading Local Neighbourhood")
+            self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
+
+            log.info("Cleaning Friends List by Local Attributes")
+            self.extended_friends_cleaner.clean_friends_local(user_id, clean_list)
+
+            log.info("Updating Local Neighbourhood")
             self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
 
             # log.info("Downloading Local Neighbourhood Tweets")
@@ -174,15 +196,97 @@ class CoreDetector():
         log.info(curr_cluster.users)
 
         log.info("Downloading Cluster Tweets")
-        self.user_tweet_downloader.stream_tweets_by_user_list(curr_cluster.users)
+        if str(user_id) not in downloaded_users:
+            self.user_tweet_downloader.stream_tweets_by_user_list(curr_cluster.users)
+            #self.user_tweet_downloader.download_user_tweets_by_user_list(curr_cluster.users)
 
         log.info("Ranking Cluster")
-        self.ranker.rank(user_id, curr_cluster)
-        ranking = self.ranking_getter.get_ranking(user_id)
+        prod_ranking, prod = self.prod_ranker.rank(str(user_id), curr_cluster)
+        con_ranking, con = self.con_ranker.rank(str(user_id), curr_cluster)
 
-        curr_user_id = ranking.get_top_user_id()
-        log.info("Top 20 users are: ")
-        log.info(ranking.get_top_20_user_ids())
-        log.info("Highest Ranking User is " + str(curr_user_id))
+        # prod_ranking = self.ranking_getter.get_ranking(str(user_id), params="retweets")
+        # con_ranking = self.ranking_getter.get_ranking(str(user_id), params="consumption utility")
 
-        return curr_user_id, curr_wf_vector, prev_cluster
+        # top_10_prod = prod_ranking[:10]
+        # top_10_con = con_ranking[:10]
+
+        top_20_prod = prod_ranking.get_top_20_user_ids()
+        top_20_con = con_ranking.get_top_20_user_ids()
+
+        # top_30_prod = prod_ranking[:30]
+        # top_30_con = con_ranking[:30]
+        #
+        # top_50_prod = prod_ranking[:50]
+        # top_50_con = con_ranking[:50]
+
+        # intersection_10 = set(top_10_prod).intersection(top_10_con)
+        # intersection_10_prod = sorted(intersection_10, key=prod.get, reverse=True)
+        # intersection_10_con = sorted(intersection_10, key=con.get, reverse=True)
+
+        intersection_20 = set(top_20_prod).intersection(top_20_con)
+        intersection_20_prod = sorted(intersection_20, key=prod.get, reverse=True)
+        intersection_20_con = sorted(intersection_20, key=con.get, reverse=True)
+
+        # intersection_30 = set(top_30_prod).intersection(top_30_con)
+        # intersection_30_prod = sorted(intersection_30, key=prod.get, reverse=True)
+        # intersection_30_con = sorted(intersection_30, key=con.get, reverse=True)
+        #
+        # intersection_50 = set(top_50_prod).intersection(top_50_con)
+        # intersection_50_prod = sorted(intersection_50, key=prod.get, reverse=True)
+        # intersection_50_con = sorted(intersection_50, key=con.get, reverse=True)
+
+        # log.info("Using Top 10: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
+
+        log.info("Using Top 20: ")
+        log.info("Production:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
+        log.info("Consumption:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+
+        # log.info("Using Top 30: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_con])
+        #
+        # log.info("Using Top 50: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_con])
+
+        curr_user_id = intersection_20_con[0]
+
+        # curr_user_id = ranking.get_top_user_id()
+        # top_ids = ranking.get_top_20_user_ids()
+        # top_names = [self.user_getter.get_user_by_id(str(id)).screen_name for id in top_ids]
+        # log.info("Top 20 users are: ")
+        # log.info(top_names)
+        curr_user_name = self.user_getter.get_user_by_id(str(curr_user_id)).screen_name
+        log.info("Highest Ranking User is " + curr_user_name)
+        # self.save_top_users(curr_cluster.users, top_names, self.user_getter.get_user_by_id(str(user_id)).screen_name, "production")
+
+        return curr_user_id, curr_wf_vector, curr_cluster
+
+
+    def save_top_users(self, cluster, users, seed_name, type):
+
+        path = "./results/" + type + "/top_users/"
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+        filename = (path + seed_name + '.json')
+
+        json_data = {
+            'seed_name': seed_name,
+            'top_20_users': users,
+            'cluster': cluster
+        }
+
+        with open(filename, 'w+') as file:
+            json.dump(json_data, file)
+

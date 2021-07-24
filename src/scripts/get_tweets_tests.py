@@ -21,8 +21,10 @@ def get_tweets(name: str, path=DEFAULT_PATH):
     user_getter = dao_module.get_user_getter()
     user_id = user_getter.get_user_by_screen_name(name).id
     twitter_getter = dao_module.get_twitter_getter()
-    tweets = twitter_getter.get_tweets_by_user_id(user_id)
-    log.info(user_getter.get_user_by_id(user_id).id)
+    # tweets = twitter_getter.get_tweets_by_user_id(user_id)
+    user_tweet_getter = dao_module.get_user_tweet_getter()
+    tweets = sorted(user_tweet_getter.get_tweets_by_user_id_time_restricted(str(user_id)),
+                    key=lambda x: x.created_at)
     log.info(len(tweets))
     log.info(tweets[0].text)
     tweet = tweets[0]

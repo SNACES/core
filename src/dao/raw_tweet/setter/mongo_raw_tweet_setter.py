@@ -1,5 +1,7 @@
 from typing import List, Dict
 import bson
+from pymongo import InsertOne
+
 from src.model.tweet import Tweet
 from src.shared.utils import get_unique_list
 from src.dao.raw_tweet.setter.raw_tweet_setter import RawTweetSetter
@@ -27,7 +29,27 @@ class MongoRawTweetSetter(RawTweetSetter):
                 # print('updated created_at to datetime\n')
             self.collection.insert_one(tweet.__dict__)
 
+    def store_many_tweets(self, tweets):
+        operations = []
+        for tweet in tweets:
+            if self._contains_tweet(tweet):
+                # TODO: decide if this should be an exception
+                pass
+            else:
+                date = tweet.created_at
+                if type(date) != datetime:
+                    proper_date = datetime.strptime(date, '%a %b %d %H:%M:%S +0000 %Y')
+                    tweet.created_at = proper_date
+                    # print('updated created_at to datetime\n')
+                    operations.append(InsertOne(tweet.__dict__))
+                    print('added!')
+        print('waiting to update...')
+        self.collection.bulk_write(operations)
+
     def _contains_tweet(self, tweet: Tweet) -> bool:
+        # if self.collection.count_documents({"id": bson.int64.Int64(tweet.id)}, limit=1) > 0:
+        #     return True
+        # return False
         return self.collection.find_one({"id": bson.int64.Int64(tweet.id)}) is not None
 
     def get_num_user_tweets(self, user_id) -> int:

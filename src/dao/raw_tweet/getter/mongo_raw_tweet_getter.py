@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from typing import List, Dict
 import bson
 from src.model.tweet import Tweet
@@ -66,7 +67,8 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         @return a list of tweets by the given user
         """
-        from_date = datetime(2020, 6, 30)
+        from_date = datetime.today() + relativedelta(months=-12)
+        # from_date = datetime(2020, 6, 30)
         tweet_doc_list = self.collection.find({"$and": [{"user_id": bson.int64.Int64(user_id)},
                                                         {"created_at": {"$gte": from_date}}]})
         tweets = []
@@ -127,6 +129,9 @@ class MongoRawTweetGetter(RawTweetGetter):
         return retweets
 
     def contains_tweets_from_user(self, user_id: str):
+        # if self.collection.count_documents({"user_id": bson.int64.Int64(user_id)}, limit=1) > 0:
+        #     return True
+        # return False
         return self.collection.find_one({"user_id": bson.int64.Int64(user_id)}) is not None
 
     def get_num_tweets(self) -> int:
