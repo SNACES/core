@@ -5,6 +5,7 @@ import bson
 from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.raw_tweet.getter.raw_tweet_getter import RawTweetGetter
+from datetime import datetime
 
 
 class MongoRawTweetGetter(RawTweetGetter):
@@ -74,7 +75,6 @@ class MongoRawTweetGetter(RawTweetGetter):
         tweets = []
         for doc in tweet_doc_list:
             tweets.append(Tweet.fromDict(doc))
-
         return tweets
 
     def convert_dates(self):
@@ -91,6 +91,20 @@ class MongoRawTweetGetter(RawTweetGetter):
                 print('updated created_at to datetime\n')
             else:
                 print('skipping as is already datetime...\n')
+
+    def convert_dates_for_user_id(self, user_id):
+        tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
+        from tqdm import tqdm
+        for tweet in tqdm(tweet_doc_list):
+            date = tweet['created_at']
+            if type(date) != datetime:
+                proper_date = datetime.strptime(date, '%a %b %d %H:%M:%S +0000 %Y')
+                pointer = tweet['id']
+                self.collection.update({'id': pointer}, {'$set': {'created_at': proper_date}})
+                # print('updated created_at to datetime\n')
+            else:
+                # print('skipping as is already datetime...\n')
+                pass
 
     def get_retweets_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
         """
@@ -164,3 +178,26 @@ class MongoRawTweetGetter(RawTweetGetter):
             retweets.append(Tweet.fromDict(doc))
 
         return retweets
+
+    def get_tweet_scale_coefficient(self, user_id) -> float:
+
+        def get_tweet_limit_coefficient_by_tweets_brute_force(tweets: List) -> float:
+            earliest = tweets[0].created_at
+            for tweet in tweets:
+                if tweet.created_at < earliest:
+                    earliest = tweet.created_at
+            date1 = datetime(2021, 6, 30)
+            print(f'first: {date1}, second: {earliest}')
+            months_difference = (12 * date1.year + date1.month) - (12 * earliest.year + earliest.month)
+            print(f'mons_diff = {months_difference}')
+            if months_difference == 0:
+                return 12.0
+            else:
+                return abs(12.0 / months_difference)
+
+        tweets = self.get_tweets_by_user_id_time_restricted(user_id)
+        coeffcient = 1
+        if len(tweets) >= 3200:
+            coeffcient = get_tweet_limit_coefficient_by_tweets_brute_force(tweets)
+            print(f'catch {user_id} with coefficient = {coeffcient}')
+        return coeffcient

@@ -3,7 +3,7 @@ from src.process.ranking.ranker import Ranker
 from typing import List
 
 
-class RetweetsRanker(Ranker):
+class ProductionUtilityRanker(Ranker):
     def __init__(self, cluster_getter, raw_tweet_getter, ranking_setter):
         self.cluster_getter = cluster_getter
         self.raw_tweet_getter = raw_tweet_getter
