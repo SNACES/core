@@ -245,7 +245,7 @@ class TweepyTwitterGetter(TwitterGetter):
         return tweets
 
     def get_friends_ids_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
-        cursor = Cursor(self.twitter_api.friends_ids, user_id=user_id).items(limit=num_friends)
+        cursor = Cursor(self.twitter_api.friends_ids, user_id=user_id, count=5000).items(limit=num_friends)
 
         friends_user_ids = []
         try:
@@ -261,7 +261,7 @@ class TweepyTwitterGetter(TwitterGetter):
         @param num_friends: 0 means ALL friends, based on tweepy.Cursor.items()
         """
         try:
-            cursor = Cursor(self.twitter_api.friends, user_id=user_id).items(limit=num_friends)
+            cursor = Cursor(self.twitter_api.friends, user_id=user_id, count=200).items(limit=num_friends)
 
             friends_users = []
             count = 0

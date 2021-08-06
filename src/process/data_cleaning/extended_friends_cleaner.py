@@ -127,12 +127,18 @@ class ExtendedFriendsCleaner():
                 clean_friends_list = new_friends
             log.info('iteration!')
 
+        # if 254201259 not in clean_friends_list:
+        #     clean_friends_list.append(254201259)
+        # log.info("merbroussard's local following count")
+        # log.info(len(set(clean_friends_list).intersection(user_friends[254201259])))
+        # log.info([self.user_getter.get_user_by_id(id).screen_name for
+        #           id in set(clean_friends_list).intersection(user_friends[254201259])])
 
         log.info("original friends: " + str(len(friends_list)) + " remaining friends: " + str(len(clean_friends_list)))
 
         if self.cleaned_user_friends_setter is not None:
             self.cleaned_user_friends_setter.store_friends(user_id, clean_friends_list)
-
+        # return user_friends[254201259]
         return clean_friends_list, deleted_friends
 
     def clean_friends_rankings(self, user_id, friends_list, consumption_threshold, production_threshold): # Clean by rankings
