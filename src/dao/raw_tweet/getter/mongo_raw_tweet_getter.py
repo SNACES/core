@@ -170,7 +170,8 @@ class MongoRawTweetGetter(RawTweetGetter):
 
     def get_retweets_of_user_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
 
-        from_date = datetime(2020, 6, 30)
+        from_date = datetime.today() + relativedelta(months=-12)
+        # from_date = datetime(2020, 6, 30)
         retweet_doc_list = self.collection.find({"$and": [{"retweet_user_id": bson.int64.Int64(user_id)},
                                                         {"created_at": {"$gte": from_date}}]})
         retweets = []

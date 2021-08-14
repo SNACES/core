@@ -1,7 +1,7 @@
 from src.model.ranking import Ranking
 from src.process.ranking.ranker import Ranker
 from typing import List
-
+from tqdm import tqdm
 
 class ProductionUtilityRanker(Ranker):
     def __init__(self, cluster_getter, raw_tweet_getter, ranking_setter):
@@ -15,7 +15,7 @@ class ProductionUtilityRanker(Ranker):
         for id in user_ids:
             scores[str(id)] = 0
 
-        for id in user_ids:
+        for id in tqdm(user_ids):
             retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id_time_restricted(id)
             #retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id(id)
 

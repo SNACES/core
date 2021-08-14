@@ -234,6 +234,11 @@ class CoreDetector():
         top_50_prod = prod_ranking.get_top_50_user_ids()
         top_50_con = con_ranking.get_top_50_user_ids()
 
+        top_150_prod = prod_ranking.get_all_ranked_user_ids()[:150]
+        top_150_con = con_ranking.get_all_ranked_user_ids()[:150]
+
+        top_400_prod = prod_ranking.get_all_ranked_user_ids()[:400]
+        top_400_con = con_ranking.get_all_ranked_user_ids()[:400]
 
         # top_30_prod = prod_ranking[:30]
         # top_30_con = con_ranking[:30]
@@ -257,6 +262,14 @@ class CoreDetector():
         intersection_50_prod = sorted(intersection_50, key=prod.get, reverse=True)
         intersection_50_con = sorted(intersection_50, key=con.get, reverse=True)
 
+        intersection_150 = set(top_150_prod).intersection(top_150_con)
+        intersection_150_prod = sorted(intersection_150, key=prod.get, reverse=True)
+        intersection_150_con = sorted(intersection_150, key=con.get, reverse=True)
+
+        intersection_400 = set(top_400_prod).intersection(top_400_con)
+        intersection_400_prod = sorted(intersection_400, key=prod.get, reverse=True)
+        intersection_400_con = sorted(intersection_400, key=con.get, reverse=True)
+
 
         log.info("Top 50 Prod")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod])
@@ -275,41 +288,55 @@ class CoreDetector():
         log.info("Consumption:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
 
-        log.info("Using Top 30: ")
-        log.info("Production:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_prod])
-        log.info("Consumption:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_con])
-
-        log.info("Using Top 50: ")
-        log.info("Production:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_prod])
-        log.info("Consumption:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_con])
+        # log.info("Using Top 30: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_con])
+        #
+        # log.info("Using Top 50: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_con])
+        #
+        # log.info("Using Top 150: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_150_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_150_con])
+        #
+        # log.info("Using Top 400: ")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_con])
 
         # By Production
-        # curr_user_id = intersection_20_prod[0]
-        #
-        # if curr_user_id == str(user_id):
-        #     if intersection_20_con[0] != curr_user_id:
-        #         index = intersection_20_con.index(curr_user_id)
-        #         for i in range(1, 20):
-        #             temp_id = intersection_20_prod[i]
-        #             if intersection_20_con.index(temp_id) < index:
-        #                 curr_user_id = temp_id
-        #                 break
-
-        # By Consumption
-        curr_user_id = intersection_20_con[0]
+        log.info("By Production")
+        curr_user_id = intersection_20_prod[0]
 
         if curr_user_id == str(user_id):
-            if intersection_20_prod[0] != curr_user_id:
-                index = intersection_20_prod.index(curr_user_id)
+            if intersection_20_con[0] != curr_user_id:
+                index = intersection_20_con.index(curr_user_id)
                 for i in range(1, 20):
-                    temp_id = intersection_20_con[i]
-                    if intersection_20_prod.index(temp_id) < index:
+                    temp_id = intersection_20_prod[i]
+                    if intersection_20_con.index(temp_id) < index:
                         curr_user_id = temp_id
                         break
+
+        # By Consumption
+        # log.info("By Consumption")
+        # curr_user_id = intersection_20_con[0]
+        #
+        # if curr_user_id == str(user_id):
+        #     if intersection_20_prod[0] != curr_user_id:
+        #         index = intersection_20_prod.index(curr_user_id)
+        #         for i in range(1, 20):
+        #             temp_id = intersection_20_con[i]
+        #             if intersection_20_prod.index(temp_id) < index:
+        #                 curr_user_id = temp_id
+        #                 break
 
         # curr_user_id = ranking.get_top_user_id()
         # top_ids = ranking.get_top_20_user_ids()
