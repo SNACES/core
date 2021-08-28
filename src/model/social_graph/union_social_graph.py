@@ -19,7 +19,9 @@ class UnionSocialGraph(SocialGraph):
         if remove_unconnected_nodes:
             user_list = SocialGraph.remove_unconnected_nodes(local_neighbourhood)
             log.info("Length of list after removing unconnected nodes " + str(len(user_list)))
-            user_list.remove(str(local_neighbourhood.seed_id))
+            if str(local_neighbourhood.seed_id) in user_list:
+                user_list.remove(str(local_neighbourhood.seed_id))
+            # user_list.remove(str(local_neighbourhood.seed_id))
 
         for user in user_list:
             graph.add_node(user)
@@ -27,7 +29,8 @@ class UnionSocialGraph(SocialGraph):
         for user in user_list:
             friends = local_neighbourhood.get_user_friends(user)
             for friend in friends:
-                graph.add_edge(user, friend)
+                graph.add_edge(user, str(friend))
+        log.info(graph.order())
 
         params = deepcopy(local_neighbourhood.params)
         if params is None:

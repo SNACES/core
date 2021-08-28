@@ -22,33 +22,37 @@ def ranking(user_name: str, thresh, path=DEFAULT_PATH):
     local_followers_ranker = process_module.get_ranker("LocalFollowers")
     consumption_ranker = process_module.get_ranker("Consumption")
     production_ranker = process_module.get_ranker()
+    ranking_getter = dao_module.get_ranking_getter()
+    user_getter = dao_module.get_user_getter()
+    user_id = user_getter.get_user_by_screen_name(user_name).id
 
-    type = 'local_and_global'
-    filename = "./dc2_exp/" + str(type) + '/clusters_local_' + str(thresh) + '_global_50' '/' + str(user_name) + '_clusters_0.json'
-    with open(filename, 'r') as file:
-        user_lists = json.load(file)
-        count = len(user_lists)
 
-    for i in range(count): # Going through each cluster
-        cluster = user_lists[i]
-        log.info('Scoring Consumption...')
-        consumption = consumption_ranker.score_users(cluster)
-        ranked_consumption = list(sorted(consumption, key=consumption.get, reverse=True))
-
-        write_ranking_to_file(user_name, ranked_consumption, i+1, thresh, 'consumption')
-
-        log.info('Scoring Production...')
-        production = production_ranker.score_users(cluster)
-        ranked_production = list(sorted(production, key=production.get, reverse=True))
-
-        write_ranking_to_file(user_name, ranked_production, i+1, thresh, 'production')
-
-        log.info('Scoring Local Followers...')
-        local_followers = local_followers_ranker.score_users(cluster)
-        log.info(local_followers)
-        ranked_followers = list(sorted(local_followers, key=local_followers.get, reverse=True))
-
-        write_ranking_to_file(user_name, ranked_followers, i+1, thresh, 'followers')
+    # type = 'local_and_global'
+    # filename = "./dc2_exp/" + str(type) + '/clusters_local_' + str(thresh) + '_global_50' '/' + str(user_name) + '_clusters_0.json'
+    # with open(filename, 'r') as file:
+    #     user_lists = json.load(file)
+    #     count = len(user_lists)
+    #
+    # for i in range(count): # Going through each cluster
+    #     cluster = user_lists[i]
+    #     log.info('Scoring Consumption...')
+    #     consumption = consumption_ranker.score_users(cluster)
+    #     ranked_consumption = list(sorted(consumption, key=consumption.get, reverse=True))
+    #
+    #     write_ranking_to_file(user_name, ranked_consumption, i+1, thresh, 'consumption')
+    #
+    #     log.info('Scoring Production...')
+    #     production = production_ranker.score_users(cluster)
+    #     ranked_production = list(sorted(production, key=production.get, reverse=True))
+    #
+    #     write_ranking_to_file(user_name, ranked_production, i+1, thresh, 'production')
+    #
+    #     log.info('Scoring Local Followers...')
+    #     local_followers = local_followers_ranker.score_users(cluster)
+    #     log.info(local_followers)
+    #     ranked_followers = list(sorted(local_followers, key=local_followers.get, reverse=True))
+    #
+    #     write_ranking_to_file(user_name, ranked_followers, i+1, thresh, 'followers')
 
 
 def write_ranking_to_file(user_name, ranking, i, thresh, type):

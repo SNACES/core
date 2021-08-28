@@ -11,7 +11,7 @@ def rank_cluster(seed_id: str, params=None, path=DEFAULT_PATH):
     dao_module = injector.get_dao_module()
 
     cluster_getter = dao_module.get_cluster_getter()
-    ranker = process_module.get_ranker()
+    ranker = process_module.get_ranker('Consumption')
 
     clusters, _ = cluster_getter.get_clusters(seed_id)
 

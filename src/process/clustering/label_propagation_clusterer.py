@@ -28,7 +28,8 @@ class LabelPropagationClusterer(Clusterer):
             #cluster = Cluster(seed_id, cleaned_users)
             cluster = Cluster(seed_id, users)
             clusters.append(cluster)
-            log.info(len(users))
+            if len(users) > 1:
+                log.info(len(users))
 
         log.info("Number of clusters " + str(len(clusters)))
 
@@ -81,7 +82,7 @@ def label_propagation_communities(G):
         for color, nodes in coloring.items():
             for n in nodes:
                 update_label(n, labeling, G)
-    log.info(set(labeling.values()))
+    # log.info(set(labeling.values()))
     for label in set(labeling.values()):
         yield {x for x in labeling if labeling[x] == label}
 

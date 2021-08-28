@@ -2,6 +2,7 @@ import os
 import json
 from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
 from src.model.user import User
+from src.model.local_neighbourhood import LocalNeighbourhood
 from typing import Dict
 from src.shared.logger_factory import LoggerFactory
 
@@ -19,10 +20,12 @@ class CoreDetector():
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
-            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter):
+            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter,
+                 user_friend_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
+        self.user_friend_getter = user_friend_getter
         self.user_tweet_downloader = user_tweet_downloader
         self.user_tweet_getter = user_tweet_getter
         self.extended_friends_cleaner = extended_friends_cleaner
@@ -123,16 +126,62 @@ class CoreDetector():
         log.info("Done downloading Beginning Processing")
         local_neighbourhood = self.local_neighbourhood_getter.get_local_neighbourhood(user_id)
 
+        # Refined Friends Method
+        log.info("Refining Friends List:")
+        user_list = local_neighbourhood.get_user_id_list()
+        friends_map = {}
+        for user in user_list:
+            friends_list = []
+            friends = local_neighbourhood.get_user_friends(user)
+
+            # print(len(friends))
+            for friend in friends:
+                if user in local_neighbourhood.get_user_friends(str(friend)):
+                    friends_list.append(friend)
+                if user == str(user_id):
+                    if int(user) in self.user_friend_getter.get_user_friends_ids(str(friend)):
+                        friends_list.append(friend)
+            # print(len(friends_list))
+            friends_map[user] = friends_list
+
+        log.info("Refining by Jaccard Similarity:")
+        for user in user_list:
+            friends_list = friends_map[user]
+            similarities = {}
+            for friend in friends_list:
+                sim = jaccard_similarity(friends_list, friends_map[str(friend)])
+                similarities[friend] = sim
+            sorted_users = sorted(similarities, key=similarities.get, reverse=True)
+            top_sum = 0
+            for top_user in sorted_users[:10]:
+                top_sum += similarities[top_user]
+            thresh = 0.1 * (top_sum / 10)
+            # Can do more efficiently using binary search
+            index = len(sorted_users)
+            for i in range(len(sorted_users)):
+                user = sorted_users[i]
+                if similarities[user] < thresh:
+                    index = i
+                    break
+            friends_map[user] = sorted_users[:index]
+
+        log.info("Setting Local Neighborhood:")
+        refined_local_neighborhood = LocalNeighbourhood(str(user_id), None, friends_map)
+        social_graph = self.social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id, refined_local_neighborhood)
+        log.info("Clustering:")
+        clusters = self.clusterer.cluster_by_social_graph(user_id, social_graph, None)
+
+
         # log.info("Processing Local Neighbourhood Tweets")
         # self.tweet_processor.process_tweets_by_local_neighbourhood(local_neighbourhood)
 
-        log.info("Construct social graph")
-        self.social_graph_constructor.construct_social_graph(user_id)
-
-        log.info("Performing Clustering")
-        self.clusterer.cluster(user_id, {"graph_type": "union"})
-        #self.clusterer.cluster_by_social_graph(user_id, social_graph, {"graph_type": "union"})
-        clusters, params = self.cluster_getter.get_clusters(user_id, params={"graph_type": "union"})
+        # log.info("Construct social graph")
+        # self.social_graph_constructor.construct_social_graph(user_id)
+        #
+        # log.info("Performing Clustering")
+        # self.clusterer.cluster(user_id, {"graph_type": "union"})
+        # #self.clusterer.cluster_by_social_graph(user_id, social_graph, {"graph_type": "union"})
+        # clusters, params = self.cluster_getter.get_clusters(user_id, params={"graph_type": "union"})
 
         curr_wf_vector = None
 

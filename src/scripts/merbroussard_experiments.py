@@ -22,31 +22,48 @@ def check_following(user_name: str, path=DEFAULT_PATH):
     friends_cleaner = process_module.get_extended_friends_cleaner()
     user_getter = dao_module.get_user_getter()
     ranking_getter = dao_module.get_ranking_getter()
+    cleaned_friends_getter = dao_module.get_cleaned_user_friend_getter()
 
     seed_id = user_getter.get_user_by_screen_name(user_name).id
 
+    cluster = cleaned_friends_getter.get_user_friends_ids(seed_id)
+    cluster.append(seed_id)
     news = ['nytimes', 'kylegriffin1', 'propublica', 'TheAtlantic', 'brianstelter',
             'NewYorker']
 
     ml = ['mer__edith', 'timnitGebru', 'merbroussard', 'rajiinio']
 
-    for name in ml:
+    for name in news:
+        user_id = user_getter.get_user_by_screen_name(name).id
+        friends = user_friend_getter.get_user_friends_ids(str(user_id))
+        intersection = set(friends).intersection(cluster)
         log.info(name)
-        user = user_getter.get_user_by_screen_name(name)
-        friends = user_friend_getter.get_user_friends_ids(str(user.id))
-        local_friends = []
-        for name2 in ml:
-            user2 = user_getter.get_user_by_screen_name(name2)
-            if user2.id in friends:
-                local_friends.append(name2)
-        log.info(local_friends)
+        log.info([user_getter.get_user_by_id(id).screen_name for id in intersection])
+
+    # for name in ml:
+    #     user_id = user_getter.get_user_by_screen_name(name).id
+    #     friends = user_friend_getter.get_user_friends_ids(str(user_id))
+    #     num = len(set(friends).intersection(cluster))
+    #     log.info(name)
+    #     log.info(num)
+
+    # for name in ml:
+    #     log.info(name)
+    #     user = user_getter.get_user_by_screen_name(name)
+    #     friends = user_friend_getter.get_user_friends_ids(str(user.id))
+    #     local_friends = []
+    #     for name2 in ml:
+    #         user2 = user_getter.get_user_by_screen_name(name2)
+    #         if user2.id in friends:
+    #             local_friends.append(name2)
+    #     log.info(local_friends)
 
     # for name in news:
     #     log.info(name)
     #     user = user_getter.get_user_by_screen_name(name)
     #     friends = user_friend_getter.get_user_friends_ids(str(user.id))
     #     local_friends = []
-    #     for name2 in ml:
+    #     for name2 in news:
     #         user2 = user_getter.get_user_by_screen_name(name2)
     #         if user2.id in friends:
     #             local_friends.append(name2)

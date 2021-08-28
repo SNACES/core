@@ -1,6 +1,7 @@
 import os
 import sys
 
+from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
 from src.activity.download_user_tweets_activity import DownloadUserTweetsActivity
 import argparse
 import time
@@ -21,7 +22,7 @@ log = LoggerFactory.logger(__name__, logging.ERROR)
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/default_config.yaml"
 
 
-def produce_plots(user_name: str, thresh, i, path=DEFAULT_PATH):
+def produce_plots(user_name: str, thresh, iteration, path=DEFAULT_PATH):
 
     injector = Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
@@ -32,26 +33,105 @@ def produce_plots(user_name: str, thresh, i, path=DEFAULT_PATH):
     social_graph_constructor = process_module.get_social_graph_constructor()
     clusterer = process_module.get_clusterer()
     user_getter = dao_module.get_user_getter()
+    user_tweet_getter = dao_module.get_user_tweet_getter()
+    clean_user_friend_getter = dao_module.get_cleaned_user_friend_getter()
+    local_neighbourhood_getter = dao_module.get_local_neighbourhood_getter()
 
     seed_id = user_getter.get_user_by_screen_name(user_name).id
     # Full user friend list
     init_user_friends = user_friend_getter.get_user_friends_ids(seed_id)
     # tweet_processor.process_tweets_by_user_list(init_user_friends)
-    global_clean = friends_cleaner.clean_friends_global(seed_id, init_user_friends, tweet_threshold=50,
-                                                      follower_threshold=50, friend_threshold=0, bot_threshold=0)
-    clean_list, removed_list = friends_cleaner.clean_friends_local(seed_id, global_clean, local_following=thresh)
-    clean_list = [str(id) for id in clean_list]
 
-    init_user_dict = get_local_neighbourhood_user_dict(seed_id, clean_list, user_friend_getter)
-    local_neighbourhood = LocalNeighbourhood(seed_id=seed_id, params=None, users=init_user_dict)
-    social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(seed_id, local_neighbourhood, remove_unconnected_nodes=True)
-    clusters = clusterer.cluster_by_social_graph(seed_id, social_graph, {})
-    log.info("Iteration: " + str(i))
-    #write_clusters_to_file(user_name, clusters, i, thresh, "local_and_global")
+    # user = user_getter.get_user_by_id(str(seed_id))
+    # follower_thresh = 0.1 * user.followers_count
+    # friend_thresh = 0.1 * user.friends_count
+    # tweet_thresh = 0.1 * len(user_tweet_getter.get_tweets_by_user_id_time_restricted(str(seed_id)))
+    # global_clean = friends_cleaner.clean_friends_global(seed_id,
+    #             tweet_threshold=tweet_thresh, follower_threshold=follower_thresh, friend_threshold=friend_thresh)
+    # clean_list, removed_list = friends_cleaner.clean_friends_local(seed_id, global_clean, local_following=thresh)
+    # clean_list = [str(id) for id in clean_list]
+
+    clean_list = clean_user_friend_getter.get_user_friends_ids(str(seed_id))
+    # social_graph = social_graph_constructor.construct_social_graph(seed_id, is_union=False)
+    # following_counts = {}
+    # for user_id in clean_list:
+    #     friends = user_friend_getter.get_user_friends_ids(str(user_id))
+    #     following_counts[user_id] = len(set(friends).intersection(clean_list))
+    # sorted_users = list(sorted(following_counts, key=following_counts.get, reverse=True))
+    # print([following_counts[user] for user in sorted_users])
+
+    local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(seed_id)
+
+    # Refined Friends Method
+    log.info("Refining Friends List:")
+    user_list = local_neighbourhood.get_user_id_list()
+    friends_map = {}
+    for user in user_list:
+        friends_list = []
+        friends = local_neighbourhood.get_user_friends(user)
+
+        # print(len(friends))
+        for friend in friends:
+            if user in local_neighbourhood.get_user_friends(str(friend)):
+                friends_list.append(friend)
+            if user == str(seed_id):
+                if int(user) in user_friend_getter.get_user_friends_ids(str(friend)):
+                    friends_list.append(friend)
+        # print(len(friends_list))
+        friends_map[user] = friends_list
+        if user == "254201259":
+            print(len(friends_list))
+
+    log.info("Refining by Jaccard Similarity:")
+    for user in user_list:
+        friends_list = friends_map[user]
+        similarities = {}
+        for friend in friends_list:
+            sim = jaccard_similarity(friends_list, friends_map[str(friend)])
+            similarities[friend] = sim
+        sorted_users = sorted(similarities, key=similarities.get, reverse=True)
+        top_sum = 0
+        for top_user in sorted_users[:10]:
+            top_sum += similarities[top_user]
+        thresh = 0.1 * (top_sum / 10)
+        # Can do more efficiently using binary search
+        index = len(sorted_users)
+        for i in range(len(sorted_users)):
+            user = sorted_users[i]
+            if similarities[user] < thresh:
+                index = i
+                break
+        friends_map[user] = sorted_users[:index]
+
+    log.info("Setting Local Neighborhood:")
+    refined_local_neighborhood = LocalNeighbourhood(str(seed_id), None, friends_map)
+    social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(seed_id, refined_local_neighborhood)
+    log.info("Clustering:")
+    clusters = clusterer.cluster_by_social_graph(seed_id, social_graph, None)
+    log.info("Iteration: " + str(iteration))
+    log.info(len(clusters))
+
+    # for i in range(3):
+    #     num = 50 * (2**i)
+    #     log.info(num)
+    #     init_user_dict = get_local_neighbourhood_user_dict(seed_id, sorted_users[:num], user_friend_getter)
+    #     print("next!")
+    #     local_neighbourhood = LocalNeighbourhood(seed_id=seed_id, params=None, users=init_user_dict)
+    #     print("next!")
+    #     social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(seed_id,
+    #                                                                                             local_neighbourhood, is_union=False)
+    #     print("next!")
+    #     clusters = clusterer.cluster_by_social_graph(seed_id, social_graph, social_graph.params)
+    #     log.info("Iteration: " + str(i))
+    #     log.info(len(clusters))
+
+    # for cluster in clusters:
+    #     log.info([user_getter.get_user_by_id(str(id)).screen_name for id in cluster.users])
+    # write_clusters_to_file(user_name, clusters, i, thresh, "local_and_global")
 
 
 def write_clusters_to_file(user_name, clusters, i, thresh, type):
-    path = "./dc2_exp/" + type + "/clusters_local_" + str(thresh) + "_global_50"
+    path = "./dc2_exp/" + type + "/clusters_local_" + str(thresh)
 
     if not os.path.exists(path):
         os.makedirs(path)
@@ -71,7 +151,7 @@ def get_local_neighbourhood_user_dict(seed_id, init_user_friends, user_friend_ge
 
     for curr_id in init_user_friends:
         curr_user_friends = user_friend_getter.get_user_friends_ids(curr_id)
-        curr_user_friends = [str(id) for id in curr_user_friends if (str(id) in init_user_friends)]
+        curr_user_friends = [str(id) for id in curr_user_friends if (id in init_user_friends)]
         user_dict[str(curr_id)] = curr_user_friends
 
     return user_dict
@@ -95,7 +175,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     produce_plots(args.name, args.thresh, args.j)
-    if args.j < 19:
+    if args.j < 5:
         new_arg = sys.argv
         iteration = args.j
         new_arg[6] = str(iteration + 1)
