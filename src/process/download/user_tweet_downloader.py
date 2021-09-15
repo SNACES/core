@@ -40,7 +40,7 @@ class UserTweetDownloader():
             if createDate.date() > startDate:
                 tweets.append(tweet)
         log.info(f"Downloaded {len(tweets)} Tweets for user {screen_name}")
-        self.raw_tweet_setter.store_tweets(tweets)
+        self.raw_tweet_setter.store_many_tweets(tweets)
 
     def download_user_tweets_by_user_id(self, user_id: str, months_back=12) -> None:
         """
@@ -50,6 +50,7 @@ class UserTweetDownloader():
         all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
         tweets = []
         startDate = date.today() + relativedelta(months=-months_back)
+
         for tweet in all_tweets:
             createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
             createDate = datetime.strptime(createDate_str, '%b %d %Y')
@@ -92,6 +93,7 @@ class UserTweetDownloader():
         subscriber = self.Subscriber(self.raw_tweet_setter)
 
         self.twitter_getter.stream_tweets_by_user_id_list(modified_list, subscriber)
+
 
     class Subscriber():
         def __init__(self, raw_tweet_setter: RawTweetSetter):

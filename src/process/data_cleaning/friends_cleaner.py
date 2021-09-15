@@ -8,11 +8,11 @@ class FriendsCleaner():
         self.cleaned_user_friends_setter = cleaned_user_friends_setter
         self.user_getter = user_getter
 
-    def clean_friends(self, user_id, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=40):
+    def clean_friends(self, user_id, tweet_threshold=0, follower_threshold=0, bot_threshold=False, percent_threshold=100): # 200, 100, True, 40
         friends_list = self.user_friends_getter.get_user_friends_ids(user_id)
-        self.clean_friends_from_list(friends_list, tweet_threshold, follower_threshold, bot_threshold, percent_threshold)
+        self.clean_friends_from_list(user_id, friends_list, tweet_threshold, follower_threshold, bot_threshold, percent_threshold)
 
-    def clean_friends_from_list(self, user_id, friends_list, tweet_threshold=200, follower_threshold=100, bot_threshold=True, percent_threshold=40):
+    def clean_friends_from_list(self, user_id, friends_list, tweet_threshold=0, follower_threshold=0, bot_threshold=False, percent_threshold=100):
         clean_friends_list = []
         clean_users = []
         for id in friends_list:

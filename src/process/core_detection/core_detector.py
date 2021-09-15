@@ -155,7 +155,12 @@ class CoreDetector():
             top_sum = 0
             for top_user in sorted_users[:10]:
                 top_sum += similarities[top_user]
-            thresh = 0.1 * (top_sum / 10)
+            if len(sorted_users) >= 10:
+                thresh = 0.1 * (top_sum / 10)
+            elif len(sorted_users) == 0:
+                thresh = 0
+            else:
+                thresh = 0.1 * (top_sum / len(sorted_users))
             # Can do more efficiently using binary search
             index = len(sorted_users)
             for i in range(len(sorted_users)):
