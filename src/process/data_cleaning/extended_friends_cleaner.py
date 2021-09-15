@@ -35,7 +35,7 @@ class ExtendedFriendsCleaner():
             elif user.followers_count < follower_threshold:
                 log.info("Removed user " + str(id) + " because they have " + str(user.followers_count) + " followers")
                 continue
-            elif user.statuses_count < tweet_threshold:
+            elif user.statuses_count < tweet_threshold: # TODO: need to change this to the time restricted tweet getter
                 log.info("Removed user " + str(id) + " because they have " + str(user.statuses_count) + " tweets")
                 continue
             elif user.friends_count < friend_threshold:

@@ -46,6 +46,7 @@ class LocalNeighbourhood():
         return localNeighbourhood
 
     def fromDict(dict: Dict):
+
         localNeighbourhood = LocalNeighbourhood(
             dict["seed_id"], dict["params"], dict["users"]
         )

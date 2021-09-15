@@ -28,8 +28,7 @@ class LabelPropagationClusterer(Clusterer):
             #cluster = Cluster(seed_id, cleaned_users)
             cluster = Cluster(seed_id, users)
             clusters.append(cluster)
-            if len(users) > 1:
-                log.info(len(users))
+            log.info(len(users))
 
         log.info("Number of clusters " + str(len(clusters)))
 

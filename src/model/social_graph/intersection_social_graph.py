@@ -14,7 +14,6 @@ class IntersectionSocialGraph(SocialGraph):
         user_list = local_neighbourhood.get_user_id_list()
         user_list.remove(str(local_neighbourhood.seed_id))
         log.info("Length of list " + str(len(user_list)))
-
         if remove_unconnected_nodes:
             user_list = SocialGraph.remove_unconnected_nodes(local_neighbourhood)
             log.info("Length of list after removing unconnected nodes " + str(len(user_list)))
@@ -26,8 +25,19 @@ class IntersectionSocialGraph(SocialGraph):
         for user in user_list:
             friends = local_neighbourhood.get_user_friends(user)
             for friend in friends:
-                if user in local_neighbourhood.get_user_friends(str(friend)):
-                    graph.add_edge(user, friend)
+                if friend != str(local_neighbourhood.seed_id):
+                    if user in local_neighbourhood.get_user_friends(str(friend)):
+                        graph.add_edge(user, friend)
+
+        # Remove Unconnected Nodes
+        remove = []
+        for node in graph:
+            neighbors = list(graph.neighbors(node))
+            #predecessors = list(graph.predecessors(node))
+            if len(neighbors) == 0:
+                remove.append(node)
+        for node in remove:
+            graph.remove_node(node)
 
         params = deepcopy(local_neighbourhood.params)
         if params is None:
