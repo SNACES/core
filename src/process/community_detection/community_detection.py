@@ -43,7 +43,7 @@ class CommunityDetector():
             users.append(user)
         self.detect_community(users)
 
-    def detect_community(self, seed_set: List, iteration = 10):
+    def detect_community(self, seed_set: List, iteration=10):
         """
         @param seed_set: a list of users (i.e. type: src.model.user.User)
         @param iteration: the number of iterations we will perform
@@ -54,9 +54,12 @@ class CommunityDetector():
 
         for index in range(iteration):
             log.info(f"iteration index: {index + 1} / {iteration}")
-            current_community, new_added_users, expansion = self.loop(current_community,
-                                                                      new_added_users, expansion, index + 1)
-            return
+            current_community, new_added_users, expansion, _ = self.loop(
+                current_community,
+                new_added_users,
+                expansion,
+                index + 1
+            )
         return current_community
 
     def loop(self, current_community: List, new_added_users: List, expansion: List, iteration):
@@ -86,7 +89,6 @@ class CommunityDetector():
         # We stop adding more users as long as we have got 500 users already
         friend_id_to_occurrence = dict()
         for user in new_added_users:
-            # friend_list = self.user_friends_getter.get_user_friends_ids(user.id)
             friend_list = self.cleaned_friends_getter.get_user_friends_ids(user.id)
 
             for friend_id in friend_list:
@@ -107,36 +109,13 @@ class CommunityDetector():
             count += len(occurrence_to_friend_id[i])
             local_expansion_candidate.extend(occurrence_to_friend_id[i])
             print(f'Add {len(occurrence_to_friend_id[i])} users of followers overlap = {i}')
-
-            # if i == 3 or count >= 500:
-            #     break
-        # # following back
-        # follow_back_dict = {}
-        # for userid in local_expansion_candidate:
-        #     self.user_friends_downloader.download_friends_users_by_id(userid)
-        #     friends = self.user_friends_getter.get_user_friends_ids(userid)
-        #     if friends is not None:
-        #         num_follow_back = 0
-        #         for community_member in current_community:
-        #             if int(community_member.id) or str(community_member.id) in friends:
-        #                 num_follow_back += 1
-        #         if num_follow_back in follow_back_dict:
-        #             follow_back_dict[num_follow_back] += 1
-        #         else:
-        #             follow_back_dict[num_follow_back] = 1
-        # print(f'follow back = {follow_back_dict}')
-
-        # Local Cleaning
-        # for userid in tqdm(local_expansion_candidate):
-        #     self.user_friends_downloader.download_friends_users_by_id(userid)
-        #     friend_list = self.user_friends_getter.get_user_friends_ids(userid)
-        #     print(len(friend_list))
-        #     clean_friends_list, deleted_friends = self.friends_cleaner.clean_friends_local(userid, friend_list)
-        #     print(f'{len(deleted_friends)} are eliminated in local cleaning for {userid}')
-
+            if i == 3 or count >= 500:
+                break
         log.info(f'Finish expanding the community, {count} users are added to the candidate pool')
 
         # Download tweets for users
+        # Only need to execute once
+
         # log.info("Downloading User Tweets for new added users")
         # for userid in tqdm(local_expansion_candidate):      # CHANGE BACK TO local_expansion later
         #     if self.user_tweets_getter.get_tweets_by_user_id(userid):
@@ -149,46 +128,20 @@ class CommunityDetector():
         #     log.info(f'Finish downloading tweets of user {userid}')
         # log.info('Finish downloading all tweets')
 
-        # Get the reference set from file
-        REF_SIZE = 100    # the size of the reference set
-        file_name = f'./dc2_exp/production_rankings/local_5.0_global_50/hardmaru_all_cluster_1.json'
-        file_name = f'./dc2_exp/production_no_scale_rankings/local_5.0_global_50/hardmaru_all_cluster_1.json'
-        file_name = f'./dc2_exp/consumption_no_scale_rankings/local_5.0_global_50/hardmaru_all_cluster_1.json'
+        # Get the Reference Set
+        reference_set = []
 
-        with open(file_name) as f:
-            raw_data = json.load(f)
-            data = [int(userid) for userid in raw_data]
-        reference_set = data[11: 11 + REF_SIZE]
-
-        # Rank candidates
+        # Rank Candidates
         log.info("Start ranking users")
 
         current_community_id_list = [user.id for user in current_community]
 
-        # scores = self.community_production_ranker.score_users(
-        #     local_expansion_candidate, UnionLists(current_community_id_list, reference_set))
+        # Rank the Candidates
         scores = self.community_consumption_ranker.score_users(
             local_expansion_candidate, UnionLists(current_community_id_list, reference_set))
-
-        # scores = self.community_production_ranker.score_users(local_expansion, current_community_id_list)
-        print(f'score = {scores}')
         ranked_ids = list(sorted(scores, key=scores.get, reverse=True))
-        # ranked_ids = self.community_production_ranker.rank(local_expansion, current_community_id_list)
 
-        # plot
-        x_axis, y_axis = [], []
-        for i, id in enumerate(ranked_ids):
-            x_axis.append(i + 1)
-            y_axis.append(scores[id])
-        # plt.plot(x_axis, y_axis)
-        # plt.xlabel('User Ranking')
-        # plt.ylabel('Utility Value')
-        # plt.title(f'Community Expansion Production Utility Value, Ref Size = {REF_SIZE}, Scale, Clean1')
-        # plt.savefig(f'Production_{REF_SIZE}_scale_clean1.png')
-        print(y_axis)
-
-        # pick top candidates
-        added_users = []
+        # Pick top candidates
         for id in ranked_ids:
             new_user_flag = True
             for user in current_community:
@@ -204,40 +157,13 @@ class CommunityDetector():
         log.info("Store information for community detection")
         self.community_setter.store_community(iteration,
                                               [user.id for user in added_users],
-                                              [user.id for user in current_community])
+                                              [user.id for user in current_community]
+                                              )
 
         log.info('New Added Users:')
         for user in added_users:
-            print(f'{user.screen_name}', end=' ')
-        print()
-        return current_community, new_added_users, local_expansion
-
-        # log.info("Rank Users by tweet")
-        # ranked_ids = self.community_tweet_ranker.rank(local_expansion, current_community)
-        #
-        # ranked_ids_by_retweet = self.community_retweet_ranker.rank(local_expansion, current_community)
-        #
-        # added_users = []
-        #
-        # cleaned_added_users = []
-        # for uu in ranked_ids:
-        #     if uu in ranked_ids_by_retweet[:int(len(ranked_ids_by_retweet)/3)]:
-        #         cleaned_added_users.append(uu)
-        #
-        # i = 0
-        # while len(added_users) < 10 and i < len(cleaned_added_users):
-        #     if cleaned_added_users[i] not in current_community:
-        #         added_users.append(cleaned_added_users[i])
-        #     i += 1
-        #
-        # log.info("Store information for community detection")
-        # self.community_setter.store_community(iteration, added_users, current_community)
-        #
-        # current_community.extend(added_users)
-        #
-        # print(current_community)
-        #
-        # return current_community, added_users, local_expansion
+            log.info(f'{user.screen_name}')
+        return current_community, added_users, local_expansion_candidate, iteration + 1
 
 
 def UnionLists(a: List, b: List):
