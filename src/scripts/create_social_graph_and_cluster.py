@@ -10,7 +10,7 @@ from src.model.social_graph.social_graph import SocialGraph
 from src.model.cluster import Cluster
 
 log = LoggerFactory.logger(__name__)
-DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/detect_core_config.yaml"
+DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
 
 def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
@@ -35,7 +35,9 @@ def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
         exit()
 
 
-def refine_social_graph(screen_name: str, social_graph: SocialGraph, local_neighbourhood: LocalNeighbourhood, path=DEFAULT_PATH) -> SocialGraph:
+def refine_social_graph(screen_name: str, social_graph: SocialGraph, \
+                        local_neighbourhood: LocalNeighbourhood, top_num: int=10, \
+                        thresh_multiplier: float=0.1, path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     log.info("Refining Friends List:")
     injector = Injector.get_injector_from_file(path)
@@ -53,16 +55,12 @@ def refine_social_graph(screen_name: str, social_graph: SocialGraph, local_neigh
 
         # friend is str anyways, can remove str()
         for friend in friends:
-            bool_1, bool_2 = False, False  # TO BE DELETED
             if user in local_neighbourhood.get_user_friends(str(friend)):
                 friends_list.append(friend)
-                bool_1 = True  # TO BE DELETED
             if user == str(user_id):  # Why is this elif statement required?
                 # Checks whether the user's friend also has the user as a friend
                 if int(user) in user_friend_getter.get_user_friends_ids(str(friend)):
                     friends_list.append(friend)
-                    bool_2 = True  # TO BE DELETED
-                    log.info(str(bool_1) + " " + str(bool_2))  # TO BE DELETED
         # Maps every user to all the friends that are friends with the user
         friends_map[user] = friends_list
     
@@ -78,14 +76,14 @@ def refine_social_graph(screen_name: str, social_graph: SocialGraph, local_neigh
         # Sorts the list of friends in descending order of similarity with the user
         sorted_users = sorted(similarities, key=similarities.get, reverse=True)
         top_sum = 0
-        for top_user in sorted_users[:10]:
+        for top_user in sorted_users[:top_num]:
             top_sum += similarities[top_user]
-        if len(sorted_users) >= 10:
-            thresh = 0.1 * (top_sum / 10)
+        if len(sorted_users) >= top_num:
+            thresh = thresh_multiplier * (top_sum / top_num)
         elif len(sorted_users) == 0:
             thresh = 0
         else:
-            thresh = 0.1 * (top_sum / len(sorted_users))
+            thresh = thresh_multiplier * (top_sum / len(sorted_users))
         
         # Binary search to find all users above threshold
         # if len(sorted_users) < 10:
@@ -129,6 +127,7 @@ def clustering_from_social_graph(screen_name: str, social_graph: SocialGraph, pa
         dao_module = injector.get_dao_module()
         clusterer = process_module.get_clusterer()
         clusters = clusterer.cluster_by_social_graph(user.id, social_graph, None)
+        return clusters
     except Exception as e:
         log.exception(e)
         exit()
@@ -146,4 +145,5 @@ def get_user_by_screen_name(screen_name: str, path=DEFAULT_PATH) -> User:
 if __name__ == "__main__":
     social_graph, local_neighbourhood = create_social_graph("david_madras")
     refined_social_graph = refine_social_graph("david_madras", social_graph, local_neighbourhood)
-    clusters = clustering_from_social_graph("david_madras", refined_social_graph)
+    # clusters = clustering_from_social_graph("david_madras", social_graph)
+    refined_clusters = clustering_from_social_graph("david_madras", refined_social_graph)
