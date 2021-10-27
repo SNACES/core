@@ -21,13 +21,6 @@ def threshold_clusters(cluster,  discard_threshold: int=10):
 
 def compare_clusters(clusters_1, clusters_2, discard_threshold: int=10):
     "Compares clusters."
-    # Discard clusters which are very small
-    #refined_c1 = [cluster for cluster in clusters_1 if len(cluster.users) > discard_threshold]
-    #refined_c2 = [cluster for cluster in clusters_2 if len(cluster.users) > discard_threshold]
-
-    # Sort the clusters in descending order of size of clusters (not currently used)
-    #refined_c1.sort(key=lambda cluster: len(cluster.users), reverse=True)
-    #refined_c2.sort(key=lambda cluster: len(cluster.users), reverse=True)
     refined_c1 = threshold_clusters(clusters_1)
     refined_c2 = threshold_clusters(clusters_2)
 
