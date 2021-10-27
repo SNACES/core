@@ -88,6 +88,7 @@ def compare_same_size_clusters(cluster_list):
     """
     Given a list containing list of cluster of same size,
     Return average/variance of each size, along with the jaccard similarity over all
+    TODO: Note this is incomplete as the clusters remained the same throughout one execution
     """
     cluster_size_list = []
 
