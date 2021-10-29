@@ -29,8 +29,10 @@ def compare_clusters(clusters_1, clusters_2, discard_threshold: int=10):
 
     for i1, c1 in enumerate(refined_c1):
         for i2, c2 in enumerate(refined_c2):
-            subset_similarity_c1["Cluster " + str(i1) + " with length " + str(len(c1.users))].append((i2, check_clusters_subset(c2, c1), len(c2.users)))
-            subset_similarity_c2["Cluster " + str(i2) + " with length " + str(len(c2.users))].append((i1, check_clusters_subset(c1, c2), len(c1.users)))
+            # Measure how much c1 is contained in c2
+            subset_similarity_c1[(i1, len(c1.users))].append((i2, check_clusters_subset(c1, c2), len(c2.users)))
+            # Measure how much c2 is contained in c1 
+            subset_similarity_c2[(i2, len(c2.users))].append((i1, check_clusters_subset(c2, c1), len(c1.users)))
 
     # Sort in descending order of highest subset similarity
     for cluster in subset_similarity_c1:
@@ -95,30 +97,42 @@ def compare_same_size_clusters(cluster_list):
     #cluster_size_std = np.std(np.transpose(cluster_size_arr))
 
 
+def experiment_results(initial_user: str):
+    """Writes the clustering comparison experiment results for the screen_name."""
+    with open(f"{initial_user}_clustering_comparison_results.txt", "a") as f:
+        clusters, refined_clusters = get_clusters(initial_user)
+        subset_similarity_clusters, subset_similarity_refined_clusters = compare_clusters(clusters, refined_clusters)
+        f.write("-" * 20 + "\n")
+        for refined_cluster in subset_similarity_refined_clusters:
+            f.write(f"Refined Cluster {refined_cluster[0]} of size {refined_cluster[1]}: \n")
+            for cluster in subset_similarity_refined_clusters[refined_cluster]:
+                f.write(f"\t is contained in Cluster {cluster[0]} of size {cluster[2]} about {round(cluster[1] * 100, 2)}%. \n")
 
 
 # def interpret_subset_similarity_results(subse)
 
 
 if __name__ == "__main__":
-    c1, c2 = get_clusters("david_madras")
-    subset_similarity_c1, subset_similarity_c2 = compare_clusters(c1, c2)
-    for k, v in subset_similarity_c1.items():
-        print(k, v)
+    # c1, c2 = get_clusters("david_madras")
+    # subset_similarity_c1, subset_similarity_c2 = compare_clusters(c1, c2)
+    # for k, v in subset_similarity_c1.items():
+    #     print(k, v)
     # for k, v in subset_similarity_c2.items():
     #     print(k, v)
 
-    unrefined_clusters = []
-    refined_clusters = []
-    for i in range(ITER_NUM):
-        c3, c4 = get_clusters("david_madras")
-        unrefined_clusters.append(c3)
-        refined_clusters.append(c4)
+    # unrefined_clusters = []
+    # refined_clusters = []
+    # for i in range(ITER_NUM):
+    #     c3, c4 = get_clusters("david_madras")
+    #     unrefined_clusters.append(c3)
+    #     refined_clusters.append(c4)
 
-    single_clusters, double_clusters, triple_clusters = \
-        categorize_clusters_by_length(refined_clusters)
+    # single_clusters, double_clusters, triple_clusters = \
+    #     categorize_clusters_by_length(refined_clusters)
 
-    if len(triple_clusters) != 0:
-        compare_same_size_clusters(triple_clusters)
-    elif len(double_clusters) != 0:
-        compare_same_size_clusters(double_clusters)
+    # if len(triple_clusters) != 0:
+    #     compare_same_size_clusters(triple_clusters)
+    # elif len(double_clusters) != 0:
+    #     compare_same_size_clusters(double_clusters)
+    experiment_results("david_madras")
+    pass
