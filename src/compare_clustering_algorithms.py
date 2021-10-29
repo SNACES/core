@@ -63,7 +63,7 @@ def count_clusters(cluster_list, discard_threshold:int):
 
 def experiment_results(initial_user: str):
     """Writes the clustering comparison experiment results for the screen_name."""
-    with open(f"{initial_user}_clustering_comparison_results.txt", "a") as f:
+    with open(f"./src/{initial_user}_clustering_comparison_results.txt", "a") as f:
         clusters, refined_clusters = get_clusters(initial_user)
         subset_similarity_clusters, subset_similarity_refined_clusters = compare_clusters(clusters, refined_clusters)
         f.write("-" * 20 + "\n")
