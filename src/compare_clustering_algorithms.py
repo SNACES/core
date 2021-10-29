@@ -1,6 +1,9 @@
 from collections import defaultdict
 import src.scripts.create_social_graph_and_cluster as csgc
 import numpy as np
+from typing import List, Dict
+from src.model.cluster import Cluster
+from pymongo import MongoClient
 
 ITER_NUM = 5
 
@@ -13,13 +16,15 @@ def get_clusters(initial_user: str) -> tuple:
 
     return clusters, refined_clusters
 
-def threshold_clusters(cluster,  discard_threshold: int=10):
+
+def threshold_clusters(cluster:List[Cluster],  discard_threshold: int=10):
     "Discard cluster with size < discard_threshold and sort"
     refined_c = [c for c in cluster if len(c.users) > discard_threshold]
     refined_c.sort(key=lambda c: len(c.users), reverse=True)
     return refined_c
 
-def compare_clusters(clusters_1, clusters_2, discard_threshold: int=10):
+
+def compare_clusters(clusters_1:List[Cluster], clusters_2:List[Cluster], discard_threshold: int=10):
     "Compares clusters."
     refined_c1 = threshold_clusters(clusters_1)
     refined_c2 = threshold_clusters(clusters_2)
@@ -47,57 +52,12 @@ def check_clusters_subset(cluster_1, cluster_2) -> float:
     c2_users = set(cluster_2.users)
     return len(c1_users.intersection(c2_users)) / len(c2_users)
 
+
 def count_clusters(cluster_list, discard_threshold:int):
-    """Count how many clustrs there are"""
+    """Count how many clusters there are"""
     cluster_count = []
     for cluster_result in cluster_list:
         cluster_count.append(len(cluster_result.users))
-
-def categorize_clusters_by_length(cluster_list):
-    """
-    Given a list containing clustering results
-    Refine/Sort the clusters, and split them into three list based on length
-    """
-    refined_cluster_list = []
-    for cluster_result in cluster_list:
-        refined_cluster_list.append(threshold_clusters(cluster_result))
-
-    single_cluster_list = []
-    double_cluster_list = []
-    triple_cluster_list = []
-
-    for refined_clusters in refined_cluster_list:
-        if len(refined_clusters) == 1:
-            single_cluster_list.append(refined_clusters)
-        elif len(refined_clusters) == 2:
-            double_cluster_list.append(refined_clusters)
-        elif len(refined_clusters) == 3:
-            triple_cluster_list.append(refined_clusters)
-
-    return single_cluster_list, double_cluster_list, triple_cluster_list
-
-
-def compare_same_size_clusters(cluster_list):
-    """
-    Given a list containing list of cluster of same size,
-    Return average/variance of each size, along with the jaccard similarity over all
-    TODO: Note this is incomplete as the clusters remained the same throughout one execution
-    """
-    cluster_size_list = []
-
-    for cluster_result in cluster_list:
-        cluster_size = [len(cluster.users) for cluster in cluster_result]
-        cluster_size_list.append(cluster_size)
-
-    print(cluster_size_list)
-    cluster_size_arr = np.array(cluster_size_list)
-    #cluster_size_mean = np.mean(np.transpose(cluster_size_arr))
-    #cluster_size_std = np.std(np.transpose(cluster_size_arr))
-
-
-
-
-# def interpret_subset_similarity_results(subse)
 
 
 if __name__ == "__main__":
@@ -107,18 +67,3 @@ if __name__ == "__main__":
         print(k, v)
     # for k, v in subset_similarity_c2.items():
     #     print(k, v)
-
-    unrefined_clusters = []
-    refined_clusters = []
-    for i in range(ITER_NUM):
-        c3, c4 = get_clusters("david_madras")
-        unrefined_clusters.append(c3)
-        refined_clusters.append(c4)
-
-    single_clusters, double_clusters, triple_clusters = \
-        categorize_clusters_by_length(refined_clusters)
-
-    if len(triple_clusters) != 0:
-        compare_same_size_clusters(triple_clusters)
-    elif len(double_clusters) != 0:
-        compare_same_size_clusters(double_clusters)

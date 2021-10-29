@@ -8,6 +8,7 @@ from src.compare_clustering_algorithms import get_clusters
 #need to import from compare_clustering_algorithms.py to generate data
 
 def connect_to_db():
+    """connect to the local database ClusterTest"""
     try:
         conn = MongoClient()
         print("Connected successfully!!!")
@@ -19,7 +20,7 @@ def connect_to_db():
 
 
 def generate_cluster_data():
-    """store the clusters data in mongodb"""
+    """generate and store the clusters data in mongodb"""
     conn, db = connect_to_db()
     db = conn.ClusterTest
     c1, c2 = get_clusters("david_madras")
@@ -63,6 +64,8 @@ def format_to_list_of_clusters(single_clustering_doc):
 
 
 def format_all_data(all_data):
+    """Return all data in List[List[Cluster]]
+       where each entry is List[Cluster] from one single clustering"""
     all_clusters = []
     for data_point in all_data:
         all_clusters.append(format_to_list_of_clusters(data_point))
@@ -73,12 +76,16 @@ if __name__ == "__main__":
     # generate cluster data and store in mongodb
     generate_cluster_data()
 
-
     all_data = get_all_data()
     # each datapoint is result from one clustering
     # each datapoint has 'num' and 'clusters'
 
-    # this formats the data to list containing only clusters and users
     all_clusters = format_all_data(all_data)
-    print(all_clusters)
+    # This formats each cluster in data['clusters'] from dict to Cluster object
+    # all_clusters is List[List[Cluster]]
 
+    #print(len(all_data))
+    #print(all_data[0])
+
+    #print(len(all_clusters))
+    #print(all_clusters[0])
