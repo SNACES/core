@@ -13,7 +13,7 @@ class SocialGraphDAOFactory():
         if type == "Mongo":
             social_graph_getter = MongoDAOFactory.create_getter(config["config"], MongoSocialGraphGetter)
         else:
-            raise Excetpion("Datastore type not supported")
+            raise Exception("Datastore type not supported")
 
         return social_graph_getter
 
@@ -23,6 +23,6 @@ class SocialGraphDAOFactory():
         if type == "Mongo":
             social_graph_setter = MongoDAOFactory.create_setter(config["config"], MongoSocialGraphSetter)
         else:
-            raise Excetpion("Datastore type not supported")
+            raise Exception("Datastore type not supported")
 
         return social_graph_setter
