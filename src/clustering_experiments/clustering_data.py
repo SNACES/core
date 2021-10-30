@@ -4,9 +4,8 @@ import numpy as np
 from typing import List, Dict
 from src.model.cluster import Cluster
 from pymongo import MongoClient
-from src.compare_clustering_algorithms import get_clusters
+from src.clustering_experiments.compare_clustering_algorithms import get_clusters
 #need to import from compare_clustering_algorithms.py to generate data
-
 def connect_to_db():
     """connect to the local database ClusterTest"""
     try:
@@ -83,9 +82,4 @@ if __name__ == "__main__":
     all_clusters = format_all_data(all_data)
     # This formats each cluster in data['clusters'] from dict to Cluster object
     # all_clusters is List[List[Cluster]]
-
-    #print(len(all_data))
-    #print(all_data[0])
-
-    #print(len(all_clusters))
-    #print(all_clusters[0])
+    # each nested List[Cluster] gives the results of one clustering experiemnt

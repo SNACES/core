@@ -36,7 +36,7 @@ def compare_clusters(clusters_1:List[Cluster], clusters_2:List[Cluster], discard
         for i2, c2 in enumerate(refined_c2):
             # Measure how much c1 is contained in c2
             subset_similarity_c1[(i1, len(c1.users))].append((i2, check_clusters_subset(c1, c2), len(c2.users)))
-            # Measure how much c2 is contained in c1 
+            # Measure how much c2 is contained in c1
             subset_similarity_c2[(i2, len(c2.users))].append((i1, check_clusters_subset(c2, c1), len(c1.users)))
 
     # Sort in descending order of highest subset similarity
@@ -52,7 +52,7 @@ def check_clusters_subset(cluster_1, cluster_2) -> float:
     """Returns a value in [0, 1] indicating how much of cluster_1 is contained in the cluster_2."""
     c1_users = set(cluster_1.users)
     c2_users = set(cluster_2.users)
-    return len(c1_users.intersection(c2_users)) / len(c2_users)
+    return len(c1_users.intersection(c2_users)) / len(c1_users)
 
 
 def count_clusters(cluster_list, discard_threshold:int):

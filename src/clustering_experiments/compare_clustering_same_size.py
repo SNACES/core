@@ -4,8 +4,8 @@ import numpy as np
 from typing import List, Dict
 from src.model.cluster import Cluster
 from pymongo import MongoClient
-from src.compare_clustering_algorithms import *
-from src.clustering_data import get_all_data, format_all_data
+from src.clustering_experiments.compare_clustering_algorithms import *
+from src.clustering_experiments.clustering_data import get_all_data, format_all_data
 
 
 def categorize_clusters_by_length(all_clusters):
@@ -45,7 +45,22 @@ def compare_same_size_clusters(all_clusters):
     # store the list of clusters_dictionary for each clustering run
 
     list1, list2, list3 = categorize_clusters_by_length(all_clusters)
-    # TODO: run subset similarity on the main clusters after retrieving the largest clusters
+    print(set(list2[0][0].users).intersection(set(list2[0][1].users)))
+    experiment_results("david_madras", list2[0], list2[1])
+    experiment_results("david_madras", list3[0], list3[1])
+    experiment_results("david_madras", list2[0], list3[0])
+    # TODO: aggregate data, the above code only computes between three sets of results
+
+
+def experiment_results(initial_user: str, c1, c2):
+    """Writes the clustering comparison experiment results for the screen_name."""
+    with open(f"./src/clustering_experiments/{initial_user}_clustering_samesize_results.txt", "a") as f:
+        subset_similarity_clusters, subset_similarity_refined_clusters = compare_clusters(c1, c2)
+        f.write("-" * 20 + "\n")
+        for refined_cluster in subset_similarity_refined_clusters:
+            f.write(f"Cluster {refined_cluster[0]} of size {refined_cluster[1]}: \n")
+            for cluster in subset_similarity_refined_clusters[refined_cluster]:
+                f.write(f"\t is contained in Cluster {cluster[0]} of size {cluster[2]} about {round(cluster[1] * 100, 2)}%. \n")
 
 if __name__ == "__main__":
     # generate cluster data and store in mongodb
@@ -57,6 +72,4 @@ if __name__ == "__main__":
     all_clusters = format_all_data(all_data)
     # This formats each cluster in data['clusters'] from dict to Cluster object
 
-    subset_similarity_c1, subset_similarity_c2 = compare_same_size_clusters(all_clusters)
-    for k, v in subset_similarity_c1.items():
-        print(k, v)
+    compare_same_size_clusters(all_clusters)
