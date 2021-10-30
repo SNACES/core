@@ -4,8 +4,8 @@ import numpy as np
 from typing import List, Dict
 from src.model.cluster import Cluster
 from pymongo import MongoClient
-from src.compare_clustering_algorithms import *
-from src.clustering_data import get_all_data, format_all_data
+from src.clustering_experiments.compare_clustering_algorithms import *
+from src.clustering_experiments.clustering_data import get_all_data, format_all_data
 
 
 def categorize_clusters_by_length(all_clusters):
