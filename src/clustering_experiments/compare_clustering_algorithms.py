@@ -3,9 +3,6 @@ import src.scripts.create_social_graph_and_cluster as csgc
 import numpy as np
 from typing import List, Dict
 from src.model.cluster import Cluster
-from pymongo import MongoClient
-
-ITER_NUM = 5
 
 def get_clusters(initial_user: str) -> tuple:
     """Returns the clusters using the old clustering algorithm and using the new clustering algorithm."""
@@ -73,26 +70,5 @@ def experiment_results(initial_user: str):
                 f.write(f"\t is contained in Cluster {cluster[0]} of size {cluster[2]} about {round(cluster[1] * 100, 2)}%. \n")
 
 if __name__ == "__main__":
-    # c1, c2 = get_clusters("david_madras")
-    # subset_similarity_c1, subset_similarity_c2 = compare_clusters(c1, c2)
-    # for k, v in subset_similarity_c1.items():
-    #     print(k, v)
-    # for k, v in subset_similarity_c2.items():
-    #     print(k, v)
-
-    # unrefined_clusters = []
-    # refined_clusters = []
-    # for i in range(ITER_NUM):
-    #     c3, c4 = get_clusters("david_madras")
-    #     unrefined_clusters.append(c3)
-    #     refined_clusters.append(c4)
-
-    # single_clusters, double_clusters, triple_clusters = \
-    #     categorize_clusters_by_length(refined_clusters)
-
-    # if len(triple_clusters) != 0:
-    #     compare_same_size_clusters(triple_clusters)
-    # elif len(double_clusters) != 0:
-    #     compare_same_size_clusters(double_clusters)
     experiment_results("david_madras")
     pass
