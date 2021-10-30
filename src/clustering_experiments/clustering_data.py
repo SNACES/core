@@ -1,5 +1,5 @@
 from collections import defaultdict
-import src.scripts.create_social_graph_and_cluster as csgc
+import src.clustering_experiments.create_social_graph_and_cluster as csgc
 import numpy as np
 from typing import List, Dict
 from src.model.cluster import Cluster
