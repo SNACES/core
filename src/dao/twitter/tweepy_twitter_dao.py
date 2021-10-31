@@ -1,13 +1,15 @@
 import datetime
 from queue import Queue
 from threading import Thread
-
+import json
 import tweepy
 
 import conf.credentials as credentials
 from typing import Union, List, Dict, Tuple
 from tweepy import OAuthHandler, Stream, API, Cursor
 from tweepy.streaming import StreamListener
+
+from src.model.liked_tweet import LikedTweet
 from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.twitter.twitter_dao import TwitterGetter
@@ -235,14 +237,31 @@ class TweepyTwitterGetter(TwitterGetter):
     def get_tweets_by_user_id(self, user_id, num_tweets=0):
         tweets = []
         try:
-            cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200,
-                            since_id='1277627227954458624', exclude_replies=True).items()
+            #cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id, count=200,
+            #                since_id='1277627227954458624', exclude_replies=True).items()
+            cursor = Cursor(self.twitter_api.user_timeline, user_id=user_id,
+                            count=200, exclude_replies=True).items()
             for data in cursor:
                 tweets.append(Tweet.fromTweepyJSON(data._json))
         except TweepError as e:
             log.error(e)
 
         return tweets
+
+    def get_liked_tweets_by_user_id(self, user_id):
+        ''' user id is the id in User model
+            return a list of user id who made tweets liked by user_id.
+        '''
+        tweets = []
+        try:
+            cursor = Cursor(self.twitter_api.favorites,
+                            user_id=user_id, count=20).items()
+            for data in cursor:
+                tweets.append(LikedTweet.fromTweepyJSON(data._json, int(user_id)))
+        except TweepError as e:
+            log.error(e)
+        return tweets
+
 
     def get_friends_ids_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
         cursor = Cursor(self.twitter_api.friends_ids, user_id=user_id, count=5000).items(limit=num_friends)
@@ -292,3 +311,12 @@ class TweepyTwitterGetter(TwitterGetter):
             follower_user.append(User.fromTweepyJSON(follower_user))
 
         return user_id, followers_users
+
+#a = TweepyTwitterGetter()
+#user_id = a.get_user_by_screen_name("david_madras"
+#a.get_tweets_by_user_id(user_id.id)876274407995527200
+#print(user_id.id)
+#print(a.get_user_by_id(970447818614812700))
+#a.get_liked_tweets_by_user_id(116624142)
+
+
