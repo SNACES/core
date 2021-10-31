@@ -12,6 +12,9 @@ class TwitterGetter():
     def get_tweets_by_user_id(self, user_id: str, num_tweets=0):
         raise NotImplementedError("Subclasses should implement this")
 
+    def get_liked_tweets_by_user_id(self, user_id: str):
+        raise NotImplementedError("Subclasses should implement this")
+
     def get_user_by_id(self, user_id: str) -> User:
         raise NotImplementedError("Subclasses should implement this")
 

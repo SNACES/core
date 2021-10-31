@@ -1,9 +1,11 @@
 import os
 import json
+
+from src.process.core_detection.boxplot_generator import generate_boxplot
+from src.process.core_detection.scatter_plot_generator import generate_plot, \
+    generate_plot_2
 from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
-from src.model.user import User
 from src.model.local_neighbourhood import LocalNeighbourhood
-from typing import Dict
 from src.shared.logger_factory import LoggerFactory
 
 log = LoggerFactory.logger(__name__)
@@ -15,19 +17,22 @@ class CoreDetector():
     """
 
     def __init__(self, user_getter, user_downloader, user_friends_downloader,
-            extended_friends_cleaner,
-            local_neighbourhood_downloader,
-            local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
-            tweet_processor, social_graph_constructor, clusterer, cluster_getter,
-            cluster_word_frequency_processor, cluster_word_frequency_getter,
-            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter,
-                 user_friend_getter):
+                 extended_friends_cleaner, local_neighbourhood_downloader,
+                 local_neighbourhood_tweet_downloader,
+                 local_neighbourhood_getter,
+                 tweet_processor, social_graph_constructor, clusterer,
+                 cluster_getter, cluster_word_frequency_processor,
+                 cluster_word_frequency_getter, prod_ranker, con_ranker,
+                 ranking_getter, user_tweet_downloader, user_tweet_getter,
+                 user_liked_tweet_getter,
+                 user_friend_getter, like_prod_ranker, like_con_ranker):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
         self.user_friend_getter = user_friend_getter
         self.user_tweet_downloader = user_tweet_downloader
         self.user_tweet_getter = user_tweet_getter
+        self.user_liked_tweet_getter = user_liked_tweet_getter
         self.extended_friends_cleaner = extended_friends_cleaner
         self.local_neighbourhood_downloader = local_neighbourhood_downloader
         self.local_neighbourhood_tweet_downloader = local_neighbourhood_tweet_downloader
@@ -41,7 +46,8 @@ class CoreDetector():
         self.prod_ranker = prod_ranker
         self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
-
+        self.like_prod_ranker = like_prod_ranker
+        self.like_con_ranker = like_con_ranker
 
     def detect_core_by_screen_name(self, screen_name: str):
         user = self.user_getter.get_user_by_screen_name(screen_name)
@@ -68,6 +74,7 @@ class CoreDetector():
         prev_wf_vectors = []
         curr_wf_vector = None
         prev_cluster = None
+        count = 0
         while str(curr_user_id) != str(prev_user_id):
 
             prev_user_id = curr_user_id
@@ -75,9 +82,10 @@ class CoreDetector():
                 prev_wf_vectors.append(curr_wf_vector)
 
             try:
-                curr_user_id, curr_wf_vector, curr_cluster = self.loop(int(curr_user_id), prev_cluster,
+                curr_user_id, curr_wf_vector, curr_cluster = self.loop(int(curr_user_id), count, prev_cluster,
                     prev_wf_vector=curr_wf_vector, default_cluster=default_cluster)
                 prev_cluster = curr_cluster
+                count += 1
             except Exception as e:
                 log.exception(e)
                 exit()
@@ -88,10 +96,9 @@ class CoreDetector():
 
             # TODO: Add check for if wf vector is drifting
 
-    def loop(self, user_id: str, prev_cluster, prev_wf_vector=None, default_cluster=1, v=True, skip_download=True):
+    def loop(self, user_id: str, count, prev_cluster, prev_wf_vector=None, default_cluster=1, v=True, skip_download=True):
         # downloaded_users = ["876274407995527169", "985158406125375488", "359831209"]
         downloaded_users = []
-
         if not skip_download or str(user_id) not in downloaded_users:
             # TODO Add flag for skipping download step
             log.info("Downloading User")
@@ -176,7 +183,6 @@ class CoreDetector():
         log.info("Clustering:")
         clusters = self.clusterer.cluster_by_social_graph(user_id, social_graph, None)
 
-
         # log.info("Processing Local Neighbourhood Tweets")
         # self.tweet_processor.process_tweets_by_local_neighbourhood(local_neighbourhood)
 
@@ -254,9 +260,21 @@ class CoreDetector():
             self.user_tweet_downloader.stream_tweets_by_user_list(curr_cluster.users)
             #self.user_tweet_downloader.download_user_tweets_by_user_list(curr_cluster.users)
 
-        log.info("Ranking Cluster")
+
+        log.info("Downloading liked tweets")
+        self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
+
+        log.info("Ranking Cluster...")
+        log.info("Computing Local Retweets Production")
         prod_ranking, prod = self.prod_ranker.rank(str(user_id), curr_cluster)
+        log.info("Computing Local Retweets Consumption")
         con_ranking, con = self.con_ranker.rank(str(user_id), curr_cluster)
+        log.info("Computing Local Likes Production")
+        like_prod_ranking, like = self.like_prod_ranker.rank(str(user_id), curr_cluster)
+        log.info("Computing Local Likes Consumption")
+        like_con_ranking, like = self.like_con_ranker.rank(str(user_id), curr_cluster)
+        #generate_boxplot(curr_cluster, self.user_getter, count)
+
 
         # prod_ranking = self.ranking_getter.get_ranking(str(user_id), params="retweets")
         # con_ranking = self.ranking_getter.get_ranking(str(user_id), params="consumption utility")
@@ -278,21 +296,27 @@ class CoreDetector():
 
         top_10_prod = prod_ranking.get_top_10_user_ids()
         top_10_con = con_ranking.get_top_10_user_ids()
+        top_10_prod_like = like_prod_ranking.get_top_10_user_ids()
+        top_10_con_like = like_con_ranking.get_top_10_user_ids()
 
         top_20_prod = prod_ranking.get_top_20_user_ids()
         top_20_con = con_ranking.get_top_20_user_ids()
+        top_20_prod_like = like_prod_ranking.get_top_20_user_ids()
+        top_20_con_like = like_con_ranking.get_top_20_user_ids()
 
-        top_30_prod = prod_ranking.get_top_30_user_ids()
-        top_30_con = con_ranking.get_top_30_user_ids()
+        #top_30_prod = prod_ranking.get_top_30_user_ids()
+        #top_30_con = con_ranking.get_top_30_user_ids()
 
         top_50_prod = prod_ranking.get_top_50_user_ids()
         top_50_con = con_ranking.get_top_50_user_ids()
+        top_50_prod_like = like_prod_ranking.get_top_50_user_ids()
+        top_50_con_like = like_con_ranking.get_top_50_user_ids()
 
-        top_150_prod = prod_ranking.get_all_ranked_user_ids()[:150]
-        top_150_con = con_ranking.get_all_ranked_user_ids()[:150]
+        #top_150_prod = prod_ranking.get_all_ranked_user_ids()[:150]
+        #top_150_con = con_ranking.get_all_ranked_user_ids()[:150]
 
-        top_400_prod = prod_ranking.get_all_ranked_user_ids()[:400]
-        top_400_con = con_ranking.get_all_ranked_user_ids()[:400]
+        #top_400_prod = prod_ranking.get_all_ranked_user_ids()[:400]
+        #top_400_con = con_ranking.get_all_ranked_user_ids()[:400]
 
         # top_30_prod = prod_ranking[:30]
         # top_30_con = con_ranking[:30]
@@ -301,46 +325,59 @@ class CoreDetector():
         # top_50_con = con_ranking[:50]
 
         intersection_10 = set(top_10_prod).intersection(top_10_con)
+        #intersection_10 = set(top_10_prod).intersection(top_10_like)
         intersection_10_prod = sorted(intersection_10, key=prod.get, reverse=True)
         intersection_10_con = sorted(intersection_10, key=con.get, reverse=True)
+        #intersection_10_like = sorted(intersection_10, key=like.get, reverse=True)
 
         intersection_20 = set(top_20_prod).intersection(top_20_con)
+        #intersection_20 = set(top_20_prod).intersection(top_20_like)
         intersection_20_prod = sorted(intersection_20, key=prod.get, reverse=True)
         intersection_20_con = sorted(intersection_20, key=con.get, reverse=True)
+        #intersection_20_like = sorted(intersection_20, key=like.get, reverse=True)
 
-        intersection_30 = set(top_30_prod).intersection(top_30_con)
-        intersection_30_prod = sorted(intersection_30, key=prod.get, reverse=True)
-        intersection_30_con = sorted(intersection_30, key=con.get, reverse=True)
+        #intersection_30 = set(top_30_prod).intersection(top_30_con)
+        #intersection_30_prod = sorted(intersection_30, key=prod.get, reverse=True)
+        #intersection_30_con = sorted(intersection_30, key=con.get, reverse=True)
 
-        intersection_50 = set(top_50_prod).intersection(top_50_con)
-        intersection_50_prod = sorted(intersection_50, key=prod.get, reverse=True)
-        intersection_50_con = sorted(intersection_50, key=con.get, reverse=True)
+        #intersection_50 = set(top_50_prod).intersection(top_50_con)
+        #intersection_50_prod = sorted(intersection_50, key=prod.get, reverse=True)
+        #intersection_50_con = sorted(intersection_50, key=con.get, reverse=True)
 
-        intersection_150 = set(top_150_prod).intersection(top_150_con)
-        intersection_150_prod = sorted(intersection_150, key=prod.get, reverse=True)
-        intersection_150_con = sorted(intersection_150, key=con.get, reverse=True)
+        #intersection_150 = set(top_150_prod).intersection(top_150_con)
+        #intersection_150_prod = sorted(intersection_150, key=prod.get, reverse=True)
+        #intersection_150_con = sorted(intersection_150, key=con.get, reverse=True)
 
-        intersection_400 = set(top_400_prod).intersection(top_400_con)
-        intersection_400_prod = sorted(intersection_400, key=prod.get, reverse=True)
-        intersection_400_con = sorted(intersection_400, key=con.get, reverse=True)
+        #intersection_400 = set(top_400_prod).intersection(top_400_con)
+        #intersection_400_prod = sorted(intersection_400, key=prod.get, reverse=True)
+        #intersection_400_con = sorted(intersection_400, key=con.get, reverse=True)
 
 
         log.info("Top 50 Prod")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod])
         log.info("Top 50 Con")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con])
+        log.info("Top 50 Local Like Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod_like])
+
+        log.info("Top 50 Local Like Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
 
         log.info("Using Top 10: ")
         log.info("Production:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
         log.info("Consumption:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
+        #log.info("Like:")
+        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_like])
 
         log.info("Using Top 20: ")
         log.info("Production:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
         log.info("Consumption:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+        #log.info("Like:")
+        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_like])
 
         # log.info("Using Top 30: ")
         # log.info("Production:")
@@ -366,6 +403,7 @@ class CoreDetector():
         # log.info("Consumption:")
         # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_con])
 
+        # TODO: PRODUCTION
         # By Production
         log.info("By Production")
         curr_user_id = intersection_20_prod[0]
@@ -379,6 +417,7 @@ class CoreDetector():
                         curr_user_id = temp_id
                         break
 
+        # TODO: CONSUMPTION
         # By Consumption
         # log.info("By Consumption")
         # curr_user_id = intersection_20_con[0]
@@ -391,6 +430,32 @@ class CoreDetector():
         #             if intersection_20_prod.index(temp_id) < index:
         #                 curr_user_id = temp_id
         #                 break
+
+        # TODO: LIKED
+        # # By Like Utility Ranker
+        # log.info("By like utility ranker")
+        # curr_user_id = intersection_20_like[0]
+        # # is the highest rank user the user we are looping from?
+        # str123 = "high rank like user: "+ str(curr_user_id)+ "original user: " + str(user_id)
+        # log.info(str123)
+        # if curr_user_id == str(user_id):
+        #     # is he also the highest rank user from production?
+        #     log.info("Not highest rank from production")
+        #     if intersection_20_prod[0] != curr_user_id:
+        #         # if not find its rank in production
+        #         index = intersection_20_prod.index(curr_user_id)
+        #         for i in range(1, 20):
+        #             # change highest rank to the highest rank user in like that has rank in production higher than index
+        #             temp_id = intersection_20_like[i]
+        #             if intersection_20_prod.index(temp_id) < index:
+        #                 str123 = "Changed user to " + str(temp_id)+ " with rank "+ str(intersection_20_prod.index(temp_id))
+        #                 log.info(str123)
+        #                 curr_user_id = temp_id
+        #                 break
+
+        #generate_plot("Production", "Like", prod_ranking, prod, like_ranking, like, curr_user_id,count)
+        #generate_plot("Consumption", "Production+Like", con_ranking, con, like_ranking, like, curr_user_id,count, self.user_getter)
+        #generate_plot_2("Consumption", "Production", con_ranking, con, prod_ranking, prod, curr_user_id,count, self.user_getter)
 
         # curr_user_id = ranking.get_top_user_id()
         # top_ids = ranking.get_top_20_user_ids()
@@ -405,7 +470,6 @@ class CoreDetector():
 
 
     def save_top_users(self, cluster, users, seed_name, type):
-
         path = "./results/" + type + "/top_users/"
 
         if not os.path.exists(path):

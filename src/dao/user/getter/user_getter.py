@@ -1,5 +1,5 @@
 from typing import List, Dict
-from src.model.user import User
+#from src.model.user import User
 
 
 class UserGetter:

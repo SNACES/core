@@ -2,8 +2,10 @@ from src.dependencies.dao_module import DAOModule
 from src.dependencies.process_module import ProcessModule
 from src.scripts.parser.parse_config import parse_from_file
 from src.shared.logger_factory import LoggerFactory
+#log = LoggerFactory.logger(__name__)
 
-class Injector():
+
+class Injector:
     """
     The Injector is used to initialize all the modules used to inject
     dependencies
@@ -11,7 +13,6 @@ class Injector():
 
     def __init__(self, config):
         self.config = config
-
         self.dao_module = None
         self.process_module = None
 
@@ -28,11 +29,10 @@ class Injector():
 
         return self.process_module
 
-
     def get_injector_from_file(path: str):
         config = parse_from_file(path)
+        #log.info("Setting up injector...")
         injector = Injector(config)
-
         log_config = config.get("Logging", {})
         LoggerFactory.init_root_logger("snaces2.log")
 

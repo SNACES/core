@@ -202,3 +202,5 @@ class MongoRawTweetGetter(RawTweetGetter):
             coeffcient = get_tweet_limit_coefficient_by_tweets_brute_force(tweets)
             print(f'catch {user_id} with coefficient = {coeffcient}')
         return coeffcient
+
+

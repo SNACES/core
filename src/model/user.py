@@ -122,5 +122,10 @@ class User:
     def get_id(self):
         return self.id
 
+    def get_likes(self):
+        return self.favourites_count
+    def get_followers(self):
+        return self.followers_count
+
     def __str__(self):
         return str(self.__dict__)

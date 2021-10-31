@@ -45,8 +45,8 @@ class LocalNeighbourhoodDownloader():
                 self.user_friends_downloader.download_friends_ids_by_id(id)
                 user_friends = self.user_friend_getter.get_user_friends_ids(id)
                 log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
-            else:
-                log.info("Already stored " + str(len(user_friends)) + " user friends for " + str(id))
+            #else:
+                #log.info("Already stored " + str(len(user_friends)) + " user friends for " + str(id))
 
             assert user_friends is not None
 

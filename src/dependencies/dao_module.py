@@ -1,4 +1,5 @@
 from src.dao.cluster.cluster_dao_factory import ClusterDAOFactory
+from src.dao.liked_tweet.liked_tweet_dao_factory import LikedTweetDAOFactory
 from src.dao.local_neighbourhood.local_neighbourhood_dao_factory import LocalNeighbourhoodDAOFactory
 from src.dao.processed_tweet.processed_tweet_dao_factory import ProcessedTweetDAOFactory
 from src.dao.ranking.ranking_dao_factory import RankingDAOFactory
@@ -84,6 +85,14 @@ class DAOModule():
         return RawTweetDAOFactory.create_setter(
             self.output_datastore["UserTweet"])
 
+    def get_user_liked_tweet_getter(self):
+        return LikedTweetDAOFactory.create_getter(
+            self.input_datastore["UserTweetLike"])
+
+    def get_user_liked_tweet_setter(self):
+        return LikedTweetDAOFactory.create_setter(
+            self.output_datastore["UserTweetLike"])
+
     def get_social_graph_getter(self):
         return SocialGraphDAOFactory.create_getter(
             self.input_datastore["SocialGraph"])
@@ -163,7 +172,30 @@ class DAOModule():
     def get_user_relative_word_frequency_setter(self):
         return UserRelativeWordFrequencyDAOFactory.create_setter(
             self.output_datastore["UserRelativeWordFrequency"])
-    
+
     def get_community_setter(self):
         return CommunityDAOFactory.create_setter(
             self.output_datastore["Community"])
+
+# c = UserDAOFactory()
+# from src.shared.utils import get_project_root
+# from src.scripts.parser.parse_config import parse_from_file
+#
+# from src.dao.user.getter.mongo_user_getter import MongoUserGetter
+# from src.shared.mongo import get_collection_from_config
+# DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/detect_core_config.yaml"
+#
+# config = parse_from_file(DEFAULT_PATH)
+# input_datastore = config.get("inout-datastore", {})
+# #print(input_datastore)
+# d = input_datastore["Users"]
+# collection = get_collection_from_config(d["config"])
+#
+# a = ["876274407995527200", "177416255"]
+# b = MongoUserGetter()
+# b.set_user_collection(collection)
+# scores = {}
+# for id in a:
+#     user = b.get_user_by_id(id)
+#     scores[str(id)] = user.get_likes()
+# print(scores)

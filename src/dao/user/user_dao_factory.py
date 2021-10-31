@@ -27,3 +27,4 @@ class UserDAOFactory():
             raise Exception("Datastore type not supported")
 
         return user_getter
+

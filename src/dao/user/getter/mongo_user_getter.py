@@ -20,3 +20,4 @@ class MongoUserGetter(UserGetter):
 
     def get_user_by_screen_name(self, screen_name: str) -> User:
         return User.fromDict(self.user_collection.find_one({"screen_name": screen_name}))
+
