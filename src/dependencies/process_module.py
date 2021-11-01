@@ -194,12 +194,13 @@ class ProcessModule():
         user_tweet_setter = self.dao_module.get_user_tweet_setter()
         user_getter = self.dao_module.get_user_getter()
         user_liked_tweet_setter = self.dao_module.get_user_liked_tweet_setter()
-
+        get_like_indicator = self.dao_module.get_like_indicator()
         print("User Getter is none? " + str(user_getter is None))
 
         user_tweet_downloader = UserTweetDownloader(twitter_getter,
                                                     user_tweet_setter,
                                                     user_liked_tweet_setter,
+                                                    get_like_indicator,
                                                     user_getter)
         return user_tweet_downloader
 

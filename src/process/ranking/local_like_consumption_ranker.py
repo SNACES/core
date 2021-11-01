@@ -28,5 +28,5 @@ class LocalLikeConsumptionRanker(Ranker):
                 if str(liked_user) in user_ids and str(liked_user) != str(user_id):
                     scores[str(liked_user)] += 1
             # TODO: REMOVE THE FOLLOWING PRINT CALL
-            print(scores)
+            #print(scores)
         return scores

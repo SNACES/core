@@ -1,5 +1,7 @@
 from src.dao.cluster.cluster_dao_factory import ClusterDAOFactory
 from src.dao.liked_tweet.liked_tweet_dao_factory import LikedTweetDAOFactory
+from src.dao.liked_tweet_indicator.mongo_liked_tweet_indicator import \
+    MongoLikedTweetIndicator
 from src.dao.local_neighbourhood.local_neighbourhood_dao_factory import LocalNeighbourhoodDAOFactory
 from src.dao.processed_tweet.processed_tweet_dao_factory import ProcessedTweetDAOFactory
 from src.dao.ranking.ranking_dao_factory import RankingDAOFactory
@@ -87,11 +89,11 @@ class DAOModule():
 
     def get_user_liked_tweet_getter(self):
         return LikedTweetDAOFactory.create_getter(
-            self.input_datastore["UserTweetLike"])
+            self.input_datastore["UserLikedTweet"])
 
     def get_user_liked_tweet_setter(self):
         return LikedTweetDAOFactory.create_setter(
-            self.output_datastore["UserTweetLike"])
+            self.output_datastore["UserLikedTweet"])
 
     def get_social_graph_getter(self):
         return SocialGraphDAOFactory.create_getter(
@@ -176,6 +178,11 @@ class DAOModule():
     def get_community_setter(self):
         return CommunityDAOFactory.create_setter(
             self.output_datastore["Community"])
+
+    def get_like_indicator(self):
+        return MongoLikedTweetIndicator(
+            self.output_datastore["UserLikedTweetIndicator"])
+
 
 # c = UserDAOFactory()
 # from src.shared.utils import get_project_root

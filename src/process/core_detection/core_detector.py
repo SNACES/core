@@ -359,8 +359,7 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con])
         log.info("Top 50 Local Like Production")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod_like])
-
-        log.info("Top 50 Local Like Production")
+        log.info("Top 50 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
 
         log.info("Using Top 10: ")
