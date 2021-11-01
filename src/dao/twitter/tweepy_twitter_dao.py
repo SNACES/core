@@ -254,9 +254,14 @@ class TweepyTwitterGetter(TwitterGetter):
         '''
         tweets = []
         try:
+            #print(user_id)
             cursor = Cursor(self.twitter_api.favorites,
-                            user_id=user_id, count=20).items()
+                            user_id=user_id, count=200).items()
+            #print(cursor.num_tweets)
             for data in cursor:
+                #print(data)
+                #print(1)
+                #print(data._json.get(user_id))
                 tweets.append(LikedTweet.fromTweepyJSON(data._json, int(user_id)))
         except TweepError as e:
             log.error(e)
@@ -312,11 +317,9 @@ class TweepyTwitterGetter(TwitterGetter):
 
         return user_id, followers_users
 
-#a = TweepyTwitterGetter()
-#user_id = a.get_user_by_screen_name("david_madras"
-#a.get_tweets_by_user_id(user_id.id)876274407995527200
+a = TweepyTwitterGetter()
+user_id = a.get_user_by_screen_name("david_madras")
+#print(user_id)
+a.get_tweets_by_user_id(user_id.id)#876274407995527200
 #print(user_id.id)
 #print(a.get_user_by_id(970447818614812700))
-#a.get_liked_tweets_by_user_id(116624142)
-
-

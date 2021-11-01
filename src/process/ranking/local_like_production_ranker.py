@@ -19,10 +19,11 @@ class LocalLikeProductionRanker(Ranker):
             scores[str(user_id)] = 0
 
         for user_id in tqdm(user_ids):
-            # tweets from user_id that being liked by other
+            # tweets that being tweeted by user_id
             liked_tweet = self.liked_tweet_getter.get_tweets_by_user_id_time_restricted(user_id)
 
             for liked_tweet in liked_tweet:
+                # user that liked the tweet
                 liked_user = liked_tweet.liked_id
                 # liking your own tweet doesn't count
                 if str(liked_user) in user_ids and str(liked_user) != str(user_id):

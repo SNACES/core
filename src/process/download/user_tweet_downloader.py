@@ -86,6 +86,7 @@ class UserTweetDownloader():
         to get a new past date as our start date for downloading tweets. Any older tweets are ignored.
         """
         #TODO:
+        log.info(f"Begin Download Liked Tweets for user {user_id}")
         all_tweets = self.twitter_getter.get_liked_tweets_by_user_id(user_id)
         tweets = []
         startDate = date.today() + relativedelta(months=-months_back)

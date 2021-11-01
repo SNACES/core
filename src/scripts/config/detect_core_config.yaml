@@ -92,4 +92,4 @@ inout-datastore:
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "UserTweetLike"
+            collection-name: "UserLikedTweet"
