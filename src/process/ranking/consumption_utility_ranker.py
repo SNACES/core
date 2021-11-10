@@ -27,5 +27,5 @@ class ConsumptionUtilityRanker(Ranker):
                 retweeter = retweet.user_id
                 # retweeting your own tweet does not count
                 if str(retweeter) in user_ids and str(retweeter) != str(user_id):
-                    scores[retweeter] += 1
+                    scores[str(retweeter)] += 1
         return scores

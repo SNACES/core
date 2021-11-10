@@ -270,9 +270,9 @@ class CoreDetector():
         log.info("Computing Local Retweets Consumption")
         con_ranking, con = self.con_ranker.rank(str(user_id), curr_cluster)
         log.info("Computing Local Likes Production")
-        like_prod_ranking, like = self.like_prod_ranker.rank(str(user_id), curr_cluster)
+        like_prod_ranking, prod_like = self.like_prod_ranker.rank(str(user_id), curr_cluster)
         log.info("Computing Local Likes Consumption")
-        like_con_ranking, like = self.like_con_ranker.rank(str(user_id), curr_cluster)
+        like_con_ranking, con_like = self.like_con_ranker.rank(str(user_id), curr_cluster)
         #generate_boxplot(curr_cluster, self.user_getter, count)
 
 
@@ -308,6 +308,7 @@ class CoreDetector():
         #top_30_con = con_ranking.get_top_30_user_ids()
 
         top_50_prod = prod_ranking.get_top_50_user_ids()
+
         top_50_con = con_ranking.get_top_50_user_ids()
         top_50_prod_like = like_prod_ranking.get_top_50_user_ids()
         top_50_con_like = like_con_ranking.get_top_50_user_ids()
@@ -324,16 +325,16 @@ class CoreDetector():
         # top_50_prod = prod_ranking[:50]
         # top_50_con = con_ranking[:50]
 
-        intersection_10 = set(top_10_prod).intersection(top_10_con)
-        #intersection_10 = set(top_10_prod).intersection(top_10_like)
-        intersection_10_prod = sorted(intersection_10, key=prod.get, reverse=True)
-        intersection_10_con = sorted(intersection_10, key=con.get, reverse=True)
+        #intersection_10 = set(top_10_prod).intersection(top_10_con)
+        intersection_10 = set(top_10_prod_like).intersection(top_10_con_like)
+        intersection_10_prod = sorted(intersection_10, key=prod_like.get, reverse=True)
+        intersection_10_con = sorted(intersection_10, key=con_like.get, reverse=True)
         #intersection_10_like = sorted(intersection_10, key=like.get, reverse=True)
 
-        intersection_20 = set(top_20_prod).intersection(top_20_con)
+        intersection_20 = set(top_20_prod_like).intersection(top_20_con_like)
         #intersection_20 = set(top_20_prod).intersection(top_20_like)
-        intersection_20_prod = sorted(intersection_20, key=prod.get, reverse=True)
-        intersection_20_con = sorted(intersection_20, key=con.get, reverse=True)
+        intersection_20_prod = sorted(intersection_20, key=prod_like.get, reverse=True)
+        intersection_20_con = sorted(intersection_20, key=con_like.get, reverse=True)
         #intersection_20_like = sorted(intersection_20, key=like.get, reverse=True)
 
         #intersection_30 = set(top_30_prod).intersection(top_30_con)
@@ -355,6 +356,7 @@ class CoreDetector():
 
         log.info("Top 50 Prod")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod])
+        log.info(prod)
         log.info("Top 50 Con")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con])
         log.info("Top 50 Local Like Production")
@@ -363,18 +365,28 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
 
         log.info("Using Top 10: ")
-        log.info("Production:")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
+        log.info("Production Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
-        log.info("Consumption:")
+        log.info("Consumption Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
         #log.info("Like:")
         #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_like])
 
         log.info("Using Top 20: ")
-        log.info("Production:")
+        # log.info("Production:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
+        # log.info("Consumption:")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+
+        log.info("Production Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
-        log.info("Consumption:")
+        log.info("Consumption Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+
         #log.info("Like:")
         #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_like])
 
@@ -402,19 +414,19 @@ class CoreDetector():
         # log.info("Consumption:")
         # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_con])
 
-        # TODO: PRODUCTION
-        # By Production
-        log.info("By Production")
-        curr_user_id = intersection_20_prod[0]
-
-        if curr_user_id == str(user_id):
-            if intersection_20_con[0] != curr_user_id:
-                index = intersection_20_con.index(curr_user_id)
-                for i in range(1, 20):
-                    temp_id = intersection_20_prod[i]
-                    if intersection_20_con.index(temp_id) < index:
-                        curr_user_id = temp_id
-                        break
+        # # TODO: PRODUCTION
+        # # By Production
+        # log.info("By Production")
+        # curr_user_id = intersection_20_prod[0]
+        #
+        # if curr_user_id == str(user_id):
+        #     if intersection_20_con[0] != curr_user_id:
+        #         index = intersection_20_con.index(curr_user_id)
+        #         for i in range(1, 20):
+        #             temp_id = intersection_20_prod[i]
+        #             if intersection_20_con.index(temp_id) < index:
+        #                 curr_user_id = temp_id
+        #                 break
 
         # TODO: CONSUMPTION
         # By Consumption
@@ -429,6 +441,19 @@ class CoreDetector():
         #             if intersection_20_prod.index(temp_id) < index:
         #                 curr_user_id = temp_id
         #                 break
+
+        #By LOcal Consumption
+        log.info("By Local Production")
+        curr_user_id = intersection_20_prod[0]
+
+        if curr_user_id == str(user_id):
+            if intersection_20_con[0] != curr_user_id:
+                index = intersection_20_con.index(curr_user_id)
+                for i in range(1, 20):
+                    temp_id = intersection_20_prod[i]
+                    if intersection_20_con.index(temp_id) < index:
+                        curr_user_id = temp_id
+                        break
 
         # TODO: LIKED
         # # By Like Utility Ranker
