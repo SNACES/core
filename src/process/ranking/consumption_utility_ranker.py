@@ -19,13 +19,15 @@ class ConsumptionUtilityRanker(Ranker):
             scores[str(user_id)] = 0
 
         for user_id in tqdm(user_ids):
-            # retweets by user_id that has retweeted retweet_id's original tweet)
-            retweets = self.raw_tweet_getter.get_retweets_by_user_id_time_restricted(user_id)
+            # get tweets tweeted by user_id that is retweeted by others
+            retweets = self.raw_tweet_getter.get_retweets_of_user_by_user_id_time_restricted(user_id)
 
             for retweet in retweets:
                 # retweeted user
                 retweeter = retweet.user_id
-                # retweeting your own tweet does not count
+                # if retweeted user in the cluster and is not the user itself
                 if str(retweeter) in user_ids and str(retweeter) != str(user_id):
+                    #print("valid retweet detected")
                     scores[str(retweeter)] += 1
+
         return scores

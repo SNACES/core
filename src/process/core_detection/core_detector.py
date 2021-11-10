@@ -1,7 +1,8 @@
 import os
 import json
 
-from src.process.core_detection.boxplot_generator import generate_boxplot
+from src.process.core_detection.boxplot_generator import generate_boxplot, \
+    generate_hist, generate_scatterplot
 from src.process.core_detection.scatter_plot_generator import generate_plot, \
     generate_plot_2
 from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
@@ -273,8 +274,6 @@ class CoreDetector():
         like_prod_ranking, prod_like = self.like_prod_ranker.rank(str(user_id), curr_cluster)
         log.info("Computing Local Likes Consumption")
         like_con_ranking, con_like = self.like_con_ranker.rank(str(user_id), curr_cluster)
-        #generate_boxplot(curr_cluster, self.user_getter, count)
-
 
         # prod_ranking = self.ranking_getter.get_ranking(str(user_id), params="retweets")
         # con_ranking = self.ranking_getter.get_ranking(str(user_id), params="consumption utility")
@@ -293,70 +292,38 @@ class CoreDetector():
         #             print("nope!")
         #         log.info(retweet.retweet_user_id)
         # log.info(count/len(local_retweets))
-
         top_10_prod = prod_ranking.get_top_10_user_ids()
         top_10_con = con_ranking.get_top_10_user_ids()
         top_10_prod_like = like_prod_ranking.get_top_10_user_ids()
         top_10_con_like = like_con_ranking.get_top_10_user_ids()
+        log.info("Top 10 Local Retweet Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod])
+        log.info("Top 10 Local Retweet Consumption")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con])
+        log.info("Top 10 Local Like Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod_like])
+        log.info("Top 10 Local Like Consumption")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con_like])
 
         top_20_prod = prod_ranking.get_top_20_user_ids()
         top_20_con = con_ranking.get_top_20_user_ids()
         top_20_prod_like = like_prod_ranking.get_top_20_user_ids()
         top_20_con_like = like_con_ranking.get_top_20_user_ids()
-
-        #top_30_prod = prod_ranking.get_top_30_user_ids()
-        #top_30_con = con_ranking.get_top_30_user_ids()
+        log.info("Top 20 Local Retweet Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod])
+        log.info("Top 20 Local Retweet Consumption")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con])
+        log.info("Top 20 Local Like Production")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod_like])
+        log.info("Top 20 Local Like Consumption")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con_like])
 
         top_50_prod = prod_ranking.get_top_50_user_ids()
-
         top_50_con = con_ranking.get_top_50_user_ids()
         top_50_prod_like = like_prod_ranking.get_top_50_user_ids()
         top_50_con_like = like_con_ranking.get_top_50_user_ids()
-
-        #top_150_prod = prod_ranking.get_all_ranked_user_ids()[:150]
-        #top_150_con = con_ranking.get_all_ranked_user_ids()[:150]
-
-        #top_400_prod = prod_ranking.get_all_ranked_user_ids()[:400]
-        #top_400_con = con_ranking.get_all_ranked_user_ids()[:400]
-
-        # top_30_prod = prod_ranking[:30]
-        # top_30_con = con_ranking[:30]
-        #
-        # top_50_prod = prod_ranking[:50]
-        # top_50_con = con_ranking[:50]
-
-        #intersection_10 = set(top_10_prod).intersection(top_10_con)
-        intersection_10 = set(top_10_prod_like).intersection(top_10_con_like)
-        intersection_10_prod = sorted(intersection_10, key=prod_like.get, reverse=True)
-        intersection_10_con = sorted(intersection_10, key=con_like.get, reverse=True)
-        #intersection_10_like = sorted(intersection_10, key=like.get, reverse=True)
-
-        intersection_20 = set(top_20_prod_like).intersection(top_20_con_like)
-        #intersection_20 = set(top_20_prod).intersection(top_20_like)
-        intersection_20_prod = sorted(intersection_20, key=prod_like.get, reverse=True)
-        intersection_20_con = sorted(intersection_20, key=con_like.get, reverse=True)
-        #intersection_20_like = sorted(intersection_20, key=like.get, reverse=True)
-
-        #intersection_30 = set(top_30_prod).intersection(top_30_con)
-        #intersection_30_prod = sorted(intersection_30, key=prod.get, reverse=True)
-        #intersection_30_con = sorted(intersection_30, key=con.get, reverse=True)
-
-        #intersection_50 = set(top_50_prod).intersection(top_50_con)
-        #intersection_50_prod = sorted(intersection_50, key=prod.get, reverse=True)
-        #intersection_50_con = sorted(intersection_50, key=con.get, reverse=True)
-
-        #intersection_150 = set(top_150_prod).intersection(top_150_con)
-        #intersection_150_prod = sorted(intersection_150, key=prod.get, reverse=True)
-        #intersection_150_con = sorted(intersection_150, key=con.get, reverse=True)
-
-        #intersection_400 = set(top_400_prod).intersection(top_400_con)
-        #intersection_400_prod = sorted(intersection_400, key=prod.get, reverse=True)
-        #intersection_400_con = sorted(intersection_400, key=con.get, reverse=True)
-
-
         log.info("Top 50 Prod")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod])
-        log.info(prod)
         log.info("Top 50 Con")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con])
         log.info("Top 50 Local Like Production")
@@ -364,55 +331,147 @@ class CoreDetector():
         log.info("Top 50 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
 
-        log.info("Using Top 10: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
+        prod_top_50 = [prod[your_key] for your_key in top_50_prod]
+        con_top_50 = [con[your_key] for your_key in top_50_con]
+        con_like_top_50 = [con_like[your_key] for your_key in top_50_prod_like]
+        prod_like_top_50 = [prod_like[your_key] for your_key in top_50_con_like]
+
+        log.info("Generating Box plots and Histograms for Utility Functions...")
+        generate_boxplot(prod_top_50, "Local_Retweet_Prod", count)
+        generate_boxplot(con_top_50, "Local_Retweet_Con", count)
+        generate_boxplot(con_like_top_50, "Local_Like_Prod", count)
+        generate_boxplot(prod_like_top_50, "Local_Like_Con", count)
+        generate_hist(prod_top_50, "Local_Retweet_Prod", count)
+        generate_hist(con_top_50, "Local_Retweet_Con", count)
+        generate_hist(con_like_top_50, "Local_Like_Prod", count)
+        generate_hist(prod_like_top_50, "Local_Like_Con", count)
+
+        intersection_50_likes = set(top_50_prod_like).intersection(top_50_con_like)
+        intersection_50_likes_prod = sorted(intersection_50_likes, key=prod_like.get, reverse=True)
+        intersection_50_likes_con = sorted(intersection_50_likes, key=con_like.get, reverse=True)
+
+        log.info("Using Top 50, intersection of local like producton & consumption: ")
         log.info("Production Like:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_prod])
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_likes_prod])
         log.info("Consumption Like:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_con])
-        #log.info("Like:")
-        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_10_like])
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_likes_con])
 
-        log.info("Using Top 20: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+        intersection_50_retweets = set(top_50_prod).intersection(top_50_con)
+        intersection_50_retweets_prod = sorted(intersection_50_retweets, key=prod.get, reverse=True)
+        intersection_50_retweets_con = sorted(intersection_50_retweets, key=con.get, reverse=True)
 
+        log.info("Using Top 50, intersection of local retweet producton & consumption: ")
+        log.info("Production Retweet:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_retweets_prod])
+        log.info("Consumption Retweet:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_retweets_con])
+
+        log.info("Plot top 50 Local Retweet Production, and their score in other utility function")
+        prod_top_50_con = []
+        prod_top_50_prod_like = []
+        prod_top_50_con_like = []
+        for top_user in top_50_prod:
+            prod_top_50_con.append(con[top_user])
+            prod_top_50_con_like.append(con_like[top_user])
+            prod_top_50_prod_like.append(prod_like[top_user])
+        generate_scatterplot("Top 50 Retweet Production", "Retweet Consumption",
+                             prod_top_50, prod_top_50_con, count)
+        generate_scatterplot("Top 50 Retweet Production", "Like Consumption",
+                             prod_top_50, prod_top_50_con_like, count)
+        generate_scatterplot("Top 50 Retweet Production", "Like Production",
+                             prod_top_50, prod_top_50_prod_like, count)
+        log.info("Plot top 50 Local Retweet Consumption, and their score in other utility function")
+        con_top_50_prod = []
+        con_top_50_prod_like = []
+        con_top_50_con_like = []
+        for top_user in top_50_con:
+            con_top_50_prod.append(prod[top_user])
+            con_top_50_con_like.append(con_like[top_user])
+            con_top_50_prod_like.append(prod_like[top_user])
+        generate_scatterplot("Top 50 Retweet Consumption", "Retweet Production",
+                             con_top_50, con_top_50_prod, count)
+        generate_scatterplot("Top 50 Retweet Consumption", "Like Consumption",
+                             con_top_50, con_top_50_prod_like, count)
+        generate_scatterplot("Top 50 Retweet Consumption", "Like Production",
+                             con_top_50, con_top_50_con_like, count)
+        log.info("Plot top 50 Local Like Consumption, and their score in other utility function")
+        con_like_top_50_prod = []
+        con_like_top_50_con = []
+        con_like_top_50_prod_like = []
+        for top_user in top_50_con_like:
+            con_like_top_50_prod.append(prod[top_user])
+            con_like_top_50_con.append(con[top_user])
+            con_like_top_50_prod_like.append(prod_like[top_user])
+        generate_scatterplot("Top 50 Like Consumption", "Retweet Production",
+                             con_like_top_50, con_like_top_50_prod, count)
+        generate_scatterplot("Top 50 Like Consumption", "Retweet Consumption",
+                             con_like_top_50, con_like_top_50_con, count)
+        generate_scatterplot("Top 50 Like Consumption", "Like Production",
+                             con_like_top_50, con_like_top_50_prod_like, count)
+        log.info("Plot top 50 Local Like Production, and their score in other utility function")
+        prod_like_top_50_prod = []
+        prod_like_top_50_con = []
+        prod_like_top_50_con_like = []
+        for top_user in top_50_prod_like:
+            prod_like_top_50_prod.append(prod[top_user])
+            prod_like_top_50_con.append(con[top_user])
+            prod_like_top_50_con_like.append(con_like[top_user])
+        generate_scatterplot("Top 50 Like Production", "Retweet Production",
+                             prod_like_top_50, prod_like_top_50_prod, count)
+        generate_scatterplot("Top 50 Like Production", "Retweet Consumption",
+                             prod_like_top_50, prod_like_top_50_con, count)
+        generate_scatterplot("Top 50 Like Production", "Like Consumption",
+                             prod_like_top_50, prod_like_top_50_con_like, count)
+
+        log.info("Analyzing all users in any intersection...")
+        user_described = []
+        for top_user in intersection_50_likes_prod:
+            if top_user not in user_described:
+                user_described.append(top_user)
+                log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+                if top_user in top_50_prod:
+                    log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+                else:
+                    log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+                if top_user in top_50_con:
+                    log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+                else:
+                    log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Consumption: {con_like[top_user]} Rank: {top_50_con_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+        for top_user in intersection_50_retweets_prod:
+            if top_user not in user_described:
+                user_described.append(top_user)
+                log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+                if top_user in top_50_con_like:
+                    log.info(f'Local Like Consumption: {con_like[top_user]} Rank: {top_50_con_like.index(top_user)}')
+                else:
+                    log.info(f'Local Like Consumption: {con_like[top_user]} Rank: Not in Top 50')
+                if top_user in top_50_prod_like:
+                    log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                else:
+                    log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
+        intersection_50_all = set(top_50_prod).intersection(top_50_con, top_50_con_like, top_50_prod_like)
+        intersection_50_all_retweets_prod = sorted(intersection_50_all, key=prod.get, reverse=True)
+        intersection_50_all_retweets_con = sorted(intersection_50_all, key=con.get, reverse=True)
+        intersection_50_all_likes_prod = sorted(intersection_50_all, key=prod_like.get, reverse=True)
+        intersection_50_all_likes_con = sorted(intersection_50_all, key=con_like.get, reverse=True)
+
+        log.info("Using Top 50, intersection of all: ")
+        log.info("Production Retweet:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_retweets_prod])
+        log.info("Consumption Retweet:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_retweets_con])
         log.info("Production Like:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_prod])
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_likes_prod])
         log.info("Consumption Like:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_con])
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_likes_con])
 
-        #log.info("Like:")
-        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_20_like])
+        penalty = 10
+        log.info(f"Similarity Test with penalty {penalty}")
 
-        # log.info("Using Top 30: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_30_con])
-        #
-        # log.info("Using Top 50: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_con])
-        #
-        # log.info("Using Top 150: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_150_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_150_con])
-        #
-        # log.info("Using Top 400: ")
-        # log.info("Production:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_prod])
-        # log.info("Consumption:")
-        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_400_con])
 
         # # TODO: PRODUCTION
         # # By Production
@@ -442,16 +501,27 @@ class CoreDetector():
         #                 curr_user_id = temp_id
         #                 break
 
-        #By LOcal Consumption
-        log.info("By Local Production")
-        curr_user_id = intersection_20_prod[0]
+        # log.info("By Local Like Production")
+        # curr_user_id = intersection_50_likes_prod[0]
+        # log.info(f"Highest Rank User in Local Like Production is "
+        #          f"{self.user_getter.get_user_by_id(str(curr_user_id)).screen_name}")
+        # if curr_user_id == str(user_id):
+        #     if intersection_50_likes_con[0] != curr_user_id:
+        #         index = intersection_50_likes_con.index(curr_user_id)
+        #         for i in range(1, 50):
+        #             temp_id = intersection_50_likes_prod[i]
+        #             if intersection_50_likes_con.index(temp_id) < index:
+        #                 curr_user_id = temp_id
+        #                 break
+        log.info("By Local Consumption")
 
+        curr_user_id = intersection_50_likes_con[0]
         if curr_user_id == str(user_id):
-            if intersection_20_con[0] != curr_user_id:
-                index = intersection_20_con.index(curr_user_id)
+            if intersection_50_likes_prod[0] != curr_user_id:
+                index = intersection_50_likes_prod.index(curr_user_id)
                 for i in range(1, 20):
-                    temp_id = intersection_20_prod[i]
-                    if intersection_20_con.index(temp_id) < index:
+                    temp_id = intersection_50_likes_con[i]
+                    if intersection_50_likes_prod.index(temp_id) < index:
                         curr_user_id = temp_id
                         break
 

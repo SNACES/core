@@ -28,7 +28,7 @@ class ProductionUtilityRanker(Ranker):
                 retweeter = retweet.user_id
                 # if retweeted user in the cluster and is not the user itself
                 if str(retweeter) in user_ids and str(retweeter) != str(user_id):
-                    #TODO key error
+                    #print("valid retweet detected")
                     scores[str(user_id)] += 1
 
         return scores
