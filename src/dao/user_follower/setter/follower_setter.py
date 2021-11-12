@@ -1,5 +1,4 @@
-from typing import List, Dict
-from src.model.user import User
+from typing import List
 
 class FollowerSetter:
     """

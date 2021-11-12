@@ -298,14 +298,16 @@ class TweepyTwitterGetter(TwitterGetter):
             log.error("error occurs")
         return user_id, friends_users
 
-    def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
+    def get_followers_ids_by_user_id(self, user_id: str, num_followers=0):
         # TODO Catch error, and set ids to []
-        cursor = Cursor(self.twitter_api.followers_id, user_id=user_id).items(limit=num_followers)
+        cursor = Cursor(self.twitter_api.followers_ids, user_id=user_id).items(limit=num_followers)
 
         followers_user_ids = []
-        for id in cursor:
-            followers_user_ids.append(id)
-
+        try:
+            for id in cursor:
+                followers_user_ids.append(id)
+        except Exception as ex:
+            log.error("Could not download friends ids")
         return user_id, followers_user_ids
 
     def get_followers_users_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
@@ -317,9 +319,13 @@ class TweepyTwitterGetter(TwitterGetter):
 
         return user_id, followers_users
 
-a = TweepyTwitterGetter()
-user_id = a.get_user_by_screen_name("david_madras")
+#a = TweepyTwitterGetter()
+#user_id = a.get_user_by_screen_name("david_madras")
 #print(user_id)
-a.get_tweets_by_user_id(user_id.id)#876274407995527200
+#a.get_tweets_by_user_id(user_id.id)#876274407995527200
 #print(user_id.id)
 #print(a.get_user_by_id(970447818614812700))
+#b = a.get_followers_ids_by_user_id(str(user_id.id))
+
+#print(b)
+#print(len(b))

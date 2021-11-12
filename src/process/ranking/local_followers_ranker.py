@@ -1,27 +1,23 @@
-from src.model.ranking import Ranking
 from src.process.ranking.ranker import Ranker
 from typing import List
 
 
 class LocalFollowersRanker(Ranker):
-    def __init__(self, cluster_getter, user_getter, friends_getter, ranking_setter):
+    def __init__(self, cluster_getter, followers_getter, ranking_setter):
         self.cluster_getter = cluster_getter
-        self.user_getter = user_getter
         self.ranking_setter = ranking_setter
         self.ranking_function_name = "local_followers"
-        self.friends_getter = friends_getter
+        self.followers_getter = followers_getter
 
     def score_users(self, user_ids: List[str]):
         scores = {}
-
-        user_friends = {}
         for user in user_ids:
-            user_friends[user] = [str(friend) for friend in self.friends_getter.get_user_friends_ids(user)] # list of int objects
-        for user in user_ids:
-            local_followers = 0
-            for friend in user_ids:
-                if user in user_friends[friend]:
-                    local_followers += 1
-            scores[user] = local_followers
+            score = 0
+            followers = self.followers_getter.get_follower_by_id(user)
+            for cluster_user in user_ids:
+                # if a user in the cluster is following user
+                if cluster_user in followers:
+                    score += 1
+            scores[user] = score
 
         return scores

@@ -26,7 +26,8 @@ class CoreDetector():
                  cluster_word_frequency_getter, prod_ranker, con_ranker,
                  ranking_getter, user_tweet_downloader, user_tweet_getter,
                  user_liked_tweet_getter,
-                 user_friend_getter, like_prod_ranker, like_con_ranker):
+                 user_friend_getter, like_prod_ranker, like_con_ranker,
+                 follower_downloader):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
@@ -49,6 +50,7 @@ class CoreDetector():
         self.ranking_getter = ranking_getter
         self.like_prod_ranker = like_prod_ranker
         self.like_con_ranker = like_con_ranker
+        self.follower_downloader = follower_downloader
 
     def detect_core_by_screen_name(self, screen_name: str):
         user = self.user_getter.get_user_by_screen_name(screen_name)
@@ -261,9 +263,15 @@ class CoreDetector():
             self.user_tweet_downloader.stream_tweets_by_user_list(curr_cluster.users)
             #self.user_tweet_downloader.download_user_tweets_by_user_list(curr_cluster.users)
 
-
+        download_like = False
         log.info("Downloading liked tweets")
-        self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
+        if download_like:
+            self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
+        download_follower = True
+        log.info("Downloading followers")
+        if download_follower:
+            self.follower_downloader.download_followers_ids_by_id_list(curr_cluster.users)
+
 
         log.info("Ranking Cluster...")
         log.info("Computing Local Retweets Production")
@@ -472,18 +480,25 @@ class CoreDetector():
         penalty = 10
         log.info(f"Similarity Test with penalty {penalty}")
 
-
-        # # TODO: PRODUCTION
+        log.info("By Rank Value")
+        length = len(intersection_50_likes_con)
+        rank_value = []
+        rank_user =[]
+        for i in range(0, length):
+            rank_user.append(intersection_50_likes_con[i])
+            rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
+        min_value = min(rank_value)
+        curr_user_id = rank_user[rank_value.index(min_value)]
+        # # # TODO: PRODUCTION
         # # By Production
-        # log.info("By Production")
-        # curr_user_id = intersection_20_prod[0]
-        #
+        # log.info("By Local Retweet Production")
+        # curr_user_id = intersection_50_retweets_prod[0]
         # if curr_user_id == str(user_id):
-        #     if intersection_20_con[0] != curr_user_id:
-        #         index = intersection_20_con.index(curr_user_id)
+        #     if intersection_50_retweets_con[0] != curr_user_id:
+        #         index = intersection_50_retweets_con.index(curr_user_id)
         #         for i in range(1, 20):
-        #             temp_id = intersection_20_prod[i]
-        #             if intersection_20_con.index(temp_id) < index:
+        #             temp_id = intersection_50_retweets_prod[i]
+        #             if intersection_50_retweets_con.index(temp_id) < index:
         #                 curr_user_id = temp_id
         #                 break
 
@@ -513,17 +528,17 @@ class CoreDetector():
         #             if intersection_50_likes_con.index(temp_id) < index:
         #                 curr_user_id = temp_id
         #                 break
-        log.info("By Local Consumption")
 
-        curr_user_id = intersection_50_likes_con[0]
-        if curr_user_id == str(user_id):
-            if intersection_50_likes_prod[0] != curr_user_id:
-                index = intersection_50_likes_prod.index(curr_user_id)
-                for i in range(1, 20):
-                    temp_id = intersection_50_likes_con[i]
-                    if intersection_50_likes_prod.index(temp_id) < index:
-                        curr_user_id = temp_id
-                        break
+        # log.info("By Local Like Consumption")
+        # curr_user_id = intersection_50_likes_con[0]
+        # if curr_user_id == str(user_id):
+        #     if intersection_50_likes_prod[0] != curr_user_id:
+        #         index = intersection_50_likes_prod.index(curr_user_id)
+        #         for i in range(1, 20):
+        #             temp_id = intersection_50_likes_con[i]
+        #             if intersection_50_likes_prod.index(temp_id) < index:
+        #                 curr_user_id = temp_id
+        #                 break
 
         # TODO: LIKED
         # # By Like Utility Ranker

@@ -75,6 +75,7 @@ class ProcessModule():
         user_tweet_getter = self.dao_module.get_user_tweet_getter()
         user_liked_tweet_getter = self.dao_module.get_user_liked_tweet_getter()
         user_friend_getter = self.dao_module.get_user_friend_getter()
+        follower_downloader = self.get_follower_downloader()
 
         return CoreDetector(user_getter, user_downloader,
             friend_downloader, extended_friends_cleaner, local_neighbourhood_downloader,
@@ -83,7 +84,7 @@ class ProcessModule():
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
             user_tweet_getter, user_liked_tweet_getter, user_friend_getter,
-                            like_prod_ranker, like_con_ranker)
+                            like_prod_ranker, like_con_ranker, follower_downloader)
 
     # def get_community_detector(self):
     #     user_getter = self.dao_module.get_user_getter()

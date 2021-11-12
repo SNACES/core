@@ -27,7 +27,7 @@ class TwitterGetter():
     def get_friends_users_by_user_id(self, user_id: str, num_friends=0) -> List[str]:
         raise NotImplementedError("Subclasses should implement this")
 
-    def get_followers_ids_by_id(self, user_id: str, num_followers=0) -> List[User]:
+    def get_followers_ids_by_user_id(self, user_id: str, num_followers=0) -> List[User]:
         raise NotImplementedError("Subclasses should implement this")
 
     def get_users_by_user_id_list(self, user_id_list: List[str]) -> List[User]:
