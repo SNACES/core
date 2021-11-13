@@ -481,12 +481,22 @@ class CoreDetector():
         log.info(f"Similarity Test with penalty {penalty}")
 
         log.info("By Rank Value")
-        length = len(intersection_50_likes_con)
+        # log.info("Ranking using likes")
+        # length = len(intersection_50_likes_con)
+        # rank_value = []
+        # rank_user =[]
+        # for i in range(0, length):
+        #     rank_user.append(intersection_50_likes_con[i])
+        #     rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
+        # min_value = min(rank_value)
+        # curr_user_id = rank_user[rank_value.index(min_value)]
+        log.info("Ranking using retweets")
+        length = len(intersection_50_retweets_con)
         rank_value = []
         rank_user =[]
         for i in range(0, length):
-            rank_user.append(intersection_50_likes_con[i])
-            rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
+            rank_user.append(intersection_50_retweets_con[i])
+            rank_value.append(i + intersection_50_retweets_prod.index(intersection_50_retweets_con[i]))
         min_value = min(rank_value)
         curr_user_id = rank_user[rank_value.index(min_value)]
         # # # TODO: PRODUCTION

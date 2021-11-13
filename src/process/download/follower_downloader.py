@@ -24,11 +24,16 @@ class TwitterFollowerDownloader():
     def download_followers_ids_by_id_list(self, ids: List[str], num_followers=None) -> None:
         """
         """
+        num_ids = len(ids)
+        count = 0
+
         for user_id in ids:
             if not self.user_follower_setter._contains_user(user_id):
                 self.download_followers_ids_by_id(user_id)
             else:
                 log.info(f"Skipped user {user_id} because followers are already downloaded")
+            count += 1
+            log.log_progress(log, count, num_ids)
 
     def download_followers_ids_by_screen_name(self, screen_name: str, num_followers=None) -> None:
         """
