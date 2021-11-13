@@ -1,5 +1,6 @@
 from src.process.ranking.like_production_threshold_ranker import \
     LikeProductionThresholdRanker
+from src.process.ranking.local_followings_ranker import LocalFollowingsRanker
 from src.process.ranking.local_like_consumption_ranker import \
     LocalLikeConsumptionRanker
 from src.process.ranking.local_like_production_ranker import \
@@ -70,6 +71,8 @@ class ProcessModule():
         con_ranker = self.get_ranker("Retweet Consumption")
         like_prod_ranker = self.get_ranker("Like Production")
         like_con_ranker = self.get_ranker("Like Consumption")
+        follower_ranker = self.get_ranker("LocalFollowers")
+        following_ranker = self.get_ranker("LocalFollowings")
         ranking_getter = self.dao_module.get_ranking_getter()
         user_tweet_downloader = self.get_user_tweet_downloader()
         user_tweet_getter = self.dao_module.get_user_tweet_getter()
@@ -84,7 +87,8 @@ class ProcessModule():
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
             user_tweet_getter, user_liked_tweet_getter, user_friend_getter,
-                            like_prod_ranker, like_con_ranker, follower_downloader)
+                            like_prod_ranker, like_con_ranker, follower_downloader,
+                            follower_ranker, following_ranker)
 
     # def get_community_detector(self):
     #     user_getter = self.dao_module.get_user_getter()
@@ -213,6 +217,7 @@ class ProcessModule():
         user_getter = self.dao_module.get_user_getter()
         friends_getter = self.dao_module.get_user_friend_getter()
         liked_tweet_getter = self.dao_module.get_user_liked_tweet_getter()
+        follower_getter = self.dao_module.get_user_follower_getter()
         if type == "Retweet Consumption":
             ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
         elif type == "Like":
@@ -224,7 +229,9 @@ class ProcessModule():
         elif type == "Follower":
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
         elif type == "LocalFollowers":
-            ranker = LocalFollowersRanker(cluster_getter, user_getter, friends_getter, ranking_setter)
+            ranker = LocalFollowersRanker(cluster_getter, follower_getter, ranking_setter)
+        elif type == "LocalFollowings":
+            ranker = LocalFollowingsRanker(cluster_getter, follower_getter, ranking_setter)
         elif type == "RelativeProduction":
             ranker = RelativeProductionRanker(cluster_getter, raw_tweet_getter, ranking_setter, user_getter)
         else: # retweet Production

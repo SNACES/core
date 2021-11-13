@@ -27,7 +27,7 @@ class CoreDetector():
                  ranking_getter, user_tweet_downloader, user_tweet_getter,
                  user_liked_tweet_getter,
                  user_friend_getter, like_prod_ranker, like_con_ranker,
-                 follower_downloader):
+                 follower_downloader, follower_ranker, following_ranker):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
@@ -50,6 +50,8 @@ class CoreDetector():
         self.ranking_getter = ranking_getter
         self.like_prod_ranker = like_prod_ranker
         self.like_con_ranker = like_con_ranker
+        self.follower_ranker = follower_ranker
+        self.following_ranker = following_ranker
         self.follower_downloader = follower_downloader
 
     def detect_core_by_screen_name(self, screen_name: str):
@@ -282,6 +284,10 @@ class CoreDetector():
         like_prod_ranking, prod_like = self.like_prod_ranker.rank(str(user_id), curr_cluster)
         log.info("Computing Local Likes Consumption")
         like_con_ranking, con_like = self.like_con_ranker.rank(str(user_id), curr_cluster)
+        log.info("Computing Local Follower")
+        follower_ranking, follower = self.follower_ranker.rank(str(user_id), curr_cluster)
+        log.info("Computing Local Following")
+        following_ranking, following = self.following_ranker.rank(str(user_id), curr_cluster)
 
         # prod_ranking = self.ranking_getter.get_ranking(str(user_id), params="retweets")
         # con_ranking = self.ranking_getter.get_ranking(str(user_id), params="consumption utility")
@@ -304,6 +310,9 @@ class CoreDetector():
         top_10_con = con_ranking.get_top_10_user_ids()
         top_10_prod_like = like_prod_ranking.get_top_10_user_ids()
         top_10_con_like = like_con_ranking.get_top_10_user_ids()
+        top_10_follower = follower_ranking.get_top_10_user_ids()
+        top_10_following = following_ranking.get_top_10_user_ids()
+
         log.info("Top 10 Local Retweet Production")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod])
         log.info("Top 10 Local Retweet Consumption")
@@ -312,11 +321,17 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod_like])
         log.info("Top 10 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con_like])
+        og.info("Top 10 Local Follower")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_follower])
+        og.info("Top 10 Local Following")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_following])
 
         top_20_prod = prod_ranking.get_top_20_user_ids()
         top_20_con = con_ranking.get_top_20_user_ids()
         top_20_prod_like = like_prod_ranking.get_top_20_user_ids()
         top_20_con_like = like_con_ranking.get_top_20_user_ids()
+        top_20_follower = follower_ranking.get_top_20_user_ids()
+        top_20_following = following_ranking.get_top_20_user_ids()
         log.info("Top 20 Local Retweet Production")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod])
         log.info("Top 20 Local Retweet Consumption")
@@ -325,11 +340,17 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod_like])
         log.info("Top 20 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con_like])
+        log.info("Top 20 Local Follower")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_follower])
+        log.info("Top 20 Local Following")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_following])
 
         top_50_prod = prod_ranking.get_top_50_user_ids()
         top_50_con = con_ranking.get_top_50_user_ids()
         top_50_prod_like = like_prod_ranking.get_top_50_user_ids()
         top_50_con_like = like_con_ranking.get_top_50_user_ids()
+        top_50_follower = follower_ranking.get_top_50_user_ids()
+        top_50_following = following_ranking.get_top_50_user_ids()
         log.info("Top 50 Prod")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod])
         log.info("Top 50 Con")
@@ -338,11 +359,17 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod_like])
         log.info("Top 50 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
+        og.info("Top 50 Local Follower")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_follower])
+        og.info("Top 50 Local Following")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_following])
 
         prod_top_50 = [prod[your_key] for your_key in top_50_prod]
         con_top_50 = [con[your_key] for your_key in top_50_con]
         con_like_top_50 = [con_like[your_key] for your_key in top_50_prod_like]
         prod_like_top_50 = [prod_like[your_key] for your_key in top_50_con_like]
+        follower_top_50 = [follower[your_key] for your_key in top_50_follower]
+        following_top_50 = [following[your_key] for your_key in top_50_following]
 
         log.info("Generating Box plots and Histograms for Utility Functions...")
         generate_boxplot(prod_top_50, "Local_Retweet_Prod", count)
@@ -353,6 +380,8 @@ class CoreDetector():
         generate_hist(con_top_50, "Local_Retweet_Con", count)
         generate_hist(con_like_top_50, "Local_Like_Prod", count)
         generate_hist(prod_like_top_50, "Local_Like_Con", count)
+        generate_hist(follower_top_50, "Local_Follower", count)
+        generate_hist(following_top_50, "Local_Following", count)
 
         intersection_50_likes = set(top_50_prod_like).intersection(top_50_con_like)
         intersection_50_likes_prod = sorted(intersection_50_likes, key=prod_like.get, reverse=True)
@@ -373,6 +402,16 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_retweets_prod])
         log.info("Consumption Retweet:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_retweets_con])
+
+        intersection_50_follow = set(top_50_follower).intersection(top_50_following)
+        intersection_50_follower = sorted(intersection_50_follow, key=follower.get, reverse=True)
+        intersection_50_following = sorted(intersection_50_follow, key=following.get, reverse=True)
+
+        log.info("Using Top 50, intersection of local follower & following: ")
+        log.info("Follower:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_follower])
+        log.info("Following:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_following])
 
         log.info("Plot top 50 Local Retweet Production, and their score in other utility function")
         prod_top_50_con = []
@@ -430,6 +469,24 @@ class CoreDetector():
                              prod_like_top_50, prod_like_top_50_con, count)
         generate_scatterplot("Top 50 Like Production", "Like Consumption",
                              prod_like_top_50, prod_like_top_50_con_like, count)
+        log.info("Plot top 50 Local Follower, and their score in other utility function")
+        follower_top_50_con = []
+        follower_top_50_prod_like = []
+        follower_top_50_con_like = []
+        follower_top_50_following = []
+        for top_user in top_50_follower:
+            follower_top_50_con.append(con[top_user])
+            follower_top_50_con_like.append(con_like[top_user])
+            follower_top_50_prod_like.append(prod_like[top_user])
+            follower_top_50_following.append(following[top_user])
+        generate_scatterplot("Top 50 Follower", "Retweet Consumption",
+                             follower_top_50, follower_top_50_con, count)
+        generate_scatterplot("Top 50 Follower", "Like Consumption",
+                             follower_top_50, follower_top_50_con_like, count)
+        generate_scatterplot("Top 50 Follower", "Like Production",
+                             follower_top_50, follower_top_50_prod_like, count)
+        generate_scatterplot("Top 50 Follower", "Following",
+                             follower_top_50, follower_top_50_following, count)
 
         log.info("Analyzing all users in any intersection...")
         user_described = []
