@@ -57,6 +57,12 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
+    Friendships:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "Friendships"
     CleanedFriends:
         type: "Mongo"
         config:

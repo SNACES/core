@@ -6,5 +6,5 @@ class FollowerSetter:
     followers in a datastore
     """
 
-    def store_followers(self, user_id:str, followers_ids: List[str]):
+    def store_followers(self, user_id:str, followers_ids: str, a_follow_b, b_follow_a):
         raise NotImplementedError("Subclasses should implement this")

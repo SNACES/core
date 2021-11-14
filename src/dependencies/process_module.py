@@ -79,7 +79,6 @@ class ProcessModule():
         user_liked_tweet_getter = self.dao_module.get_user_liked_tweet_getter()
         user_friend_getter = self.dao_module.get_user_friend_getter()
         follower_downloader = self.get_follower_downloader()
-
         return CoreDetector(user_getter, user_downloader,
             friend_downloader, extended_friends_cleaner, local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
@@ -87,8 +86,8 @@ class ProcessModule():
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
             user_tweet_getter, user_liked_tweet_getter, user_friend_getter,
-                            like_prod_ranker, like_con_ranker, follower_downloader,
-                            follower_ranker, following_ranker)
+                            like_prod_ranker, like_con_ranker,
+                            follower_ranker, following_ranker, follower_downloader)
 
     # def get_community_detector(self):
     #     user_getter = self.dao_module.get_user_getter()
@@ -132,16 +131,10 @@ class ProcessModule():
 
         return extended_friends_cleaner
 
-    # Downloaduser_setter
-    def get_follower_downloader(self):
+    # twitter_getter
+    def get_twitter_getter(self):
         twitter_getter = self.dao_module.get_twitter_getter()
-        user_follower_setter = self.dao_module.get_user_follower_setter()
-        user_setter = self.dao_module.get_user_setter()
-
-        follower_downloader = TwitterFollowerDownloader(twitter_getter, user_follower_setter,
-            user_setter)
-
-        return follower_downloader
+        return twitter_getter
 
     def get_friend_downloader(self):
         twitter_getter = self.dao_module.get_twitter_getter()
@@ -152,6 +145,18 @@ class ProcessModule():
 
         friend_downloader = FriendDownloader(twitter_getter, user_friend_getter,
             user_friend_setter, user_setter, user_getter)
+
+        return friend_downloader
+
+    def get_follower_downloader(self):
+        twitter_getter = self.dao_module.get_twitter_getter()
+        user_follower_getter = self.dao_module.get_user_follower_getter()
+        user_follower_setter = self.dao_module.get_user_follower_setter()
+        user_setter = self.dao_module.get_user_setter()
+        user_getter = self.dao_module.get_user_getter()
+
+        friend_downloader = TwitterFollowerDownloader(twitter_getter,
+                                             user_follower_setter, user_setter)
 
         return friend_downloader
 
@@ -218,6 +223,7 @@ class ProcessModule():
         friends_getter = self.dao_module.get_user_friend_getter()
         liked_tweet_getter = self.dao_module.get_user_liked_tweet_getter()
         follower_getter = self.dao_module.get_user_follower_getter()
+        twitter_getter = self.dao_module.get_twitter_getter()
         if type == "Retweet Consumption":
             ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
         elif type == "Like":
@@ -229,33 +235,15 @@ class ProcessModule():
         elif type == "Follower":
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
         elif type == "LocalFollowers":
-            ranker = LocalFollowersRanker(cluster_getter, follower_getter, ranking_setter)
+            ranker = LocalFollowersRanker(cluster_getter, friends_getter, ranking_setter)
         elif type == "LocalFollowings":
-            ranker = LocalFollowingsRanker(cluster_getter, follower_getter, ranking_setter)
+            ranker = LocalFollowingsRanker(cluster_getter, friends_getter, ranking_setter)
         elif type == "RelativeProduction":
             ranker = RelativeProductionRanker(cluster_getter, raw_tweet_getter, ranking_setter, user_getter)
         else: # retweet Production
             ranker = ProductionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
 
         return ranker
-
-    # def get_community_ranker(self, function_name="Production"):
-    #     user_tweets_getter = self.dao_module.get_user_tweet_getter()
-    #     if function_name == "Consumption":
-    #         ranker = CommunityConsumptionRanker(user_tweets_getter)
-    #     elif function_name == "Production":
-    #         ranker = CommunityProductionRanker(user_tweets_getter)
-    #     elif function_name == 'linear':
-    #         ranker = LinearCommunityRanker(user_tweets_getter)
-    #     else:
-    #         raise NotImplementedError("function name not identified")
-    #     return ranker
-
-    def get_followers_ranker(self):
-        pass
-
-    def get_retweets_ranker(self):
-        pass
 
     # Processing
     def get_tweet_processor(self):

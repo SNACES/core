@@ -14,6 +14,12 @@ class MongoFollowerGetter(FollowerGetter):
         self.follower_collection = follower_collection
 
     def get_follower_by_id(self, user_id: str) -> List[str]:
-        doc = self.follower_collection.find_one({"user_id": bson.int64.Int64(user_id)})
-        return doc["follower_ids"]
+        follower_list = self.follower_collection.find({"user_id": bson.int64.Int64(user_id)})
 
+        followers = []
+        for doc in follower_list:
+            followers.append(doc["follower_id"])
+        return followers
+    def get_friendship_by_id(self, a: str, b:str) :
+        friendship = self.follower_collection.find({"user_a": bson.int64.Int64(a), "user_a": bson.int64.Int64(b)})
+        return friendship["a_follow_b"], friendship["b_follow_a"]

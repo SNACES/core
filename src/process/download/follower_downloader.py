@@ -1,7 +1,5 @@
 from typing import List
 
-from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
-from src.dao.user_follower.setter.follower_setter import FollowerSetter
 from src.shared.logger_factory import LoggerFactory
 
 log = LoggerFactory.logger(__name__)
@@ -21,19 +19,29 @@ class TwitterFollowerDownloader():
         log.info(f"Downloaded {len(followers_user_ids)} Followers for user {user_id}")
         self.user_follower_setter.store_followers(id, followers_user_ids)
 
-    def download_followers_ids_by_id_list(self, ids: List[str], num_followers=None) -> None:
+    def download_followers_ids_by_id_list(self, ids: List[str]) -> None:
         """
         """
         num_ids = len(ids)
         count = 0
 
-        for user_id in ids:
-            if not self.user_follower_setter._contains_user(user_id):
-                self.download_followers_ids_by_id(user_id)
-            else:
-                log.info(f"Skipped user {user_id} because followers are already downloaded")
+        # for user_id in ids:
+        #     if not self.user_follower_setter._contains_user(user_id):
+        #         log.info(f"Downloading followers for {user_id}...")
+        #         self.download_followers_ids_by_id(user_id)
+        #     else:
+        #         log.info(f"Skipped user {user_id} because followers are already downloaded")
+        #     count += 1
+        #     log.log_progress(log, count, num_ids)
+
+        for a in range(len(ids)):
+            for b in range(a+1, len(ids)):
+                a_follow_b, b_follow_a = self.tweepy_getter.check_friendship(ids[a], ids[b])
+                self.user_follower_setter.store_followers(ids[a], ids[b], a_follow_b, b_follow_a)
             count += 1
+            log.info(f"Downloaded Friendships for user {a}")
             log.log_progress(log, count, num_ids)
+
 
     def download_followers_ids_by_screen_name(self, screen_name: str, num_followers=None) -> None:
         """

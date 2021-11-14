@@ -113,11 +113,11 @@ class DAOModule():
 
     def get_user_follower_getter(self):
         return UserFollowerDAOFactory.create_getter(
-            self.input_datastore["Followers"])
+            self.input_datastore["Friendships"])
 
     def get_user_follower_setter(self):
         return UserFollowerDAOFactory.create_setter(
-            self.output_datastore["Followers"])
+            self.output_datastore["Friendships"])
 
     def get_user_friend_getter(self):
         return UserFriendDAOFactory.create_getter(

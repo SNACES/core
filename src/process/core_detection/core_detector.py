@@ -27,7 +27,7 @@ class CoreDetector():
                  ranking_getter, user_tweet_downloader, user_tweet_getter,
                  user_liked_tweet_getter,
                  user_friend_getter, like_prod_ranker, like_con_ranker,
-                 follower_downloader, follower_ranker, following_ranker):
+                 follower_ranker, following_ranker, follower_downloader):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
         self.user_friends_downloader = user_friends_downloader
@@ -269,10 +269,10 @@ class CoreDetector():
         log.info("Downloading liked tweets")
         if download_like:
             self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
-        download_follower = True
-        log.info("Downloading followers")
-        if download_follower:
-            self.follower_downloader.download_followers_ids_by_id_list(curr_cluster.users)
+        # download_follower = True
+        # log.info("Downloading followers")
+        # if download_follower:
+        #    self.follower_downloader.download_followers_ids_by_id_list(curr_cluster.users)
 
 
         log.info("Ranking Cluster...")
@@ -306,44 +306,45 @@ class CoreDetector():
         #             print("nope!")
         #         log.info(retweet.retweet_user_id)
         # log.info(count/len(local_retweets))
+
         top_10_prod = prod_ranking.get_top_10_user_ids()
         top_10_con = con_ranking.get_top_10_user_ids()
         top_10_prod_like = like_prod_ranking.get_top_10_user_ids()
         top_10_con_like = like_con_ranking.get_top_10_user_ids()
         top_10_follower = follower_ranking.get_top_10_user_ids()
         top_10_following = following_ranking.get_top_10_user_ids()
-
-        log.info("Top 10 Local Retweet Production")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod])
-        log.info("Top 10 Local Retweet Consumption")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con])
-        log.info("Top 10 Local Like Production")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod_like])
-        log.info("Top 10 Local Like Consumption")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con_like])
-        og.info("Top 10 Local Follower")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_follower])
-        og.info("Top 10 Local Following")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_following])
-
-        top_20_prod = prod_ranking.get_top_20_user_ids()
-        top_20_con = con_ranking.get_top_20_user_ids()
-        top_20_prod_like = like_prod_ranking.get_top_20_user_ids()
-        top_20_con_like = like_con_ranking.get_top_20_user_ids()
-        top_20_follower = follower_ranking.get_top_20_user_ids()
-        top_20_following = following_ranking.get_top_20_user_ids()
-        log.info("Top 20 Local Retweet Production")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod])
-        log.info("Top 20 Local Retweet Consumption")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con])
-        log.info("Top 20 Local Like Production")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod_like])
-        log.info("Top 20 Local Like Consumption")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con_like])
-        log.info("Top 20 Local Follower")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_follower])
-        log.info("Top 20 Local Following")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_following])
+        #
+        # log.info("Top 10 Local Retweet Production")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod])
+        # log.info("Top 10 Local Retweet Consumption")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con])
+        # log.info("Top 10 Local Like Production")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_prod_like])
+        # log.info("Top 10 Local Like Consumption")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_con_like])
+        # log.info("Top 10 Local Follower")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_follower])
+        # log.info("Top 10 Local Following")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_10_following])
+        #
+        # top_20_prod = prod_ranking.get_top_20_user_ids()
+        # top_20_con = con_ranking.get_top_20_user_ids()
+        # top_20_prod_like = like_prod_ranking.get_top_20_user_ids()
+        # top_20_con_like = like_con_ranking.get_top_20_user_ids()
+        # top_20_follower = follower_ranking.get_top_20_user_ids()
+        # top_20_following = following_ranking.get_top_20_user_ids()
+        # log.info("Top 20 Local Retweet Production")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod])
+        # log.info("Top 20 Local Retweet Consumption")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con])
+        # log.info("Top 20 Local Like Production")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_prod_like])
+        # log.info("Top 20 Local Like Consumption")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_con_like])
+        # log.info("Top 20 Local Follower")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_follower])
+        # log.info("Top 20 Local Following")
+        # log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_20_following])
 
         top_50_prod = prod_ranking.get_top_50_user_ids()
         top_50_con = con_ranking.get_top_50_user_ids()
@@ -359,9 +360,9 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_prod_like])
         log.info("Top 50 Local Like Consumption")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_con_like])
-        og.info("Top 50 Local Follower")
+        log.info("Top 50 Local Follower")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_follower])
-        og.info("Top 50 Local Following")
+        log.info("Top 50 Local Following")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in top_50_following])
 
         prod_top_50 = [prod[your_key] for your_key in top_50_prod]
@@ -376,6 +377,9 @@ class CoreDetector():
         generate_boxplot(con_top_50, "Local_Retweet_Con", count)
         generate_boxplot(con_like_top_50, "Local_Like_Prod", count)
         generate_boxplot(prod_like_top_50, "Local_Like_Con", count)
+        generate_boxplot(follower_top_50, "Local_Follower", count)
+        generate_boxplot(following_top_50, "Local_Following", count)
+
         generate_hist(prod_top_50, "Local_Retweet_Prod", count)
         generate_hist(con_top_50, "Local_Retweet_Con", count)
         generate_hist(con_like_top_50, "Local_Like_Prod", count)
@@ -474,11 +478,15 @@ class CoreDetector():
         follower_top_50_prod_like = []
         follower_top_50_con_like = []
         follower_top_50_following = []
+        follower_top_50_prod = []
         for top_user in top_50_follower:
             follower_top_50_con.append(con[top_user])
             follower_top_50_con_like.append(con_like[top_user])
             follower_top_50_prod_like.append(prod_like[top_user])
             follower_top_50_following.append(following[top_user])
+            follower_top_50_prod.append(prod[top_user])
+        generate_scatterplot("Top 50 Follower", "Retweet Production",
+                             follower_top_50, follower_top_50_prod, count)
         generate_scatterplot("Top 50 Follower", "Retweet Consumption",
                              follower_top_50, follower_top_50_con, count)
         generate_scatterplot("Top 50 Follower", "Like Consumption",
@@ -487,42 +495,217 @@ class CoreDetector():
                              follower_top_50, follower_top_50_prod_like, count)
         generate_scatterplot("Top 50 Follower", "Following",
                              follower_top_50, follower_top_50_following, count)
-
-        log.info("Analyzing all users in any intersection...")
-        user_described = []
-        for top_user in intersection_50_likes_prod:
-            if top_user not in user_described:
-                user_described.append(top_user)
-                log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
-                if top_user in top_50_prod:
-                    log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
-                else:
-                    log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
-                if top_user in top_50_con:
-                    log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
-                else:
-                    log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
-                log.info(f'Local Like Consumption: {con_like[top_user]} Rank: {top_50_con_like.index(top_user)}')
-                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
-        for top_user in intersection_50_retweets_prod:
-            if top_user not in user_described:
-                user_described.append(top_user)
-                log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+        log.info("Plot top 50 Local Following, and their score in other utility function")
+        following_top_50_con = []
+        following_top_50_prod_like = []
+        following_top_50_con_like = []
+        following_top_50_follower = []
+        following_top_50_prod = []
+        for top_user in top_50_follower:
+            following_top_50_con.append(con[top_user])
+            following_top_50_con_like.append(con_like[top_user])
+            following_top_50_prod_like.append(prod_like[top_user])
+            following_top_50_follower.append(following[top_user])
+            following_top_50_prod.append(prod[top_user])
+        generate_scatterplot("Top 50 Following", "Retweet Production",
+                             following_top_50, following_top_50_prod, count)
+        generate_scatterplot("Top 50 Following", "Retweet Consumption",
+                             following_top_50, following_top_50_con, count)
+        generate_scatterplot("Top 50 Following", "Like Consumption",
+                             following_top_50, following_top_50_con_like, count)
+        generate_scatterplot("Top 50 Following", "Like Production",
+                             following_top_50, following_top_50_prod_like, count)
+        generate_scatterplot("Top 50 Following", "Follower",
+                             following_top_50, following_top_50_follower, count)
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Like Production...")
+        #
+        for top_user in top_10_prod_like:
+            #if top_user not in user_described:
+                #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
                 log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
                 log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
-                if top_user in top_50_con_like:
-                    log.info(f'Local Like Consumption: {con_like[top_user]} Rank: {top_50_con_like.index(top_user)}')
-                else:
-                    log.info(f'Local Like Consumption: {con_like[top_user]} Rank: Not in Top 50')
-                if top_user in top_50_prod_like:
-                    log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
-                else:
-                    log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
-        intersection_50_all = set(top_50_prod).intersection(top_50_con, top_50_con_like, top_50_prod_like)
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Like Consumption...")
+        for top_user in top_10_con_like:
+            #if top_user not in user_described:
+            #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Retweet Production...")
+        for top_user in top_10_prod:
+            #if top_user not in user_described:
+            #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Retweet Consumption...")
+        for top_user in top_10_con:
+            #if top_user not in user_described:
+            #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Follower...")
+        for top_user in top_10_follower:
+            #if top_user not in user_described:
+            #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        log.info("Analyzing top 10 users in Following...")
+        for top_user in top_10_following:
+            #if top_user not in user_described:
+            #user_described.append(top_user)
+            log.info(self.user_getter.get_user_by_id(str(top_user)).screen_name)
+            if top_user in top_50_prod:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: {top_50_prod.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Production: {prod[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: {top_50_con.index(top_user)}')
+            else:
+                log.info(f'Local Retweet Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_con_like:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: {top_50_con_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_prod_like:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+            else:
+                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_following:
+                log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
+            else:
+                log.info(f'Local Following: {following[top_user]} Rank: Not in Top 50')
+            if top_user in top_50_follower:
+                log.info(f'Local Follower: {follower[top_user]} Rank: {top_50_follower.index(top_user)}')
+            else:
+                log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
+        log.info("-------------------------------------------------------")
+        intersection_50_all = set(top_50_prod).intersection(top_50_con, top_50_con_like, top_50_prod_like, top_50_follower, top_50_following)
         intersection_50_all_retweets_prod = sorted(intersection_50_all, key=prod.get, reverse=True)
         intersection_50_all_retweets_con = sorted(intersection_50_all, key=con.get, reverse=True)
         intersection_50_all_likes_prod = sorted(intersection_50_all, key=prod_like.get, reverse=True)
         intersection_50_all_likes_con = sorted(intersection_50_all, key=con_like.get, reverse=True)
+        intersection_50_all_follower = sorted(intersection_50_all, key=follower.get, reverse=True)
+        intersection_50_all_following = sorted(intersection_50_all, key=following.get, reverse=True)
 
         log.info("Using Top 50, intersection of all: ")
         log.info("Production Retweet:")
@@ -533,20 +716,24 @@ class CoreDetector():
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_likes_prod])
         log.info("Consumption Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_likes_con])
+        log.info("Follower:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_follower])
+        log.info("Following:")
+        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_following])
 
-        penalty = 10
-        log.info(f"Similarity Test with penalty {penalty}")
-
-        log.info("By Rank Value")
-        # log.info("Ranking using likes")
-        # length = len(intersection_50_likes_con)
-        # rank_value = []
-        # rank_user =[]
-        # for i in range(0, length):
-        #     rank_user.append(intersection_50_likes_con[i])
-        #     rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
-        # min_value = min(rank_value)
-        # curr_user_id = rank_user[rank_value.index(min_value)]
+        log.info("-------------------------------------------------------")
+        log.info("Ranking...")
+        log.info("By Minimum sum of Rank Value")
+        log.info("Ranking using likes")
+        length = len(intersection_50_likes_con)
+        rank_value = []
+        rank_user =[]
+        for i in range(0, length):
+            rank_user.append(intersection_50_likes_con[i])
+            rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
+        min_value = min(rank_value)
+        curr_user_id = rank_user[rank_value.index(min_value)]
+        log.info(f"Highest rank user: {curr_user_id}")
         log.info("Ranking using retweets")
         length = len(intersection_50_retweets_con)
         rank_value = []
@@ -556,6 +743,87 @@ class CoreDetector():
             rank_value.append(i + intersection_50_retweets_prod.index(intersection_50_retweets_con[i]))
         min_value = min(rank_value)
         curr_user_id = rank_user[rank_value.index(min_value)]
+        log.info(f"Highest rank user: {curr_user_id}")
+        log.info("Ranking using follows")
+        length = len(intersection_50_following)
+        rank_value = []
+        rank_user =[]
+        for i in range(0, length):
+            rank_user.append(intersection_50_follower[i])
+            rank_value.append(i + intersection_50_following.index(intersection_50_follower[i]))
+        min_value = min(rank_value)
+        curr_user_id = rank_user[rank_value.index(min_value)]
+        log.info(f"Highest rank user: {curr_user_id}")
+        log.info("Ranking using all")
+        length = len(intersection_50_all_likes_con)
+        if length > 0:
+            rank_value = []
+            rank_user =[]
+            for i in range(0, length):
+                value = i
+                rank_user.append(intersection_50_all_likes_con[i])
+                value += intersection_50_all_likes_prod.index(intersection_50_all_likes_con[i])
+                value += intersection_50_all_following.index(intersection_50_all_likes_con[i])
+                value += intersection_50_all_follower.index(intersection_50_all_likes_con[i])
+                value += intersection_50_all_retweets_prod.index(intersection_50_all_likes_con[i])
+                value += intersection_50_all_retweets_con.index(intersection_50_all_likes_con[i])
+                rank_value.append(value)
+            min_value = min(rank_value)
+            curr_user_id = rank_user[rank_value.index(min_value)]
+            log.info(f"Highest rank user: {curr_user_id}")
+        else:
+            log.info("Ranking Method Not Avaliable - intersection is empty")
+        # log.info("-------------------------------------------------------")
+        # log.info("By mean of Rank Value")
+        # log.info("Ranking using likes")
+        # length = len(intersection_50_likes_con)
+        # rank_value = []
+        # rank_user =[]
+        # for i in range(0, length):
+        #     rank_user.append(intersection_50_likes_con[i])
+        #     rank_value.append((i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))/2)
+        # min_value = min(rank_value)
+        # curr_user_id = rank_user[rank_value.index(min_value)]
+        # log.info(f"Highest rank user: {curr_user_id}")
+        # log.info("Ranking using retweets")
+        # length = len(intersection_50_retweets_con)
+        # rank_value = []
+        # rank_user =[]
+        # for i in range(0, length):
+        #     rank_user.append(intersection_50_retweets_con[i])
+        #     rank_value.append((i + intersection_50_retweets_prod.index(intersection_50_retweets_con[i]))/2)
+        # min_value = min(rank_value)
+        # curr_user_id = rank_user[rank_value.index(min_value)]
+        # log.info(f"Highest rank user: {curr_user_id}")
+        # log.info("Ranking using follows")
+        # length = len(intersection_50_following)
+        # rank_value = []
+        # rank_user =[]
+        # for i in range(0, length):
+        #     rank_user.append(intersection_50_follower[i])
+        #     rank_value.append((i + intersection_50_following.index(intersection_50_follower[i]))/2)
+        # min_value = min(rank_value)
+        # curr_user_id = rank_user[rank_value.index(min_value)]
+        # log.info(f"Highest rank user: {curr_user_id}")
+        # log.info("Ranking using all")
+        # length = len(intersection_50_all_likes_con)
+        # if length > 0:
+        #     rank_value = []
+        #     rank_user =[]
+        #     for i in range(0, length):
+        #         value = i
+        #         rank_user.append(intersection_50_all_likes_con[i])
+        #         value += intersection_50_all_likes_prod.index(intersection_50_all_likes_con[i])
+        #         value += intersection_50_all_following.index(intersection_50_all_likes_con[i])
+        #         value += intersection_50_all_follower.index(intersection_50_all_likes_con[i])
+        #         value += intersection_50_all_retweets_prod.index(intersection_50_all_likes_con[i])
+        #         value += intersection_50_all_retweets_con.index(intersection_50_all_likes_con[i])
+        #         rank_value.append(value/6)
+        #     min_value = min(rank_value)
+        #     curr_user_id = rank_user[rank_value.index(min_value)]
+        #     log.info(f"Highest rank user: {curr_user_id}")
+        # else:
+        #     log.info("Ranking Method Not Avaliable - intersection is empty")
         # # # TODO: PRODUCTION
         # # By Production
         # log.info("By Local Retweet Production")
@@ -639,6 +907,7 @@ class CoreDetector():
         # log.info("Top 20 users are: ")
         # log.info(top_names)
         curr_user_name = self.user_getter.get_user_by_id(str(curr_user_id)).screen_name
+        log.info("By Rank for all")
         log.info("Highest Ranking User is " + curr_user_name)
         # self.save_top_users(curr_cluster.users, top_names, self.user_getter.get_user_by_id(str(user_id)).screen_name, "production")
 

@@ -319,13 +319,24 @@ class TweepyTwitterGetter(TwitterGetter):
 
         return user_id, followers_users
 
-#a = TweepyTwitterGetter()
-#user_id = a.get_user_by_screen_name("david_madras")
+    def check_friendship(self, user_a, user_b):
+        """ return tuple of boolean.
+        true if user_a follows user_b, true if user_b follows user_a
+        """
+        friendship = self.twitter_api.show_friendship(source_id=user_a, target_id=user_b)
+        #print(friendship[0].id)
+        return (friendship[0].following, friendship[0].followed_by)
+
+a = TweepyTwitterGetter()
+user_id = a.get_user_by_screen_name("david_madras")#876274407995527169
+b = a.get_user_by_screen_name("luke_stark")#24223629
+
+
 #print(user_id)
 #a.get_tweets_by_user_id(user_id.id)#876274407995527200
 #print(user_id.id)
 #print(a.get_user_by_id(970447818614812700))
 #b = a.get_followers_ids_by_user_id(str(user_id.id))
-
+b = a.check_friendship(user_id.id, b.id)
 #print(b)
 #print(len(b))
