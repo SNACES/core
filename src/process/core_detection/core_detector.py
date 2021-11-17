@@ -265,7 +265,7 @@ class CoreDetector():
             self.user_tweet_downloader.stream_tweets_by_user_list(curr_cluster.users)
             #self.user_tweet_downloader.download_user_tweets_by_user_list(curr_cluster.users)
 
-        download_like = False
+        download_like = True
         log.info("Downloading liked tweets")
         if download_like:
             self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
@@ -537,9 +537,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -567,9 +567,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -597,9 +597,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -627,9 +627,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -657,9 +657,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -687,9 +687,9 @@ class CoreDetector():
             else:
                 log.info(f'Local Like Consumption: {con[top_user]} Rank: Not in Top 50')
             if top_user in top_50_prod_like:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: {top_50_prod_like.index(top_user)}')
             else:
-                log.info(f'Local Like Consumption: {prod_like[top_user]} Rank: Not in Top 50')
+                log.info(f'Local Like Production: {prod_like[top_user]} Rank: Not in Top 50')
             if top_user in top_50_following:
                 log.info(f'Local Following: {following[top_user]} Rank: {top_50_following.index(top_user)}')
             else:
@@ -723,6 +723,7 @@ class CoreDetector():
 
         log.info("-------------------------------------------------------")
         log.info("Ranking...")
+        highest_rank = []
         log.info("By Minimum sum of Rank Value")
         log.info("Ranking using likes")
         length = len(intersection_50_likes_con)
@@ -733,7 +734,8 @@ class CoreDetector():
             rank_value.append(i + intersection_50_likes_prod.index(intersection_50_likes_con[i]))
         min_value = min(rank_value)
         curr_user_id = rank_user[rank_value.index(min_value)]
-        log.info(f"Highest rank user: {curr_user_id}")
+        highest_rank.append(curr_user_id)
+        log.info(f"Highest rank user: {curr_user_id} {self.user_getter.get_user_by_id(str(curr_user_id)).screen_name}")
         log.info("Ranking using retweets")
         length = len(intersection_50_retweets_con)
         rank_value = []
@@ -743,7 +745,8 @@ class CoreDetector():
             rank_value.append(i + intersection_50_retweets_prod.index(intersection_50_retweets_con[i]))
         min_value = min(rank_value)
         curr_user_id = rank_user[rank_value.index(min_value)]
-        log.info(f"Highest rank user: {curr_user_id}")
+        highest_rank.append(curr_user_id)
+        log.info(f"Highest rank user: {curr_user_id} {self.user_getter.get_user_by_id(str(curr_user_id)).screen_name}")
         log.info("Ranking using follows")
         length = len(intersection_50_following)
         rank_value = []
@@ -753,7 +756,8 @@ class CoreDetector():
             rank_value.append(i + intersection_50_following.index(intersection_50_follower[i]))
         min_value = min(rank_value)
         curr_user_id = rank_user[rank_value.index(min_value)]
-        log.info(f"Highest rank user: {curr_user_id}")
+        highest_rank.append(curr_user_id)
+        log.info(f"Highest rank user: {curr_user_id} {self.user_getter.get_user_by_id(str(curr_user_id)).screen_name}")
         log.info("Ranking using all")
         length = len(intersection_50_all_likes_con)
         if length > 0:
@@ -770,7 +774,8 @@ class CoreDetector():
                 rank_value.append(value)
             min_value = min(rank_value)
             curr_user_id = rank_user[rank_value.index(min_value)]
-            log.info(f"Highest rank user: {curr_user_id}")
+            highest_rank.append(curr_user_id)
+            log.info(f"Highest rank user: {curr_user_id} {self.user_getter.get_user_by_id(str(curr_user_id)).screen_name}")
         else:
             log.info("Ranking Method Not Avaliable - intersection is empty")
         # log.info("-------------------------------------------------------")
@@ -906,6 +911,7 @@ class CoreDetector():
         # top_names = [self.user_getter.get_user_by_id(str(id)).screen_name for id in top_ids]
         # log.info("Top 20 users are: ")
         # log.info(top_names)
+        #curr_user_id = highest_rank[0]
         curr_user_name = self.user_getter.get_user_by_id(str(curr_user_id)).screen_name
         log.info("By Rank for all")
         log.info("Highest Ranking User is " + curr_user_name)
