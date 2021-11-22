@@ -35,7 +35,52 @@ def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
         exit()
 
 
-def refine_social_graph(screen_name: str, social_graph: SocialGraph, \
+def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph, \
+                        local_neighbourhood: LocalNeighbourhood, top_num: int=10, \
+                        thresh_multiplier: float=0.1, path=DEFAULT_PATH) -> SocialGraph:
+    """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
+    injector = Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
+    dao_module = injector.get_dao_module()
+    user_friend_getter = dao_module.get_user_friend_getter()
+    
+    user_id = get_user_by_screen_name(screen_name).id
+    user_list = local_neighbourhood.get_user_id_list()
+    jaccard_sim = []
+
+    for user in user_list:
+        friends = local_neighbourhood.get_user_friends(user)
+        for friend in friends:
+            sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(friend)))
+            jaccard_sim.append(sim)
+    
+    jaccard_sim.sort(reverse=True)
+    if len(jaccard_sim) >= top_num:
+        threshold = sum(jaccard_sim[:top_num]) / top_num * thresh_multiplier
+    elif len(jaccard_sim) == 0:
+        threshold = 0
+    else:
+        threshold = sum(jaccard_sim[:len(jaccard_sim)]) / len(jaccard_sim) * thresh_multiplier
+    
+    log.info("Refining by Jaccard Similarity:")
+    friends_map = {}
+    for user in user_list:
+        friends = local_neighbourhood.get_user_friends(user)
+        friends_map[user] = []
+        for friend in friends:
+            sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(friend)))
+            if sim >= threshold:
+                friends_map[user].append(friend)
+
+    log.info("Setting Local Neighbourhood:")
+    refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, friends_map)
+    social_graph_constructor = process_module.get_social_graph_constructor()
+    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id, refined_local_neighbourhood)
+    
+    return refined_social_graph
+
+# TO BE DELETED
+def refine_social_graph_old(screen_name: str, social_graph: SocialGraph, \
                         local_neighbourhood: LocalNeighbourhood, top_num: int=10, \
                         thresh_multiplier: float=0.1, path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
@@ -143,7 +188,8 @@ def get_user_by_screen_name(screen_name: str, path=DEFAULT_PATH) -> User:
 
 
 if __name__ == "__main__":
-    social_graph, local_neighbourhood = create_social_graph("david_madras")
-    refined_social_graph = refine_social_graph("david_madras", social_graph, local_neighbourhood)
+    # Play around with threshold multiplier and top num
+    social_graph, local_neighbourhood = create_social_graph("timnitGebru")
+    refined_social_graph = refine_social_graph_jaccard("timnitGebru", social_graph, local_neighbourhood, top_num=10, thresh_multiplier=0.5)
     # clusters = clustering_from_social_graph("david_madras", social_graph)
-    refined_clusters = clustering_from_social_graph("david_madras", refined_social_graph)
+    refined_clusters = clustering_from_social_graph("timnitGebru", refined_social_graph)
