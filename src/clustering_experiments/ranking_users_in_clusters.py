@@ -33,8 +33,8 @@ def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
         intersection = top_prod.intersection(top_con)
         i += 1
     
-    top_n_users_prod = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=prod.get, reverse=True)]
-    top_n_users_cons = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=con.get, reverse=True)]
+    top_n_users_prod = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=prod.get, reverse=True)][:n]
+    top_n_users_cons = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=con.get, reverse=True)][:n]
 
     return top_n_users_prod, top_n_users_cons
 

@@ -42,6 +42,20 @@ def write_cluster_ranking(initial_user: str, clusters, refined_clusters):
 
 
 if __name__ == "__main__":
-    clusters, refined_clusters = get_clusters("david_madras")
+    # clusters, refined_clusters = get_clusters("david_madras")
     # write_cluster_sizes("david_madras", clusters, refined_clusters)
-    write_cluster_ranking("david_madras", clusters, refined_clusters)
+    # write_cluster_ranking("david_madras", clusters, refined_clusters)
+
+    # clusters, refined_clusters = get_clusters("hardmaru")
+    # write_cluster_sizes("hardmaru", clusters, refined_clusters)
+    # write_cluster_ranking("hardmaru", clusters, refined_clusters)
+
+    # clusters, refined_clusters = get_clusters("tw_killian")
+    # write_cluster_sizes("tw_killian", clusters, refined_clusters)
+    # write_cluster_ranking("tw_killian", clusters, refined_clusters)
+
+    # clusters, refined_clusters = get_clusters("timnitGebru")
+    # write_cluster_sizes("timnitGebru", clusters, refined_clusters)
+    # write_cluster_ranking("timnitGebru", clusters, refined_clusters)
+
+    pass
