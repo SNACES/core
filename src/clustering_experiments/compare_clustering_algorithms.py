@@ -21,7 +21,7 @@ def threshold_clusters(cluster:List[Cluster],  discard_threshold: int=10):
     return refined_c
 
 
-def compare_clusters(clusters_1:List[Cluster], clusters_2:List[Cluster], discard_threshold: int=10):
+def compare_clusters(clusters_1:List[Cluster], clusters_2:List[Cluster], discard_threshold: int=10, key=1):
     "Compares clusters."
     refined_c1 = threshold_clusters(clusters_1)
     refined_c2 = threshold_clusters(clusters_2)
@@ -37,12 +37,35 @@ def compare_clusters(clusters_1:List[Cluster], clusters_2:List[Cluster], discard
             subset_similarity_c2[(i2, len(c2.users))].append((i1, check_clusters_subset(c2, c1), len(c1.users)))
 
     # Sort in descending order of highest subset similarity
-    for cluster in subset_similarity_c1:
-        subset_similarity_c1[cluster].sort(key=lambda x: x[1], reverse=True)
-    for cluster in subset_similarity_c2:
-        subset_similarity_c2[cluster].sort(key=lambda x: x[1], reverse=True)
+    if key != 0:
+        for cluster in subset_similarity_c1:
+            subset_similarity_c1[cluster].sort(key=lambda x: x[key], reverse=True)
+        for cluster in subset_similarity_c2:
+            subset_similarity_c2[cluster].sort(key=lambda x: x[key], reverse=True)
 
     return subset_similarity_c1, subset_similarity_c2
+
+
+def compare_clusters_jaccard(clusters_1:List[Cluster], clusters_2:List[Cluster], key=2):
+    jaccard_similarity = defaultdict(list)
+
+    for i1, c1 in enumerate(clusters_1):
+        for i2, c2 in enumerate(clusters_2):
+            # Measure how much c1 is contained in c2
+            jaccard_similarity[(i1, len(c1.users))].append((i2, check_clusters_jaccard(c1, c2), len(c2.users)))
+
+    # Sort in descending order of highest subset similarity
+    for cluster in jaccard_similarity:
+        jaccard_similarity[cluster].sort(key=lambda x: x[2], reverse=True)
+
+    return jaccard_similarity, jaccard_similarity
+
+
+def check_clusters_jaccard(cluster_1, cluster_2) -> float:
+    """Returns the jaccard similarity between the two clusters"""
+    c1_users = set(cluster_1.users)
+    c2_users = set(cluster_2.users)
+    return len(c1_users.intersection(c2_users)) / len(c1_users.union(c2_users))
 
 
 def check_clusters_subset(cluster_1, cluster_2) -> float:
