@@ -269,10 +269,10 @@ class CoreDetector():
         log.info("Downloading liked tweets")
         if download_like:
             self.user_tweet_downloader.download_user_liked_tweets_by_user_list(curr_cluster.users)
-        # download_follower = True
-        # log.info("Downloading followers")
-        # if download_follower:
-        #    self.follower_downloader.download_followers_ids_by_id_list(curr_cluster.users)
+        download_follower = True
+        log.info("Downloading followers")
+        if download_follower:
+           self.follower_downloader.download_followers_ids_by_id_list(curr_cluster.users)
 
 
         log.info("Ranking Cluster...")
@@ -700,6 +700,7 @@ class CoreDetector():
                 log.info(f'Local Follower: {follower[top_user]} Rank: Not in Top 50')
         log.info("-------------------------------------------------------")
         intersection_50_all = set(top_50_prod).intersection(top_50_con, top_50_con_like, top_50_prod_like, top_50_follower, top_50_following)
+        #intersection_50_all = set(top_50_prod).intersection(top_50_con, top_50_con_like, top_50_prod_like)
         intersection_50_all_retweets_prod = sorted(intersection_50_all, key=prod.get, reverse=True)
         intersection_50_all_retweets_con = sorted(intersection_50_all, key=con.get, reverse=True)
         intersection_50_all_likes_prod = sorted(intersection_50_all, key=prod_like.get, reverse=True)
@@ -717,9 +718,9 @@ class CoreDetector():
         log.info("Consumption Like:")
         log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_likes_con])
         log.info("Follower:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_follower])
+        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_follower])
         log.info("Following:")
-        log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_following])
+        #log.info([self.user_getter.get_user_by_id(str(id)).screen_name for id in intersection_50_all_following])
 
         log.info("-------------------------------------------------------")
         log.info("Ranking...")
@@ -912,6 +913,7 @@ class CoreDetector():
         # log.info("Top 20 users are: ")
         # log.info(top_names)
         #curr_user_id = highest_rank[0]
+        curr_user_id = top_50_follower[0]
         curr_user_name = self.user_getter.get_user_by_id(str(curr_user_id)).screen_name
         log.info("By Rank for all")
         log.info("Highest Ranking User is " + curr_user_name)
