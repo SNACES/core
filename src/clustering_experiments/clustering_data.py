@@ -22,7 +22,7 @@ def generate_cluster_data():
     """generate and store the clusters data in mongodb"""
     conn, db = connect_to_db()
     db = conn.ClusterTest
-    c1, c2 = get_clusters("david_madras")
+    c1, c2 = get_clusters("timnitGebru")
     rec_1 = format_cluster_to_doc(c1)
     rec_2 = format_cluster_to_doc(c2)
 
@@ -75,11 +75,11 @@ if __name__ == "__main__":
     # generate cluster data and store in mongodb
     generate_cluster_data()
 
-    all_data = get_all_data()
+    #all_data = get_all_data()
     # each datapoint is result from one clustering
     # each datapoint has 'num' and 'clusters'
 
-    all_clusters = format_all_data(all_data)
+    #all_clusters = format_all_data(all_data)
     # This formats each cluster in data['clusters'] from dict to Cluster object
     # all_clusters is List[List[Cluster]]
     # each nested List[Cluster] gives the results of one clustering experiemnt

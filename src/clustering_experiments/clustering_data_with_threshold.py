@@ -5,7 +5,6 @@ from typing import List, Dict
 from src.model.cluster import Cluster
 from pymongo import MongoClient
 from src.clustering_experiments.clustering_data import *
-from src.clustering_experiments.compare_clustering_algorithms import get_clusters
 
 def get_threshold_clusters(initial_user: str, top_num: int=10, thresh_multiplier: float=0.1) -> List[Cluster]:
     """Return clusters with threshold_multiplier and top_num"""
@@ -18,14 +17,14 @@ def get_threshold_clusters(initial_user: str, top_num: int=10, thresh_multiplier
     return refined_clusters
 
 
-def generate_threshold_cluster_data(db, conn):
+def generate_threshold_cluster_data(conn):
     db = conn.ClusterTest
     collection = db.threshold
 
-    for top_num in range(10, 50, 5):
-        for i in range(1, 11):
+    for top_num in range(10, 55, 10):
+        for i in range(2, 11, 2):
             thresh_mult = 0.05*i
-            clusters = get_threshold_clusters("david_madras", top_num, thresh_mult)
+            clusters = get_threshold_clusters("timnitGebru", top_num, thresh_mult)
             doc = {"clusters": [cluster.__dict__ for cluster in clusters],
                    "num": len(clusters),
                    "top_num": top_num,
@@ -33,11 +32,10 @@ def generate_threshold_cluster_data(db, conn):
             collection.insert_one(doc)
 
 
-
 if __name__ == "__main__":
     # generate cluster data and store in mongodb
     conn, db = connect_to_db()
 
-    # Generates cluster with top_num in range(10, 50, 5),
-    # Along with thresh_mult = range(0.05, 0.55, 0.0.5)
-    generate_threshold_cluster_data(db, conn)
+    # Generates cluster with top_num in range(5, 55, 5),
+    # Along with thresh_mult = range(0.05, 0.55, 00.5)
+    generate_threshold_cluster_data(conn)
