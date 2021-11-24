@@ -93,5 +93,5 @@ def experiment_results(initial_user: str):
                 f.write(f"\t is contained in Cluster {cluster[0]} of size {cluster[2]} about {round(cluster[1] * 100, 2)}%. \n")
 
 if __name__ == "__main__":
-    experiment_results("david_madras")
+    experiment_results("timnitGebru")
     pass
