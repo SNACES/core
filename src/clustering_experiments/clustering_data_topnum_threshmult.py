@@ -9,7 +9,7 @@ from src.clustering_experiments.clustering_data import *
 def get_threshold_clusters(initial_user: str, top_num: int=10, thresh_multiplier: float=0.1) -> List[Cluster]:
     """Return clusters with threshold_multiplier and top_num"""
     social_graph, local_neighbourhood = csgc.create_social_graph(initial_user)
-    refined_social_graph = csgc.refine_social_graph(initial_user, social_graph,
+    refined_social_graph = csgc.refine_social_graph_jaccard(initial_user, social_graph,
                                                     local_neighbourhood,
                                                     top_num=top_num,
                                                     thresh_multiplier=thresh_multiplier)
@@ -21,9 +21,11 @@ def generate_threshold_cluster_data(conn):
     db = conn.ClusterTest
     collection = db.threshold
 
-    for top_num in range(10, 55, 10):
-        for i in range(2, 11, 2):
-            thresh_mult = 0.05*i
+    top_num_vals = [10, 100, 1000, 10000]
+    thresh_mult_vals = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+
+    for top_num in top_num_vals:
+        for thresh_mult in thresh_mult_vals:
             clusters = get_threshold_clusters("timnitGebru", top_num, thresh_mult)
             doc = {"clusters": [cluster.__dict__ for cluster in clusters],
                    "num": len(clusters),
