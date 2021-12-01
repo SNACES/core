@@ -38,7 +38,7 @@ def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
 
 def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph, \
                         local_neighbourhood: LocalNeighbourhood, top_num: int=10, \
-                        thresh_multiplier: float=0.1, path=DEFAULT_PATH) -> SocialGraph:
+                        thresh_multiplier: float=0.1, threshold: float=-1.0, path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
@@ -49,21 +49,25 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph, \
     user_list = local_neighbourhood.get_user_id_list()
     jaccard_sim = []
 
-    for user in user_list:
-        friends = local_neighbourhood.get_user_friends(user)
-        for friend in friends:
-            sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(friend)))
-            jaccard_sim.append(sim)
-
-    jaccard_sim.sort(reverse=True)
-    #graph_list(jaccard_sim, None, "Jaccard Similarity", "all_jac_sim.png")
-    if len(jaccard_sim) >= top_num:
-        threshold = sum(jaccard_sim[:top_num]) / top_num * thresh_multiplier
-    elif len(jaccard_sim) == 0:
-        threshold = 0
-    else:
-        threshold = sum(jaccard_sim[:len(jaccard_sim)]) / len(jaccard_sim) * thresh_multiplier
-
+    def calculate_threshold():
+        for user in user_list:
+            friends = local_neighbourhood.get_user_friends(user)
+            for friend in friends:
+                sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(friend)))
+                jaccard_sim.append(sim)
+        
+        jaccard_sim.sort(reverse=True)
+        if len(jaccard_sim) >= top_num:
+            threshold = sum(jaccard_sim[:top_num]) / top_num * thresh_multiplier
+        elif len(jaccard_sim) == 0:
+            threshold = 0
+        else:
+            threshold = sum(jaccard_sim[:len(jaccard_sim)]) / len(jaccard_sim) * thresh_multiplier
+        return threshold
+    
+    if threshold == -1.0:
+        threshold = calculate_threshold()
+    
     log.info("Refining by Jaccard Similarity:")
     friends_map = {}
     for user in user_list:
@@ -80,6 +84,57 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph, \
     refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id, refined_local_neighbourhood)
 
     return refined_social_graph
+
+def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGraph, \
+                        local_neighbourhood: LocalNeighbourhood, top_num: int=10, \
+                        thresh_multiplier: float=0.1, threshold: float=-1.0, path=DEFAULT_PATH) -> SocialGraph:
+    """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
+    injector = Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
+    dao_module = injector.get_dao_module()
+    user_friend_getter = dao_module.get_user_friend_getter()
+    
+    user_id = get_user_by_screen_name(screen_name).id
+    user_list = local_neighbourhood.get_user_id_list()
+    jaccard_sim = []
+
+    def calculate_threshold():
+        for user_1 in user_list:
+            friends = local_neighbourhood.get_user_friends(user_1)
+            for user_2 in user_list:
+                if user_1 != user_2:
+                    sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(user_2)))
+                    jaccard_sim.append(sim)
+        
+        jaccard_sim.sort(reverse=True)
+        if len(jaccard_sim) >= top_num:
+            threshold = sum(jaccard_sim[:top_num]) / top_num * thresh_multiplier
+        elif len(jaccard_sim) == 0:
+            threshold = 0
+        else:
+            threshold = sum(jaccard_sim[:len(jaccard_sim)]) / len(jaccard_sim) * thresh_multiplier
+        return threshold
+    
+    if threshold == -1.0:
+        threshold = calculate_threshold()
+    
+    log.info("Refining by Jaccard Similarity:")
+    users_map = {}
+    for user_1 in user_list:
+        friends = local_neighbourhood.get_user_friends(user_1)
+        users_map[user_1] = []
+        for user_2 in user_list:
+            sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(user_2)))
+            if sim >= threshold:
+                users_map[user_1].append(user_2)
+
+    log.info("Setting Local Neighbourhood:")
+    refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, users_map)
+    social_graph_constructor = process_module.get_social_graph_constructor()
+    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id, refined_local_neighbourhood)
+    
+    return refined_social_graph
+
 
 # TO BE DELETED
 def refine_social_graph_old(screen_name: str, social_graph: SocialGraph, \
@@ -251,6 +306,6 @@ def graph_list(y_val, x_label, y_label, fig_name):
 if __name__ == "__main__":
     # Play around with threshold multiplier and top num
     social_graph, local_neighbourhood = create_social_graph("timnitGebru")
-    refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.5)
+    refined_social_graph = refine_social_graph_jaccard_users("timnitGebru", social_graph, local_neighbourhood, top_num=100, thresh_multiplier=1)
     # clusters = clustering_from_social_graph("david_madras", social_graph)
     refined_clusters = clustering_from_social_graph("timnitGebru", refined_social_graph)
