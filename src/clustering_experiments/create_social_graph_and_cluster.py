@@ -107,6 +107,8 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
                     jaccard_sim.append(sim)
 
         jaccard_sim.sort(reverse=True)
+        graph_list(jaccard_sim, None, "Jaccard Similarity", "all_jac_sim.png")
+        graph_list(jaccard_sim[:100], None, "Jaccard Similarity", "top_jac_sim.png")
         if len(jaccard_sim) >= top_num:
             threshold = sum(jaccard_sim[:top_num]) / top_num * thresh_multiplier
         elif len(jaccard_sim) == 0:
@@ -124,9 +126,10 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
         friends = local_neighbourhood.get_user_friends(user_1)
         users_map[user_1] = []
         for user_2 in user_list:
-            sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(user_2)))
-            if sim >= threshold:
-                users_map[user_1].append(user_2)
+            if user_1 != user_2:
+                sim = jaccard_similarity(friends, local_neighbourhood.get_user_friends(str(user_2)))
+                if sim >= threshold:
+                    users_map[user_1].append(user_2)
 
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, users_map)
@@ -308,7 +311,10 @@ def graph_list(y_val, x_label, y_label, fig_name):
 if __name__ == "__main__":
     # Play around with threshold multiplier and top num
     social_graph, local_neighbourhood = create_social_graph("timnitGebru")
-    refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
+
+    #refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
+    refined_social_graph = refine_social_graph_jaccard_users("timnitGebru", social_graph, local_neighbourhood)
+
     # clusters = clustering_from_social_graph("david_madras", social_graph)
 
     refined_clusters = clustering_from_social_graph("timnitGebru", refined_social_graph)

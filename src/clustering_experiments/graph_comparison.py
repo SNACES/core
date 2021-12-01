@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from src.shared.utils import get_project_root
 
 
-<<<<<<< HEAD
 def compare_number_clusters_user(initial_user: str):
     with open(f"{str(get_project_root())}/src/clustering_experiments/data/{initial_user}_number_of_clusters.txt", "r") as f:
         number_of_clusters_list = [int(num) for num in f.readlines()]
@@ -11,15 +10,6 @@ def compare_number_clusters_user(initial_user: str):
         number_of_refined_clusters_list = [int(num) for num in f.readlines()]
     compare_number_clusters(number_of_clusters_list)
     compare_number_clusters(number_of_refined_clusters_list)
-=======
-def compare_number_clusters_user(initial_user: str, runs: int=10, save=False):
-    with open(f"./src/clustering_experiments/data/{initial_user}_number_of_clusters.txt", "r") as f:
-        number_of_clusters_list = [int(num) for num in f.readlines()][:runs]
-    with open(f"./src/clustering_experiments/data/{initial_user}_number_of_refined_clusters.txt", "r") as f:
-        number_of_refined_clusters_list = [int(num) for num in f.readlines()][:runs]
-    compare_number_clusters(number_of_clusters_list, colour="lightblue", save=save, filename=f"num_clusters_{initial_user}")
-    compare_number_clusters(number_of_refined_clusters_list, refined=True, colour="darkblue", save=save, filename=f"num_refined_clusters_{initial_user}")
->>>>>>> c096ad4af3614d58015629b5a8a674d21131be49
 
 def compare_number_clusters(number_of_clusters_list: list, refined=False, colour="blue", save=False, filename="test"):
     """Plots the number of clusters across experiment runs."""
