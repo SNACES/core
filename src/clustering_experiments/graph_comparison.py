@@ -1,6 +1,8 @@
 from collections import Counter
 import matplotlib.pyplot as plt
 from src.shared.utils import get_project_root
+from src.clustering_experiments.clustering_data import *
+from ranking_users_in_clusters import rank_users
 
 
 def compare_number_clusters_user(initial_user: str):
@@ -107,14 +109,68 @@ def compare_top_users(list_of_top_users_across_runs, title: str, n: int=10, colo
     else:
         plt.show()
 
-if __name__ == "__main__":
-    # compare_number_clusters_user("david_madras", runs=70)
-    # compare_top_users_user("david_madras", runs=20, save=True)
-    # compare_number_clusters_user("hardmaru", runs=20, save=True)
-    # compare_top_users_user("hardmaru", runs=20, num_clusters=2, num_refined_clusters=2, save=True)
-    # compare_number_clusters_user("tw_killian", runs=20, save=True)
-    # compare_top_users_user("tw_killian", runs=20, num_clusters=2, num_refined_clusters=2, save=True)
 
-    compare_number_clusters_user("timnitGebru", runs=20, save=True)
-    compare_top_users_user("timnitGebru", runs=20, num_clusters=1, num_refined_clusters=2, save=True)
+def compare_top_users_mongo(conn, user: str, threshold: int, discard_size: int):
+    """Graphs top users for the clusters over runs for a particular threshold value and discard size value."""
+    clusters_over_runs = non_discarded_clusters_over_runs(conn, threshold, discard_size)
+    n = len(clusters_over_runs[0])
+    print(n)
+    # IMPORTANT: This assertion makes sure that the number of large (or non-discarded) clusters
+    # is the same throughout all runs. If you have different numbers during each run
+    # then an adapted version of this function may have to be created to compare similar runs. 
+    assert all(len(clusters) == n for clusters in clusters_over_runs)  
+    same_clusters_over_runs = [[clusters[i] for clusters in clusters_over_runs] for i in range(n)]
+    for i, same_clusters in enumerate(same_clusters_over_runs):
+        top_users_mongo_same_cluster(user, same_clusters, i, threshold)
+
+
+def top_users_mongo_same_cluster(user: str, clusters: list, cluster_number: int, threshold: int):
+    """Graphs the top 10 users of the same cluster over runs."""
+    name_of_graph = f"Top Users of Cluster {cluster_number} of Threshold {threshold}"
+    top_users_list = []
+    for cluster in clusters:
+        top_10_users = rank_users(user, cluster)[0]
+        top_users_list.extend(top_10_users)
+    top_users_count = Counter(top_users_list).most_common(10)
+    top_users, count = [user[0] for user in top_users_count], [user[1] for user in top_users_count]
+    average = [c/len(clusters) for c in count]
+
+    fig = plt.figure(figsize=(15, 15))
+    ax = fig.add_subplot()
+    ax.bar(top_users, average, color="pink")
+    ax.set_xlabel("Top Users")
+    ax.set_ylabel("Average Occurences across runs")
+    ax.set_title(name_of_graph)
+
+    name_of_file = f"t10_refined_{user}_{threshold}_{cluster_number}"
+    plt.savefig(f'./src/clustering_experiments/data/img/{name_of_file}.png')
+
+
+def non_discarded_clusters_over_runs(conn, threshold: int, discard_size: int):
+    """Returns clusters that are not discarded over runs"""
+    collection = conn.ClusterTest.threshold
+    clusters_over_runs = []
+    for doc in collection.find({"threshold": threshold}):
+        clusters = format_to_list_of_clusters(doc)
+        non_discarded_clusters = discard_clusters_size_mongo(clusters, discard_size)
+        clusters_over_runs.append(non_discarded_clusters)
+    return clusters_over_runs
+
+
+def discard_clusters_size_mongo(clusters, discard_size: int):
+    """Returns the clusters in descending order of size after discarding clusters
+    below a certain discard size.
+    """
+    non_discarded_clusters = []
+    new_clusters = sorted(clusters, key=lambda c: len(c.users), reverse=True)
+    for cluster in new_clusters:
+        if len(cluster.users) >= discard_size:
+            non_discarded_clusters.append(cluster)
+    
+    return non_discarded_clusters
+
+
+if __name__ == "__main__":
+    conn, db = connect_to_db()
+    compare_top_users_mongo(conn, "timnitGebru", 0.4, 40)
     pass
