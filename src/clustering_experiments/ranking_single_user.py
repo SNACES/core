@@ -69,31 +69,87 @@ def rank_single_user_from_data(conn, user: str, threshold: float,
     """For now this uses one single point of data instead aggregating over runs"""
     clusters = non_discarded_clusters_over_runs(conn, threshold, discard_size)[
         0]
+    prods, cons, prod_norms, con_norms = [], [], [], []
     for i, cluster in enumerate(clusters):
-        rank_single_user(user, cluster, new_user)
+        size = len(cluster.users) + 1
+        prod, con = rank_single_user(user, cluster, new_user)
+        prod_norm, con_norm = prod/size, con/size
+
+        prods.append(prod)
+        cons.append(con)
+        prod_norms.append(prod_norm)
+        con_norms.append(con_norm)
+
+    return prods, cons, prod_norms, con_norms
+
+def graph_cross_cluster_rankings(conn, user: str, threshold: float,
+                                 discard_size: int, users_to_rank):
+    ''' rank each users in users_to_rank in user's clusters
+    '''
+    x_labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    # change the nested lists if you have more clusters to rank in
+    # ex. if three, [[], [], []]
+    prod_list = [[], []]
+    con_list = [[], []]
+    prod_norm_list = [[], []]
+    con_norm_list = [[], []]
+    lists = [prod_list, con_list, prod_norm_list, con_norm_list]
+    for new_user in users_to_rank:
+        print(new_user)
+        prods, cons, prod_norms, con_norms = rank_single_user_from_data(conn, user, threshold,
+        discard_size, new_user)
+        new_vals = [prods, cons, prod_norms, con_norms]
+
+        for i in range(0, len(lists)):
+            cur_list = lists[i]
+            cur_vals = new_vals[i]
+            for j in range(0, len(cur_list)):
+                cur_list[j].append(cur_vals[j])
+
+        print(lists)
+    print(prod_list)
+    print(con_list)
+    print(prod_norm_list)
+    print(con_norm_list)
+    graph_cross_cluster_ranking(x_labels, prod_list, 'production utility', 'Production Utilities of Previous Top Users in New Clusters', 'prod_rank.png')
+    print(con_list)
+    graph_cross_cluster_ranking(x_labels, con_list, 'consumption utility', 'Consumption Utilities of Previous Top Users in New Clusters', 'con_rank.png')
+    graph_cross_cluster_ranking(x_labels, prod_norm_list, 'production utility (normalized)', 'Production Utilities (Normalized) of Previous Top Users in New Clusters', 'prod_norm_rank.png')
+    graph_cross_cluster_ranking(x_labels, con_norm_list, 'consumption utility (normalized)', 'Consumption Utilities (Normalized) of Previous Top Users in New Clusters', 'con_norm_rank.png')
+
+    return 0
+
+def graph_cross_cluster_ranking(x_vals, y_vals, y_label, fig_label, fig_name):
+    '''helper function for creating a graph, where x_vals is user index,
+    y_vals is nested list = [[vals_for_cluster0], [vals_for_cluster1], ..]'''
+    x = np.arange(len(x_vals))  # the label locations
+    width = 0.2  # the width of the bars
+
+    fig, ax = plt.subplots()
+
+    # Might have to changed the x-width stuffs for different number of bars
+    rects1 = ax.bar(x - width/2, y_vals[0], width, label=f'Cluster {0}')
+    ax.bar_label(rects1, padding=3)
+    rects2 = ax.bar(x + width/2, y_vals[1], width, label=f'Cluster {1}')
+    ax.bar_label(rects2, padding=3)
+    print('here')
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_ylabel(y_label)
+    ax.set_title(fig_label)
+    ax.set_xticks(x, x_vals)
+    ax.legend()
+
+    fig.tight_layout()
+    plt.savefig(fig_name)
+    plt.show()
+    return 0
 
 
 if __name__ == "__main__":
     conn, db = connect_to_db()
-    # Note: need to download data for those users before we can do the ranking
-    print("Hardmaru")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "hardmaru")
-    print("timnitGebru")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "timnitGebru")
-    print("mmitchell_ai")
-    print(rank_single_user_from_data(conn, "timnitGebru", 0.3, 60, "mmitchell_ai"))
-    print("mer__edith")
-    print(rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "mer__edith"))
-    print("ak92501")
-    print(rank_single_user_from_data(conn, "timnitGebru", 0.3, 60, "ak92501"))
-    print("Abebab")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "Abebab")
-    print("julien_c")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "julien_c")
-    print("weights_biases")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "weights_biases")
-    print("DynamicWebPaige")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "DynamicWebPaige")
-    print("cdixon")
-    rank_single_user_from_data(conn, "timnitGebru", 0.3, 80, "cdixon")
+    # Note: need to have the clusters data for cur_user
+    # 92501 in this example
+    #rank_single_user_from_data(conn, "ak92501", 0.3, 80, "hardmaru")
+    users_to_rank = ['hardmaru', 'weights_biases', 'suzatweet', 'DynamicWebPaige', 'l2k', 'bhutanisanyam1', 'osanseviero', 'mmbronstein', 'mervenoyann', 'ericjang11']
+    graph_cross_cluster_rankings(conn, "ak92501", 0.3, 80, users_to_rank)
     pass
