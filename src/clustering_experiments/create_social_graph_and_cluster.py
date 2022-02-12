@@ -33,6 +33,7 @@ def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
 
     except Exception as e:
         log.exception(e)
+        log.exception(f'{user.screen_name} {user.id} {type(user.id)}')
         exit()
 
 
@@ -227,11 +228,11 @@ def graph_list(y_val, x_label, y_label, fig_name):
 
 if __name__ == "__main__":
     # Play around with threshold multiplier and top num
-    social_graph, local_neighbourhood = create_social_graph("mikarv")
+    social_graph, local_neighbourhood = create_social_graph("timnitGebru")
 
     #refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
-    refined_social_graph = refine_social_graph_jaccard_users("mikarv", social_graph, local_neighbourhood, threshold=0.3)
+    # refined_social_graph = refine_social_graph_jaccard_users("mikarv", social_graph, local_neighbourhood, threshold=0.3)
 
     # clusters = clustering_from_social_graph("david_madras", social_graph)
 
-    refined_clusters = clustering_from_social_graph("mikarv", refined_social_graph)
+    # refined_clusters = clustering_from_social_graph("mikarv", refined_social_graph)
