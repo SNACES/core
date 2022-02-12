@@ -1,7 +1,9 @@
+import imp
 from src.process.ranking.relative_production_ranker import RelativeProductionRanker
 from src.dependencies.dao_module import DAOModule
 from src.process.clustering.clusterer_factory import ClustererFactory
 from src.process.core_detection.core_detector import CoreDetector
+from src.process.core_detection.core_detector_jaccard import JaccardCoreDetector
 from src.process.community_detection.community_detection import CommunityDetector
 from src.process.data_cleaning.friends_cleaner import FriendsCleaner
 from src.process.data_cleaning.extended_friends_cleaner import ExtendedFriendsCleaner
@@ -67,6 +69,35 @@ class ProcessModule():
         user_friend_getter = self.dao_module.get_user_friend_getter()
 
         return CoreDetector(user_getter, user_downloader,
+            friend_downloader, extended_friends_cleaner, local_neighbourhood_downloader,
+            local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
+            tweet_processor, social_graph_constructor, clusterer, cluster_getter,
+            cluster_word_frequency_processor, cluster_word_frequency_getter,
+            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
+                            user_tweet_getter, user_friend_getter)
+    
+    def get_jaccard_core_detector(self):
+        user_getter = self.dao_module.get_user_getter()
+        user_downloader = self.get_user_downloader()
+        friend_downloader = self.get_friend_downloader()
+        extended_friends_cleaner = self.get_extended_friends_cleaner()
+        local_neighbourhood_downloader = self.get_local_neighbourhood_downloader()
+        local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader()
+        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
+        tweet_processor = self.get_tweet_processor()
+        social_graph_constructor = self.get_social_graph_constructor()
+        clusterer = self.get_clusterer()
+        cluster_getter = self.dao_module.get_cluster_getter()
+        cluster_word_frequency_processor = self.get_cluster_word_frequency_processor()
+        cluster_word_frequency_getter = self.dao_module.get_cluster_word_frequency_getter()
+        prod_ranker = self.get_ranker() # Production
+        con_ranker = self.get_ranker("Consumption")
+        ranking_getter = self.dao_module.get_ranking_getter()
+        user_tweet_downloader = self.get_user_tweet_downloader()
+        user_tweet_getter = self.dao_module.get_user_tweet_getter()
+        user_friend_getter = self.dao_module.get_user_friend_getter()
+
+        return JaccardCoreDetector(user_getter, user_downloader,
             friend_downloader, extended_friends_cleaner, local_neighbourhood_downloader,
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,

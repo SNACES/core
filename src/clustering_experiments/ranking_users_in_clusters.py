@@ -1,6 +1,7 @@
-from src.dependencies.injector import Injector
+# changed from from... import to prevent circular import
+import src.dependencies.injector as sdi
 from src.shared.utils import get_project_root
-from create_social_graph_and_cluster import get_user_by_screen_name
+from src.clustering_experiments.create_social_graph_and_cluster import get_user_by_screen_name
 
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
@@ -8,7 +9,7 @@ DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_grap
 def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
     """Returns the top n ranked users from the given cluster with the seed id as user's id."""
     user_id = get_user_by_screen_name(user).id
-    injector = Injector.get_injector_from_file(path)
+    injector = sdi.Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
     dao_module = injector.get_dao_module()
     user_getter = dao_module.get_user_getter()
