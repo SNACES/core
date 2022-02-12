@@ -46,7 +46,7 @@ class JaccardCoreDetector():
         self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
 
-    def detect_core_by_screen_name(self, screen_name: str):
+    def detect_core_by_screen_name(self, screen_name: str, skip_download=False):
         user = self.user_getter.get_user_by_screen_name(screen_name)
         if user is None:
             log.info("Downloading initial user " + str(screen_name))
@@ -60,17 +60,18 @@ class JaccardCoreDetector():
                 raise Exception(msg)
 
         log.info("Beginning Core detection algorithm with initial user " + str(screen_name))
-        self.detect_core(user.id)
+        self.detect_core(user.id, skip_download)
 
-    def detect_core(self, initial_user_id: str, default_cluster=1):
+    def detect_core(self, initial_user_id: str, skip_download=False):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
         prev_user_id = str(initial_user_id)
         curr_user_id = None
+        top_10_users = []
         
         # First iteration
         try:
-            curr_user_id, top_10_users = self.first_iteration(prev_user_id)
+            curr_user_id, top_10_users = self.first_iteration(prev_user_id, skip_download)
         except Exception as e:
             log.exception(e)
             exit()
@@ -80,13 +81,14 @@ class JaccardCoreDetector():
             prev_user_id = curr_user_id
 
             try:
-                curr_user_id = self.loop_iteration(curr_user_id)
+                curr_user_id, top_10_users = self.loop_iteration(curr_user_id, top_10_users, skip_download)
             except Exception as e:
                 log.exception(e)
                 exit()
         
         log.info("The final user for initial user " + str(initial_user_id) + " is "
-                 + self.user_getter.get_user_id(str(curr_user_id)).screen_name)
+                 + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
+        log.info(f"The top 10 users for the selected cluster in the last iteration were: {top_10_users}")
     
     def first_iteration(self, user_id: str, skip_download=False):
         if not skip_download:
@@ -94,11 +96,12 @@ class JaccardCoreDetector():
         
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
         
-        clusters = self._clustering(user_id, 0.2)
+        clusters = self._clustering(user_id, 0.3)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)
-        curr_user = top_10_users[0]
+        top_10_users = rank_users(screen_name, chosen_cluster)[0]
+        curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
+        curr_user = curr_user.id
         
         return curr_user, top_10_users
     
@@ -117,7 +120,7 @@ class JaccardCoreDetector():
         clusters = self._clustering(user_id)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)
+        top_10_users = rank_users(screen_name, chosen_cluster)[0]
         curr_user = top_10_users[0]
 
         return curr_user, top_10_users
@@ -148,6 +151,8 @@ class JaccardCoreDetector():
         
     def _download(self, user_id: str):
             # TODO: Cleaning Friends List by Global and Local Attributes
+            user_id = int(user_id)
+
             log.info("Downloading User")
             self.user_downloader.download_user_by_id(user_id)
 
