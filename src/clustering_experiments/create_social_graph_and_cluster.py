@@ -234,7 +234,7 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
     user_list = local_neighbourhood.get_user_id_list()
     jaccard_sim = []
 
-    graph_user_following(user_list, local_neighbourhood)
+    #graph_user_following(user_list, local_neighbourhood)
     for user in user_list:
         friends = local_neighbourhood.get_user_friends(user)
         for friend in friends:
@@ -242,8 +242,8 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
             jaccard_sim.append(sim)
 
     jaccard_sim.sort(reverse=True)
-    graph_list(jaccard_sim, "Pairs of Users", "Jaccard Similarity", "all_jac_sim.png")
-    graph_list(jaccard_sim[:100], "Pairs of Users", "Jaccard Similarity", "top_jac_sim.png")
+    #graph_list(jaccard_sim, "Pairs of Users", "Jaccard Similarity", "all_jac_sim.png")
+    #graph_list(jaccard_sim[:100], "Pairs of Users", "Jaccard Similarity", "top_jac_sim.png")
 
     log.info("Refining by Jaccard Similarity:")
     friends_map = {}
@@ -299,11 +299,12 @@ def graph_user_following(user_list, local_neighbourhood):
     graph_list(friends_list_val[:10], "Users", "number of Friends", "top_following.png")
 
 
-def graph_list(y_val, x_label, y_label, fig_name):
-    plt.figure()
-    plt.plot(y_val)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+def graph_list(y_val, x_label, y_label, fig_name, title=""):
+    fig, ax = plt.subplots()
+    ax.plot(y_val)
+    ax.xlabel(x_label)
+    ax.ylabel(y_label)
+    ax.set_title(title)
     plt.savefig(fig_name)
 
 
@@ -315,6 +316,6 @@ if __name__ == "__main__":
     #refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
     refined_social_graph = refine_social_graph_jaccard_users("timnitGebru", social_graph, local_neighbourhood)
 
-    # clusters = clustering_from_social_graph("david_madras", social_graph)
+    #clusters = clustering_from_social_graph("david_madras", social_graph)
 
     refined_clusters = clustering_from_social_graph("timnitGebru", refined_social_graph)
