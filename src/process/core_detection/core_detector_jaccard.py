@@ -96,7 +96,7 @@ class JaccardCoreDetector():
         
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
         
-        clusters = self._clustering(user_id, 0.3)
+        clusters = self._clustering(user_id, 0.2)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)[0]
@@ -121,7 +121,8 @@ class JaccardCoreDetector():
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)[0]
-        curr_user = top_10_users[0]
+        curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
+        curr_user = curr_user.id
 
         return curr_user, top_10_users
     
@@ -130,7 +131,7 @@ class JaccardCoreDetector():
         the previous iteration is the highest."""
         log.info("Selecting Cluster based on production utilities")
 
-        list_of_prod_values = [None] * len(clusters)
+        list_of_prod_values = [0] * len(clusters)
         top_10_users_ids = [self.user_getter.get_user_by_screen_name(top_user).id for top_user in top_10_users]
 
         for ind, cluster in enumerate(clusters):
@@ -152,8 +153,9 @@ class JaccardCoreDetector():
     def _download(self, user_id: str):
             # TODO: Cleaning Friends List by Global and Local Attributes
             user_id = int(user_id)
+            screen_name = self.user_getter.get_user_by_id(str(user_id)).screen_name
 
-            log.info("Downloading User")
+            log.info(f"Downloading User {screen_name} {user_id}")
             self.user_downloader.download_user_by_id(user_id)
 
             log.info("Downloading User Tweets")
