@@ -231,12 +231,26 @@ def discard_small_clusters(clusters):
     This works by finding an adaptive cut-off discard size above which all clusters are
     said to be "large" clusters.
     """
+    total_users = sum(len(c.users) for c in clusters)
+    # Remove clusters of size < 2% of the total number of users
+    too_small = 0.02 * total_users
+    updated_clusters = []
+    for i in range(len(clusters)):
+        if len(clusters[i].users) < too_small:
+            pass
+        else:
+            updated_clusters.append(clusters[i])
+
     gaps = []
-    for i in range(1, len(clusters)):
-        gap = len(clusters[i - 1].users) - len(clusters[i].users)
-        # i is the number of clusters larger than a cut-off discard size chosen
-        # at the gap.
+    for i in range(1, len(updated_clusters)):
+        gap = len(updated_clusters[i - 1].users) - len(updated_clusters[i].users)
+        # i is the number of updated_clusters larger than a 
+        # cut-off discard size chosen at the gap.
         gaps.append((i, gap))
+    # Final gap is gap from 0 to the smallest cluster
+    final_gap = len(updated_clusters[len(updated_clusters) - 1].users) - 0
+    gaps.append((len(updated_clusters), final_gap))
+    
     gaps.sort(key=lambda g: g[1], reverse=True)
     
     wide_range = set(range(1, 9))
@@ -245,11 +259,11 @@ def discard_small_clusters(clusters):
     # Initialize them to 0
     outside_wide_num = 0
     wide_num = 0
-    for j in range(3):
+    for j in range(min(3, len(gaps))):
         num_clusters = gaps[j][0]
         if num_clusters in viable_range:
             return num_clusters
-        elif num_clusters in wide_range and wide_num == 0:
+        elif num_clusters in wide_range and wide_num in (0, 1):
             wide_num = num_clusters
         elif num_clusters not in wide_range and outside_wide_num == 0:
             outside_wide_num = num_clusters
