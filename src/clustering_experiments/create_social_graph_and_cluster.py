@@ -232,9 +232,10 @@ def discard_small_clusters(clusters):
     """
     gaps = []
     for i in range(1, len(clusters)):
+        gap = len(clusters[i - 1].users) - len(clusters[i].users)
         # i is the number of clusters larger than a cut-off discard size chosen
-        # at the gap. clusters[i - 1] - clusters[i] is the gap.
-        gaps.append((i, clusters[i - 1] - clusters[i]))
+        # at the gap.
+        gaps.append((i, gap))
     gaps.sort(key=lambda g: g[1], reverse=True)
     
     wide_range = set(range(1, 9))
@@ -251,7 +252,7 @@ def discard_small_clusters(clusters):
             wide_num = num_clusters
         elif num_clusters not in wide_range and outside_wide_num == 0:
             outside_wide_num = num_clusters
-    if wide_num == 0:
+    if wide_num != 0:
         return wide_num
     return outside_wide_num
   
