@@ -46,7 +46,7 @@ class JaccardCoreDetector():
         self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
 
-    def detect_core_by_screen_name(self, screen_name: str, skip_download=False):
+    def detect_core_by_screen_name(self, screen_name: str, skip_download=False, optimize_threshold=False):
         user = self.user_getter.get_user_by_screen_name(screen_name)
         if user is None:
             log.info("Downloading initial user " + str(screen_name))
@@ -60,9 +60,9 @@ class JaccardCoreDetector():
                 raise Exception(msg)
 
         log.info("Beginning Core detection algorithm with initial user " + str(screen_name))
-        self.detect_core(user.id, skip_download)
+        self.detect_core(user.id, skip_download, optimize_threshold)
 
-    def detect_core(self, initial_user_id: str, skip_download=False):
+    def detect_core(self, initial_user_id: str, skip_download=False, optimize_threshold=False):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
         prev_user_id = str(initial_user_id)
@@ -71,7 +71,7 @@ class JaccardCoreDetector():
         
         # First iteration
         try:
-            curr_user_id, top_10_users = self.first_iteration(prev_user_id, skip_download)
+            curr_user_id, top_10_users = self.first_iteration(prev_user_id, skip_download, optimize_threshold)
         except Exception as e:
             log.exception(e)
             exit()
@@ -81,7 +81,7 @@ class JaccardCoreDetector():
             prev_user_id = curr_user_id
 
             try:
-                curr_user_id, top_10_users = self.loop_iteration(curr_user_id, top_10_users, skip_download)
+                curr_user_id, top_10_users = self.loop_iteration(curr_user_id, top_10_users, skip_download, optimize_threshold)
             except Exception as e:
                 log.exception(e)
                 exit()
@@ -90,13 +90,17 @@ class JaccardCoreDetector():
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
         log.info(f"The top 10 users for the selected cluster in the last iteration were: {top_10_users}")
     
-    def first_iteration(self, user_id: str, skip_download=False):
+    def first_iteration(self, user_id: str, skip_download=False, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
         
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
         
-        clusters = self._clustering(user_id, 0.2)
+        if optimize_threshold:
+            thresh = self._pick_optimal_threshold(user_id)
+        else:
+            thresh = 0.3
+        clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)[0]
@@ -111,13 +115,17 @@ class JaccardCoreDetector():
         log.info("Picking Default Cluster")
         return clusters[0]
 
-    def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=False):
+    def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=False, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
         
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
-    
-        clusters = self._clustering(user_id)
+
+        if optimize_threshold:
+            thresh = self._pick_optimal_threshold(user_id)
+        else:
+            thresh = 0.3
+        clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)[0]
@@ -184,4 +192,27 @@ class JaccardCoreDetector():
         sorted_clusters = sorted(refined_clusters, key=lambda c: len(c.users), reverse=True)
 
         return sorted_clusters
+    
+    def _pick_optimal_threshold(self, user_id: str):
+        """Returns the optimal threshold for clustering for a given user."""
+        log.info("---PICKING THRESHOLD NOW---")
+        candidate_thresholds = [0.1, 0.2, 0.3, 0.4, 0.5]
+
+        num_large_clusters = []
+        for thresh in candidate_thresholds:
+            large_clusters = csgc.discard_small_clusters(self._clustering(user_id, thresh))
+            num_large_clusters.append(large_clusters)
+
+        curr_num, curr_thresh = 0, 0
+        for i in range(len(num_large_clusters)):
+            if num_large_clusters[i] > curr_num:
+                curr_num = num_large_clusters[i]
+                curr_thresh = candidate_thresholds[i]
+            elif num_large_clusters[i] == curr_num:
+                pass
+            else:  # Number of large clusters is decreasing now
+                break
+
+        log.info("---FINISHED PICKING THRESHOLD---")
+        return curr_thresh
   

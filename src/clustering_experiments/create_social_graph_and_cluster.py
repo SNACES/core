@@ -269,7 +269,6 @@ def discard_small_clusters(clusters):
     if wide_num != 0:
         return wide_num
     return outside_wide_num
-  
 
 
 if __name__ == "__main__":
