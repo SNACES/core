@@ -226,6 +226,37 @@ def graph_list(y_val, x_label, y_label, fig_name, title=""):
     plt.savefig(fig_name)
 
 
+def discard_small_clusters(clusters):
+    """Returns the number of large clusters in the list of clusters sorted in descending order of size.
+    This works by finding an adaptive cut-off discard size above which all clusters are
+    said to be "large" clusters.
+    """
+    gaps = []
+    for i in range(1, len(clusters)):
+        # i is the number of clusters larger than a cut-off discard size chosen
+        # at the gap. clusters[i - 1] - clusters[i] is the gap.
+        gaps.append((i, clusters[i - 1] - clusters[i]))
+    gaps.sort(key=lambda g: g[1], reverse=True)
+    
+    wide_range = set(range(1, 9))
+    viable_range = set(range(3, 6))
+    
+    # Initialize them to 0
+    outside_wide_num = 0
+    wide_num = 0
+    for j in range(3):
+        num_clusters = gaps[j][0]
+        if num_clusters in viable_range:
+            return num_clusters
+        elif num_clusters in wide_range and wide_num == 0:
+            wide_num = num_clusters
+        elif num_clusters not in wide_range and outside_wide_num == 0:
+            outside_wide_num = num_clusters
+    if wide_num == 0:
+        return wide_num
+    return outside_wide_num
+  
+
 
 if __name__ == "__main__":
     # Play around with threshold multiplier and top num
