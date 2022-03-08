@@ -242,20 +242,24 @@ def discard_small_clusters(clusters):
             updated_clusters.append(clusters[i])
 
     gaps = []
+    updated_clusters.sort(key=lambda k: len(k.users))
+    print([len(updated_cluster.users) for updated_cluster in updated_clusters])
     for i in range(1, len(updated_clusters)):
-        gap = len(updated_clusters[i - 1].users) - len(updated_clusters[i].users)
-        # i is the number of updated_clusters larger than a 
+        gap = len(updated_clusters[i].users) - len(updated_clusters[i-1].users)
+        # i is the number of updated_clusters larger than a
         # cut-off discard size chosen at the gap.
-        gaps.append((i, gap))
+        gaps.append((len(updated_clusters) - i, gap))
     # Final gap is gap from 0 to the smallest cluster
-    final_gap = len(updated_clusters[len(updated_clusters) - 1].users) - 0
+    final_gap = len(updated_clusters[0].users) - 0
     gaps.append((len(updated_clusters), final_gap))
-    
+
     gaps.sort(key=lambda g: g[1], reverse=True)
-    
+
+    print(gaps)
+
     wide_range = set(range(1, 9))
-    viable_range = set(range(3, 6))
-    
+    viable_range = set(range(3, 9))
+
     # Initialize them to 0
     outside_wide_num = 0
     wide_num = 0
@@ -263,14 +267,14 @@ def discard_small_clusters(clusters):
         num_clusters = gaps[j][0]
         if num_clusters in viable_range:
             return num_clusters
-        elif num_clusters in wide_range and wide_num in (0, 1):
+        elif num_clusters in wide_range:
             wide_num = num_clusters
         elif num_clusters not in wide_range and outside_wide_num == 0:
             outside_wide_num = num_clusters
     if wide_num != 0:
         return wide_num
     return outside_wide_num
-  
+
 
 
 if __name__ == "__main__":
