@@ -152,7 +152,7 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
     user_list = local_neighbourhood.get_user_id_list()
     jaccard_sim = []
 
-    #graph_user_following(user_list, local_neighbourhood)
+    graph_user_following(user_list, local_neighbourhood)
     for user in user_list:
         friends = local_neighbourhood.get_user_friends(user)
         for friend in friends:
@@ -160,8 +160,8 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
             jaccard_sim.append(sim)
 
     jaccard_sim.sort(reverse=True)
-    #graph_list(jaccard_sim, "Pairs of Users", "Jaccard Similarity", "all_jac_sim.png")
-    #graph_list(jaccard_sim[:100], "Pairs of Users", "Jaccard Similarity", "top_jac_sim.png")
+    graph_list(jaccard_sim, "Pairs of Users", "Jaccard Similarity", "all_jac_sim.png")
+    graph_list(jaccard_sim[:100], "Pairs of Users", "Jaccard Similarity", "top_jac_sim.png")
 
     log.info("Refining by Jaccard Similarity:")
     friends_map = {}
@@ -217,12 +217,11 @@ def graph_user_following(user_list, local_neighbourhood):
     graph_list(friends_list_val[:10], "Users", "number of Friends", "top_following.png")
 
 
-def graph_list(y_val, x_label, y_label, fig_name, title=""):
-    fig, ax = plt.subplots()
-    ax.plot(y_val)
-    ax.xlabel(x_label)
-    ax.ylabel(y_label)
-    ax.set_title(title)
+def graph_list(y_val, x_label, y_label, fig_name):
+    plt.figure()
+    plt.plot(y_val)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
     plt.savefig(fig_name)
 
 
@@ -242,24 +241,20 @@ def discard_small_clusters(clusters):
             updated_clusters.append(clusters[i])
 
     gaps = []
-    updated_clusters.sort(key=lambda k: len(k.users))
-    print([len(updated_cluster.users) for updated_cluster in updated_clusters])
     for i in range(1, len(updated_clusters)):
-        gap = len(updated_clusters[i].users) - len(updated_clusters[i-1].users)
-        # i is the number of updated_clusters larger than a
+        gap = len(updated_clusters[i - 1].users) - len(updated_clusters[i].users)
+        # i is the number of updated_clusters larger than a 
         # cut-off discard size chosen at the gap.
-        gaps.append((len(updated_clusters) - i, gap))
+        gaps.append((i, gap))
     # Final gap is gap from 0 to the smallest cluster
-    final_gap = len(updated_clusters[0].users) - 0
+    final_gap = len(updated_clusters[len(updated_clusters) - 1].users) - 0
     gaps.append((len(updated_clusters), final_gap))
-
+    
     gaps.sort(key=lambda g: g[1], reverse=True)
-
-    print(gaps)
-
+    
     wide_range = set(range(1, 9))
-    viable_range = set(range(3, 9))
-
+    viable_range = set(range(3, 6))
+    
     # Initialize them to 0
     outside_wide_num = 0
     wide_num = 0
@@ -267,14 +262,13 @@ def discard_small_clusters(clusters):
         num_clusters = gaps[j][0]
         if num_clusters in viable_range:
             return num_clusters
-        elif num_clusters in wide_range:
+        elif num_clusters in wide_range and wide_num in (0, 1):
             wide_num = num_clusters
         elif num_clusters not in wide_range and outside_wide_num == 0:
             outside_wide_num = num_clusters
     if wide_num != 0:
         return wide_num
     return outside_wide_num
-
 
 
 if __name__ == "__main__":
@@ -284,6 +278,6 @@ if __name__ == "__main__":
     #refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
     # refined_social_graph = refine_social_graph_jaccard_users("mikarv", social_graph, local_neighbourhood, threshold=0.3)
 
-    #clusters = clustering_from_social_graph("david_madras", social_graph)
+    # clusters = clustering_from_social_graph("david_madras", social_graph)
 
     # refined_clusters = clustering_from_social_graph("mikarv", refined_social_graph)
