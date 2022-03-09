@@ -35,37 +35,49 @@ def graph_count_list(x_vals, y_vals, fig_name):
     plt.show()
 
 
-def aggregate_size_of_clusters(conn, threshold, one=False):
+def aggregate_size_of_clusters(conn, user, threshold, one=False):
     db = conn.ClusterTest
     size_count_dict = {}
     count = 0
 
-    #for doc in db.threshold.find({"top_num": 10, "threshold_multiplier": 0.5})
-    #Just for test since I don't have new data yet -^-
-    for doc in db.threshold.find({"threshold": threshold}):
-        count += 1
-        clusters = format_to_list_of_clusters(doc)
-        for cluster in clusters:
-            size = len(cluster.users)
-            if size not in size_count_dict:
-                size_count_dict[size] = 1
-            else:
-                size_count_dict[size] += 1
+    if one:
+        doc = db.threshold.find_one({"threshold": threshold, "user": user})
+        count = 1
+        size_count_dict = update_size_count_dict(size_count_dict, doc)
+    else:
+        for doc in db.threshold.find({"threshold": threshold, "user": user}):
+            count += 1
+            size_count_dict = update_size_count_dict(size_count_dict, doc)
+
     return size_count_dict, count
 
 
-def graph_size_of_clusters(conn, threshold):
-    size_count_dict, count = aggregate_size_of_clusters(conn, threshold)
+
+def update_size_count_dict(size_count_dict, doc):
+    clusters = format_to_list_of_clusters(doc)
+    for cluster in clusters:
+        size = len(cluster.users)
+        if size not in size_count_dict:
+            size_count_dict[size] = 1
+        else:
+            size_count_dict[size] += 1
+    return size_count_dict
+
+
+def graph_size_of_clusters(conn, user, threshold, one=False):
+    size_count_dict, count = \
+        aggregate_size_of_clusters(conn, user, threshold, one)
 
     fig, ax = plt.subplots()
     count_list = [val / count for val in size_count_dict.values()]
-    ax.bar(size_count_dict.keys(), count_list)
+    key_list = [str(size) for size in sorted(size_count_dict.keys())]
+    ax.bar(key_list, count_list)
 
-    ax.set_title(f'Average Number of Clusters for Each Size, threshold={threshold}')
-    ax.set_ylabel(f'Average Count of Cluster of Each Size')
+    ax.set_title(f'Number of Clusters for Each Size, threshold={threshold} -- user')
+    ax.set_ylabel(f'Count of Cluster given Size')
     ax.set_xlabel('Size of clusters')
 
-    plt.savefig(f"dist_of_clusters_sizes_threshold_{threshold}.png")
+    plt.savefig(f"dist_of_clusters_sizes_{threshold}_{user}.png")
     plt.show()
 
 

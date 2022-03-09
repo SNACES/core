@@ -1,14 +1,14 @@
 # changed from from... import to prevent circular import
 import src.dependencies.injector as sdi
 from src.shared.utils import get_project_root
-from src.clustering_experiments.create_social_graph_and_cluster import get_user_by_screen_name
+import src.clustering_experiments.create_social_graph_and_cluster as csgc
 
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
 def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
     """Returns the top n ranked users from the given cluster with the seed id as user's id."""
-    user_id = get_user_by_screen_name(user).id
+    user_id = csgc.get_user_by_screen_name(user).id
     injector = sdi.Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
     dao_module = injector.get_dao_module()
@@ -19,7 +19,7 @@ def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
 
     prod_ranking, prod = prod_ranker.rank(user_id, cluster)
     con_ranking, con = con_ranker.rank(user_id, cluster)
-    
+
     prod_ranking_users = prod_ranking.get_all_ranked_user_ids()
     con_ranking_users = con_ranking.get_all_ranked_user_ids()
 
@@ -33,7 +33,7 @@ def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
         top_con.add(con_ranking_users[i])
         intersection = top_prod.intersection(top_con)
         i += 1
-    
+
     top_n_users_prod = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=prod.get, reverse=True)][:n]
     top_n_users_cons = [user_getter.get_user_by_id(id).screen_name for id in sorted(intersection, key=con.get, reverse=True)][:n]
 
