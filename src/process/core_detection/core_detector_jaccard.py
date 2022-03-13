@@ -158,8 +158,8 @@ class JaccardCoreDetector():
         
         return clusters[ind]
         
-    def _download(self, user_id: str):
-            # TODO: Cleaning Friends List by Global and Local Attributes
+    def _download(self, user_id: str, clean=True):
+            # TODO: Add a separate option for cleaning when not downloading
             user_id = int(user_id)
             screen_name = self.user_getter.get_user_by_id(str(user_id)).screen_name
 
@@ -175,7 +175,31 @@ class JaccardCoreDetector():
             log.info("Downloading Local Neighbourhood")
             self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
 
+            if clean:
+                self._clean()
+                log.info("Updating Local Neighbourhood")
+                self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
+
             log.info("Done downloading. Beginning processing")
+    
+    def _clean(self, user_id, local_following=4):
+        """Removes users based on global and local attributes."""
+        clean_list = self._clean_globally(user_id)
+        log.info("Cleaning Friends List by Local Attributes")
+        self.extended_friends_cleaner.clean_friends_local(user_id, clean_list, local_following=local_following)
+
+
+    def _clean_globally(self, user_id):
+        """Removes users based on global follower, friend and tweet thresholds."""
+        user = self.user_getter.get_user_by_id(str(user_id))
+        log.info("Cleaning Friends List by Global Attributes")
+        follower_thresh = 0.1 * user.followers_count
+        friend_thresh = 0.1 * user.friends_count
+        tweet_thresh = 0.1 * len(self.user_tweet_getter.get_tweets_by_user_id_time_restricted(str(user_id)))
+        clean_list = self.extended_friends_cleaner.clean_friends_global(user_id, 
+                     tweet_threshold=tweet_thresh, follower_threshold=follower_thresh, friend_threshold=friend_thresh)
+        
+        return clean_list
     
     def _download_cluster_tweets(self, cluster):
         self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)      
