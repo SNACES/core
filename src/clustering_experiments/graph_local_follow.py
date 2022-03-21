@@ -4,6 +4,7 @@ from src.clustering_experiments.compare_clustering_algorithms import threshold_c
 import matplotlib.pyplot as plt
 import graph_ranking as gr
 from src.shared.utils import get_project_root
+import src.dependencies.injector as sdi
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
@@ -50,7 +51,7 @@ def graph_local_following(user, selected_users=None, iter_num=False):
         if curr_user != str(user_id):
             friends = local_neighbourhood.get_user_friends(curr_user)
             local_following_dict[str(curr_user)] = len(friends)
-    #local_following_dict[str(user_id)] = len(local_neighbourhood.get_user_friends(str(user_id)))
+    local_following_dict[str(user_id)] = len(local_neighbourhood.get_user_friends(str(user_id)))
 
     x_vals, y_vals, xs, ys = _graph_distribution_helper(local_following_dict, selected_user_ids)
     fig, ax = plt.subplots()
@@ -77,13 +78,23 @@ def graph_local_follower(user, selected_users=None, iter_num=None):
 
     user_id = csgc.get_user_by_screen_name(user).id
     local_neighbourhood_users = local_neighbourhood.get_user_id_list()
+    local_neighbourhood_users = [str(u) for u in local_neighbourhood_users]
 
     selected_user_ids = _get_selected_user_ids(selected_users, local_neighbourhood_users)
+    selected_user_ids = [str(s) for s in selected_user_ids]
+
+    injector = sdi.Injector.get_injector_from_file(DEFAULT_PATH)
+    dao_module = injector.get_dao_module()
+    user_friend_getter = dao_module.get_user_friend_getter()
 
     for curr_user in local_neighbourhood_users:
-        friends = local_neighbourhood.get_user_friends(curr_user)
+        # friends = local_neighbourhood.get_user_friends(curr_user)
+        friends = user_friend_getter.get_user_friends_ids(str(curr_user))
+        friends = [str(f) for f in friends]
         for friend in friends:
-            if friend not in local_follower_dict:
+            if str(friend) not in local_neighbourhood_users:
+                pass
+            elif friend not in local_follower_dict:
                 local_follower_dict[str(friend)] = 1
             else:
                 local_follower_dict[str(friend)] += 1
@@ -109,14 +120,17 @@ def graph_local_follower(user, selected_users=None, iter_num=None):
 
 
 if __name__ == "__main__":
-    graph_local_following("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
-    graph_local_follower("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
+    # graph_local_following("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
+    # graph_local_follower("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
 
-    graph_local_following("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
-    graph_local_follower("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
+    # graph_local_following("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
+    # graph_local_follower("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
 
-    graph_local_following("esa", ["NASAKennedy"], iter_num=3)
-    graph_local_follower("esa", ["NASAKennedy"], iter_num=3)
+    # graph_local_following("esa", ["NASAKennedy"], iter_num=3)
+    # graph_local_follower("esa", ["NASAKennedy"], iter_num=3)
 
-    # graph_local_following("NASAKennedy", ["NASAKennedy"], iter_num=3)
-    # graph_local_follower("NASAKennedy", ["NASAKennedy"], iter_num=3)
+    # graph_local_following("Karen_Chess1", ["chess24com"], iter_num=1)
+    # graph_local_follower("Karen_Chess1", ["chess24com"], iter_num=1)
+
+    graph_local_following("chess24com", ["chess24com"], iter_num=2)
+    graph_local_follower("chess24com", ["chess24com"], iter_num=2)
