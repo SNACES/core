@@ -47,9 +47,10 @@ def graph_local_following(user, selected_users=None, iter_num=False):
     selected_user_ids = _get_selected_user_ids(selected_users, local_neighbourhood_users)
 
     for curr_user in local_neighbourhood_users:
-        friends = local_neighbourhood.get_user_friends(curr_user)
-        local_following_dict[str(curr_user)] = len(friends)
-    local_following_dict[str(user_id)] = len(local_neighbourhood.get_user_friends(str(user_id)))
+        if curr_user != str(user_id):
+            friends = local_neighbourhood.get_user_friends(curr_user)
+            local_following_dict[str(curr_user)] = len(friends)
+    #local_following_dict[str(user_id)] = len(local_neighbourhood.get_user_friends(str(user_id)))
 
     x_vals, y_vals, xs, ys = _graph_distribution_helper(local_following_dict, selected_user_ids)
     fig, ax = plt.subplots()
@@ -64,9 +65,9 @@ def graph_local_following(user, selected_users=None, iter_num=False):
     plt.ylabel("Number of Following in Local Neighborhood")
     plt.legend()
     if iter_num:
-        plt.title(f"Distribution of Followers for User -- {user}, Iter {iter_num}")
+        plt.title(f"Distribution of Following for User -- {user}, Iter {iter_num}")
     else:
-        plt.title(f"Distribution of Followers for User -- {user}")
+        plt.title(f"Distribution of Following for User -- {user}")
     plt.savefig(f"localfollowing_for_{user}.png")
 
 
@@ -116,3 +117,6 @@ if __name__ == "__main__":
 
     graph_local_following("esa", ["NASAKennedy"], iter_num=3)
     graph_local_follower("esa", ["NASAKennedy"], iter_num=3)
+
+    # graph_local_following("NASAKennedy", ["NASAKennedy"], iter_num=3)
+    # graph_local_follower("NASAKennedy", ["NASAKennedy"], iter_num=3)
