@@ -7,6 +7,8 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 from src.shared.utils import print_progress
 from typing import Dict
 import math
+from src.process.data_cleaning import extended_friends_cleaner
+
 from src.shared.logger_factory import LoggerFactory
 
 log = LoggerFactory.logger(__name__)
@@ -26,17 +28,23 @@ class LocalNeighbourhoodDownloader():
         self.cleaned_user_friend_getter = cleaned_user_friend_getter
         self.local_neighbourhood_setter = local_neighbourhood_setter
 
-    def download_local_neighbourhood_by_id(self, user_id: str, params=None):
+    def download_local_neighbourhood_by_id(self, user_id: str, params=None, clean=True):
         user_friends_ids = self.cleaned_user_friend_getter.get_user_friends_ids(user_id)
         if user_friends_ids is None:
             log.info("Could not find user_friend list")
             self.user_friends_downloader.download_friends_ids_by_id(user_id)
             user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
 
+        log.info(f"{ user_id} has {len(user_friends_ids)} friends")
+        if clean:
+            user_friends_ids, t = self.clean_user_friends_global(user_id, user_friends_ids)
+
         user_dict = {}
         user_dict[str(user_id)] = user_friends_ids
 
         num_ids = len(user_friends_ids)
+        log.info(f"Cleaning Threshold: {t}")
+        log.info("Starting Downloading Friend List for " + str(len(user_friends_ids)) + " users")
         for i in range(num_ids):
             id = user_friends_ids[i]
 
@@ -66,3 +74,26 @@ class LocalNeighbourhoodDownloader():
         id = self.user_getter.get_user_by_screen_name(screen_name).get_id()
 
         self.download_local_neighbourhood_by_id(id, params)
+
+    def clean_user_friends_global(self, user_id, friends_list):
+        user = self.user_getter.get_user_by_id(str(user_id))
+        log.info("Cleaning Friends List by Follower and Friend")
+        t = 0.1
+
+        num_users = len(friends_list)
+        clean_friends_list = friends_list
+        while (num_users > 1000):
+            num_users = len(friends_list)
+            clean_friends_list = []
+            follower_thresh = t * user.followers_count
+            friend_thresh = t * user.friends_count
+            print(f"Data cleaning with thresholds {follower_thresh, friend_thresh}")
+            for id in friends_list:
+                num_users -= 1
+                curr_user = self.user_getter.get_user_by_id(id)
+                if user is not None and curr_user.followers_count > follower_thresh and curr_user.friends_count > friend_thresh:
+                    clean_friends_list.append(id)
+                    num_users += 1
+            log.info(f"Increasing Data Cleaning Strength {t}, {num_users} remaining users")
+            t += 0.05
+        return clean_friends_list, t

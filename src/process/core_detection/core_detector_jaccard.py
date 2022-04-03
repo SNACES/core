@@ -68,7 +68,7 @@ class JaccardCoreDetector():
         prev_user_id = str(initial_user_id)
         curr_user_id = None
         top_10_users = []
-        
+
         # First iteration
         try:
             curr_user_id, top_10_users = self.first_iteration(prev_user_id, skip_download, optimize_threshold)
@@ -85,30 +85,30 @@ class JaccardCoreDetector():
             except Exception as e:
                 log.exception(e)
                 exit()
-        
+
         log.info("The final user for initial user " + str(initial_user_id) + " is "
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
         log.info(f"The top 10 users for the selected cluster in the last iteration were: {top_10_users}")
-    
+
     def first_iteration(self, user_id: str, skip_download=False, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
-        
+
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
-        
+
         if optimize_threshold:
             thresh = self._pick_optimal_threshold(user_id)
         else:
-            thresh = 0.3
+            thresh = 0.4
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)[0]
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
-        
+
         return curr_user, top_10_users
-    
+
     def _pick_first_cluster(self, user_id, clusters):
         """Returns the largest cluster."""
         # TODO: Figure out a "better" arbitrary solution
@@ -118,13 +118,13 @@ class JaccardCoreDetector():
     def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=False, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
-        
+
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
 
         if optimize_threshold:
             thresh = self._pick_optimal_threshold(user_id)
         else:
-            thresh = 0.3
+            thresh = 0.4
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         self._download_cluster_tweets(chosen_cluster)
@@ -133,7 +133,7 @@ class JaccardCoreDetector():
         curr_user = curr_user.id
 
         return curr_user, top_10_users
-    
+
     def _select_cluster(self, user_id, top_10_users, clusters):
         """Returns the cluster where the sum of the production utilities of the top 10 users of
         the previous iteration is the highest."""
@@ -146,19 +146,21 @@ class JaccardCoreDetector():
             cluster_user_ids = cluster.users
             cluster_user_ids.extend(top_10_users_ids)
             prod_ranker_scores = self.prod_ranker.score_users(cluster_user_ids)
-            
+
             for top_user_id in top_10_users_ids:
                 list_of_prod_values[ind] += prod_ranker_scores[str(top_user_id)]
-        
+
+        print(list_of_prod_values)
+
         ind, val = 0, 0
         for i in range(len(list_of_prod_values)):
             if list_of_prod_values[i] >= val:
                 ind = i
                 val = list_of_prod_values[i]
-        
+
         return clusters[ind]
-        
-    def _download(self, user_id: str, clean=True):
+
+    def _download(self, user_id: str, clean=False):
             # TODO: Add a separate option for cleaning when not downloading
             user_id = int(user_id)
             screen_name = self.user_getter.get_user_by_id(str(user_id)).screen_name
@@ -181,7 +183,7 @@ class JaccardCoreDetector():
                 self.local_neighbourhood_downloader.download_local_neighbourhood_by_id(user_id)
 
             log.info("Done downloading. Beginning processing")
-    
+
     def _clean(self, user_id, local_following=4):
         """Removes users based on global and local attributes."""
         clean_list = self._clean_globally(user_id)
@@ -196,27 +198,27 @@ class JaccardCoreDetector():
         follower_thresh = 0.1 * user.followers_count
         friend_thresh = 0.1 * user.friends_count
         tweet_thresh = 0.1 * len(self.user_tweet_getter.get_tweets_by_user_id_time_restricted(str(user_id)))
-        clean_list = self.extended_friends_cleaner.clean_friends_global(user_id, 
+        clean_list = self.extended_friends_cleaner.clean_friends_global(user_id,
                      tweet_threshold=tweet_thresh, follower_threshold=follower_thresh, friend_threshold=friend_thresh)
-        
+
         return clean_list
-    
+
     def _download_cluster_tweets(self, cluster):
-        self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)      
-    
+        self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)
+
     def _clustering(self, user_id: str, threshold: int=0.3):
         """Returns clusters in descending order of size after refining using jaccard similarity
         (all pairs of users).
         """
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
-        
+
         social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
         refined_social_graph = csgc.refine_social_graph_jaccard_users(screen_name, social_graph, local_neighbourhood, threshold=threshold)
         refined_clusters = csgc.clustering_from_social_graph(screen_name, refined_social_graph)
         sorted_clusters = sorted(refined_clusters, key=lambda c: len(c.users), reverse=True)
 
         return sorted_clusters
-    
+
     def _pick_optimal_threshold(self, user_id: str):
         """Returns the optimal threshold for clustering for a given user."""
         log.info("---PICKING THRESHOLD NOW---")
@@ -239,4 +241,3 @@ class JaccardCoreDetector():
 
         log.info("---FINISHED PICKING THRESHOLD---")
         return curr_thresh
-  
