@@ -1,10 +1,8 @@
 from compare_clustering_algorithms import get_clusters, threshold_clusters
-<<<<<<< HEAD
 from src.shared.utils import get_project_root
-=======
 from ranking_users_in_clusters import rank_users
+import create_social_graph_and_cluster as csgc
 
->>>>>>> c096ad4af3614d58015629b5a8a674d21131be49
 
 def write_cluster_sizes(initial_user: str, clusters, refined_clusters):
     """Write number of clusters to text files given clusters and refined_clusters of a particular experiment run."""
@@ -46,25 +44,7 @@ def write_cluster_ranking(initial_user: str, clusters, refined_clusters):
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     clusters, refined_clusters = get_clusters("david_madras")
     write_cluster_sizes("david_madras", clusters, refined_clusters)
-=======
-    # clusters, refined_clusters = get_clusters("david_madras")
-    # write_cluster_sizes("david_madras", clusters, refined_clusters)
-    # write_cluster_ranking("david_madras", clusters, refined_clusters)
-
-    # clusters, refined_clusters = get_clusters("hardmaru")
-    # write_cluster_sizes("hardmaru", clusters, refined_clusters)
-    # write_cluster_ranking("hardmaru", clusters, refined_clusters)
-
-    # clusters, refined_clusters = get_clusters("tw_killian")
-    # write_cluster_sizes("tw_killian", clusters, refined_clusters)
-    # write_cluster_ranking("tw_killian", clusters, refined_clusters)
-
-    # clusters, refined_clusters = get_clusters("timnitGebru")
-    # write_cluster_sizes("timnitGebru", clusters, refined_clusters)
-    # write_cluster_ranking("timnitGebru", clusters, refined_clusters)
 
     pass
->>>>>>> c096ad4af3614d58015629b5a8a674d21131be49

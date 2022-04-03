@@ -116,7 +116,7 @@ def graph_overlap(user, overlap_threshold, selected_user=None):
 
     selected_user_overlap = None
     for curr_user in local_neighbourhood_users:
-        if curr_user != str(user_id):
+        # if curr_user != str(user_id):
             friends = local_neighbourhood.get_user_friends(curr_user)
             overlaps.append(len(friends))
             if selected_user and \
@@ -125,10 +125,10 @@ def graph_overlap(user, overlap_threshold, selected_user=None):
 
     N = len(local_neighbourhood_users)
     overlaps.sort(reverse=True)
-    x_vals = list(range(N - 1))
+    x_vals = list(range(N))
     plt.figure()
     plt.plot(x_vals, overlaps, label="local following list")
-    plt.plot(x_vals, [overlap_threshold for _ in range(N - 1)], label="local following list threhold")
+    plt.plot(x_vals, [overlap_threshold for _ in range(N)], label="local following list threhold")
     if selected_user:
         x_selected = len([o for o in overlaps if o > selected_user_overlap])
         plt.plot(x_selected, selected_user_overlap, 'go', label=selected_user)
@@ -136,6 +136,7 @@ def graph_overlap(user, overlap_threshold, selected_user=None):
     plt.ylabel("Number of Followers in Local Neighborhood")
     plt.legend()
     plt.savefig(f"overlaps_for_{user}.png")
+    plt.show()
 
 
 
@@ -151,6 +152,6 @@ if __name__ == "__main__":
     # graph_size_of_clusters(conn, 0.2)
 
     # graph_overlap("jps_astro", 4)
-    graph_overlap("jps_astro", 4, "RoyalAstroSoc")
+    graph_overlap("chess24com", 4, "chess24com")
 
 

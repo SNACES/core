@@ -8,3 +8,4 @@ src/twitter-download/user_list
 src/clustering/label-propagation/label_propagation_results
 SNACES.egg-info/
 src/clustering_experiments/data/
+*.png
