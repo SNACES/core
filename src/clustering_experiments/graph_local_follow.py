@@ -120,17 +120,20 @@ def graph_local_follower(user, selected_users=None, iter_num=None):
 
 
 if __name__ == "__main__":
-    # graph_local_following("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
-    # graph_local_follower("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
+    graph_local_following("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
+    graph_local_follower("jps_astro", ["RoyalAstroSoc", "astrogrant"], iter_num=1)
 
-    # graph_local_following("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
-    # graph_local_follower("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
+    graph_local_following("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
+    graph_local_follower("RoyalAstroSoc", ["esa", "NASA"], iter_num=2)
 
-    # graph_local_following("esa", ["NASAKennedy"], iter_num=3)
-    # graph_local_follower("esa", ["NASAKennedy"], iter_num=3)
+    graph_local_following("esa", ["NASAKennedy"], iter_num=3)
+    graph_local_follower("esa", ["NASAKennedy"], iter_num=3)
+
+    graph_local_following("NASAKennedy", ["NASAKennedy"], iter_num=4)
+    graph_local_follower("NASAKennedy", ["NASAKennedy"], iter_num=4)
 
     # graph_local_following("Karen_Chess1", ["chess24com"], iter_num=1)
     # graph_local_follower("Karen_Chess1", ["chess24com"], iter_num=1)
 
-    graph_local_following("chess24com", ["chess24com"], iter_num=2)
-    graph_local_follower("chess24com", ["chess24com"], iter_num=2)
+    # graph_local_following("chess24com", ["chess24com"], iter_num=2)
+    # graph_local_follower("chess24com", ["chess24com"], iter_num=2)

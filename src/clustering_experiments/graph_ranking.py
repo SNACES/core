@@ -8,6 +8,7 @@ from src.shared.utils import get_project_root
 from create_social_graph_and_cluster import get_user_by_screen_name
 import numpy as np
 from ranking_users_in_clusters import rank_users
+import graph_connnection as gc
 
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
@@ -40,11 +41,13 @@ def compare_top_users_mongo_single(conn, user, threshold, discard_size, data_id=
         doc = db.threshold.find_one({"threshold": threshold, "user": user})
     clusters = format_to_list_of_clusters(doc)
     clusters_nested = []
-    new_clusters = sorted(clusters, key=lambda c: len(c.users), reverse=False)
+    new_clusters = sorted(clusters, key=lambda c: len(c.users), reverse=True)
     for cluster in new_clusters:
         if len(cluster.users) >= discard_size:
             clusters_nested.append(cluster)
+    print(len(clusters_nested))
     for i, cluster in enumerate(clusters_nested):
+        print(f"processing cluster {i}")
         graph_utility(user, cluster, i, threshold)
     return clusters
 
@@ -83,7 +86,7 @@ def rank_users(user, cluster, n:int = 10, path=DEFAULT_PATH):
     top_n_users_prod_value = [prod.get(user_id) for user_id in top_n_users_id]
     top_n_users_con_value = [con.get(user_id) for user_id in top_n_users_id]
     print(top_n_users_prod, top_n_users_prod_value, top_n_users_con_value)
-    return top_n_users_prod, top_n_users_prod_value, top_n_users_con_value
+    return top_n_users_prod[:n], top_n_users_prod_value[:n], top_n_users_con_value[:n]
 
 
 def rank_single_user(user, cluster, new_user, path=DEFAULT_PATH):
@@ -181,10 +184,11 @@ def discard_clusters_size_mongo(clusters, discard_size: int):
 
 def graph_utility(user: str, cluster, cluster_number: int, threshold: int):
     """Graphs the top 10 users of the same cluster over runs."""
-    name_of_graph = f"Top Users of Cluster {cluster_number}, threshold {threshold} -- {user}"
+    name_of_graph = f"Top Users of Cluster {cluster_number}, threshold {threshold} -- {user}, size {len(cluster.users)}"
 
     top_10_users, top_10_prod, top_10_con = rank_users(user, cluster)
 
+    gc.graph_connection(user, cluster, cluster_number, threshold, top_10_users)
     fig = plt.figure(figsize=(18, 10))
     ax = fig.add_subplot()
     x = np.arange(len(top_10_users))  # the label locations

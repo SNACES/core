@@ -64,6 +64,7 @@ def update_size_count_dict(size_count_dict, doc):
             size_count_dict[size] = 1
         else:
             size_count_dict[size] += 1
+    print(size_count_dict)
     return size_count_dict
 
 
@@ -71,17 +72,34 @@ def graph_size_of_clusters(conn, user, threshold, one=False):
     size_count_dict, count = \
         aggregate_size_of_clusters(conn, user, threshold, one)
 
+
     fig, ax = plt.subplots()
-    count_list = [val / count for val in size_count_dict.values()]
-    key_list = [str(size) for size in sorted(size_count_dict.keys())]
+
+    count_list = []
+    key_list = []
+    key_str_list = []
+
+    for k, v in sorted(size_count_dict.items()):
+        count_list.append(v)
+        key_list.append(k)
+        key_str_list.append(str(k))
+
+    ax.bar(key_str_list, count_list)
+
+    ax.set_title(f'Number of Clusters for Each Size, threshold={threshold} -- {user}')
+    ax.set_ylabel(f'Count of Cluster given Size')
+    ax.set_xlabel('Size of clusters')
+
+    plt.savefig(f"bar_of_clusters_sizes_{threshold}_{user}.png")
+
+    fig, ax = plt.subplots()
     ax.bar(key_list, count_list)
 
-    ax.set_title(f'Number of Clusters for Each Size, threshold={threshold} -- user')
+    ax.set_title(f'Number of Clusters for Each Size, threshold={threshold} -- {user}')
     ax.set_ylabel(f'Count of Cluster given Size')
     ax.set_xlabel('Size of clusters')
 
     plt.savefig(f"dist_of_clusters_sizes_{threshold}_{user}.png")
-    plt.show()
 
 
 def graph_overlap(user, overlap_threshold, selected_user=None):
