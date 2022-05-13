@@ -4,6 +4,7 @@ import create_social_graph_and_cluster as csgc
 import matplotlib.pyplot as plt
 from src.shared.utils import get_project_root
 import src.dependencies.injector as sdi
+from matplotlib.offsetbox import AnchoredText
 
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
@@ -11,7 +12,10 @@ def graph_following_between_clusters(screen_name, c1, c2, c1_name="Cluster 1", c
     """Graphs the number of users from cluster 2 are being followed by each user from cluster 1
     sorted by production utility in decreasing order.
     """
-    graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_to_{c2_name}"#_{num_users}"
+    if num_users == -1:
+        graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_to_{c2_name}"
+    else:
+        graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_to_{c2_name}_{num_users}"
     initial_user_id = csgc.get_user_by_screen_name(screen_name).id
     injector = sdi.Injector.get_injector_from_file(DEFAULT_PATH)
     process_module = injector.get_process_module()
@@ -32,7 +36,7 @@ def graph_following_between_clusters(screen_name, c1, c2, c1_name="Cluster 1", c
         num_users = len(prod_ranking_users) - 1
     else:
         num_users = min(num_users, len(prod_ranking_users) - 1)
-    for i in range(num_users):
+    for i in range(len(prod_ranking_users) - 1):
         user_id = prod_ranking_users[i]
         if str(user_id) == str(initial_user_id):
             # so as to ignore spikes, we ignore the initial user
@@ -43,8 +47,8 @@ def graph_following_between_clusters(screen_name, c1, c2, c1_name="Cluster 1", c
         follows_in_c2_count = len(follows_in_c2)
         following_in_c2.append(follows_in_c2_count)
     
-    y_vals = following_in_c2
-    x_vals = list(range(len(following_in_c2)))
+    y_vals = following_in_c2[:num_users]
+    x_vals = list(range(1, len(y_vals) + 1))
     
     fig, ax = plt.subplots()
     ax.plot(x_vals, y_vals, color="magenta")
@@ -52,6 +56,14 @@ def graph_following_between_clusters(screen_name, c1, c2, c1_name="Cluster 1", c
     plt.xlabel(f"Users from {c1_name} sorted by Production Utility")
     plt.ylabel(f"Number of Followers in {c2_name}")
     plt.title(f"Distribution of each user from {c1_name} following users from {c2_name}")
+
+    ## Textbox code
+    mean_str = f'mean = {round(sum(y_vals) / len(y_vals), 4)}'
+    mean_txt = AnchoredText(mean_str, prop=dict(size=12), frameon=True, loc="upper right")
+    mean_txt.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(mean_txt)
+    ##
+
     plt.savefig(graph_name)
     # plt.show()
 
@@ -60,7 +72,10 @@ def graph_following_between_clusters_2(screen_name, c1, c2, c1_name="Cluster 1",
     """Graphs the number of users from cluster 2 that follow each user from cluster 1
     sorted by production utility in decreasing order.
     """
-    graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_from_{c2_name}"#_{num_users}"
+    if num_users == -1:
+        graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_from_{c2_name}"
+    else:
+        graph_name = f"./src/clustering_experiments/data/info_flow/{screen_name}_{c1_name}_from_{c2_name}_{num_users}"
 
     initial_user_id = csgc.get_user_by_screen_name(screen_name).id
     injector = sdi.Injector.get_injector_from_file(DEFAULT_PATH)
@@ -89,7 +104,7 @@ def graph_following_between_clusters_2(screen_name, c1, c2, c1_name="Cluster 1",
         num_users = len(prod_ranking_users) - 1
     else:
         num_users = min(num_users, len(prod_ranking_users) - 1)
-    for i in range(num_users):
+    for i in range(len(prod_ranking_users) - 1):
         k = prod_ranking_users[i]
         if str(k) == str(initial_user_id):
             # so as to ignore spikes, we ignore the initial user
@@ -98,8 +113,8 @@ def graph_following_between_clusters_2(screen_name, c1, c2, c1_name="Cluster 1",
         following_in_c2.append(following_in_c2_dict[str(k)])
 
     
-    y_vals = following_in_c2
-    x_vals = list(range(len(following_in_c2)))
+    y_vals = following_in_c2[:num_users]
+    x_vals = list(range(1, len(y_vals) + 1))
     
     fig, ax = plt.subplots()
     ax.plot(x_vals, y_vals, color="darkred")
@@ -107,6 +122,14 @@ def graph_following_between_clusters_2(screen_name, c1, c2, c1_name="Cluster 1",
     plt.xlabel(f"Users from {c1_name} sorted by Production Utility")
     plt.ylabel(f"Number of Following from {c2_name}")
     plt.title(f"Distribution of {c2_name} users following each user from {c1_name}")
+    
+    ## Textbox code
+    mean_str = f'mean = {round(sum(y_vals) / len(y_vals), 4)}'
+    mean_txt = AnchoredText(mean_str, prop=dict(size=12), frameon=True, loc="upper right")
+    mean_txt.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(mean_txt)
+    ##
+
     plt.savefig(graph_name)
     # plt.show()
 
@@ -144,6 +167,13 @@ def graph_local_following(screen_name: str, cluster, cluster_name="Cluster X", p
     ax.plot(x_vals, y_vals, label="cluster following list", color="C0")
     ax.set_ylim([0, len(cluster_users)])
     # plt.plot(x_vals, [overlap_threshold for _ in range(N - 1)], label="local following list threhold")
+
+    ## Textbox code
+    mean_str = f'mean = {round(sum(y_vals) / len(y_vals), 4)}'
+    mean_txt = AnchoredText(mean_str, prop=dict(size=12), frameon=True, loc="lower left")
+    mean_txt.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(mean_txt)
+    ##
 
     plt.ylabel("Number of Following in Cluster")
     plt.legend()
@@ -209,6 +239,14 @@ def graph_local_follower(screen_name: str, cluster, cluster_name="Cluster X", pr
     plt.legend()
     plt.title(f"Distribution of Followers for User -- {screen_name}, {cluster_name}")
     graph_name = f"./src/clustering_experiments/data/info_flow/clusterfollower_for_{screen_name}_{cluster_name}"
+
+    ## Textbox code
+    mean_str = f'mean = {round(sum(y_vals) / len(y_vals), 4)}'
+    mean_txt = AnchoredText(mean_str, prop=dict(size=12), frameon=True, loc="lower left")
+    mean_txt.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+    ax.add_artist(mean_txt)
+    ##
+
     if prod:
         plt.xlabel("Users sorted by Production Utility")
         graph_name = graph_name + ".png"
@@ -258,8 +296,9 @@ if __name__ == "__main__":
             graph_following_between_clusters_2(screen_name, sorted_clusters[i], sorted_clusters[j], f"Cluster {i}", f"Cluster {j}")#, num_users=10)
             graph_following_between_clusters_2(screen_name, sorted_clusters[j], sorted_clusters[i], f"Cluster {j}", f"Cluster {i}")#, num_users=10)
 
-    for i in range(7):
-        graph_local_following(screen_name, sorted_clusters[i], f"Cluster {i}", prod=True)
-        graph_local_follower(screen_name, sorted_clusters[i], f"Cluster {i}", prod=True)
-        graph_local_following(screen_name, sorted_clusters[i], f"Cluster {i}", prod=False)
-        graph_local_follower(screen_name, sorted_clusters[i], f"Cluster {i}", prod=False)
+    # for i in range(7):
+    #     graph_local_following(screen_name, sorted_clusters[i], f"Cluster {i}", prod=True)
+    #     graph_local_follower(screen_name, sorted_clusters[i], f"Cluster {i}", prod=True)
+    #     graph_local_following(screen_name, sorted_clusters[i], f"Cluster {i}", prod=False)
+    #     graph_local_follower(screen_name, sorted_clusters[i], f"Cluster {i}", prod=False)
+    # graph_following_between_clusters(screen_name, sorted_clusters[0], sorted_clusters[1], f"Cluster {0}", f"Cluster {1}")# , num_users=10)
