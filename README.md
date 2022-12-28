@@ -13,15 +13,23 @@ credential for the twitter API.
 
 To retrieve these credentials sign up for a developer twitter account [here](https://developer.twitter.com/en/apply-for-access).
 
-Getting access may take several days. Once your application is approved,
-you will get four keys: `consumer key`, `consumer secret`, `access token`, and
-`access token secret`. Enter these four values into the file
-`./conf/credentials.py`.
+Getting access may be immediate or may take several days.
+Once your application is approved, you will get four values: 
+`API Key`, `API Key Secret`, `Access Token`, and `Access Token Secret`.
+Create a file with this path `./conf/credentials.py` and enter the four values into the file in this format:
+```python
+ACCESS_TOKEN = "<Your Access Token>"
+ACCESS_TOKEN_SECRET = "<Your Access Token Secret>"
+CONSUMER_KEY = "<Your API Key>"
+CONSUMER_SECRET = "<Your API Key Secret>"
+```
+Note that the API Key is also known as the Consumer Key.
 
 ### Installing
+Python 3.8 is required for the following installation steps.
 
 1. Clone Git repository to your workspace
-1. Run the install script `./scripts/install.sh`
+1. Run the install script `./install.sh`
 1. Run `python ./setup.py` to setup the Pipfile
 1. Run `pipenv shell` to start a pip environment using the pip file
 
