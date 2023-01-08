@@ -180,6 +180,20 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         return retweets
 
+    def get_tweets_by_user_ids(self, user_ids: List[str]) -> List[Tweet]:
+        # Get all tweets of all users in the list
+        user_ids = [bson.int64.Int64(user_id) for user_id in user_ids]
+        from_date = datetime.today() + relativedelta(months=-12)
+
+        # tweet_doc_list = self.collection.find({"user_id": {"$in": user_ids}})
+        
+        tweet_doc_list = self.collection.find({"$and": [
+            {"user_id": {"$in": user_ids}},
+            {"created_at": {"$gte": from_date}}
+            ]})
+
+        return [Tweet.fromDict(doc) for doc in tweet_doc_list]
+
     def get_tweet_scale_coefficient(self, user_id) -> float:
 
         def get_tweet_limit_coefficient_by_tweets_brute_force(tweets: List) -> float:

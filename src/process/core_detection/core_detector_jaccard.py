@@ -103,7 +103,7 @@ class JaccardCoreDetector():
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)[0]
+        top_10_users = rank_users(screen_name, chosen_cluster)
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 
@@ -128,7 +128,7 @@ class JaccardCoreDetector():
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)[0]
+        top_10_users = rank_users(screen_name, chosen_cluster)
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 
@@ -139,26 +139,16 @@ class JaccardCoreDetector():
         the previous iteration is the highest."""
         log.info("Selecting Cluster based on production utilities")
 
-        list_of_prod_values = [0] * len(clusters)
+        cluster_scores = {cluster: 0 for cluster in clusters}
         top_10_users_ids = [self.user_getter.get_user_by_screen_name(top_user).id for top_user in top_10_users]
 
-        for ind, cluster in enumerate(clusters):
-            cluster_user_ids = cluster.users
-            cluster_user_ids.extend(top_10_users_ids)
+        for cluster in clusters:
+            cluster_user_ids = list(set([str(user_id) for user_id in cluster.users + top_10_users_ids]))
             prod_ranker_scores = self.prod_ranker.score_users(cluster_user_ids)
 
-            for top_user_id in top_10_users_ids:
-                list_of_prod_values[ind] += prod_ranker_scores[str(top_user_id)]
+            cluster_scores[cluster] = sum([prod_ranker_scores[str(user_id)] for user_id in top_10_users_ids])
 
-        print(list_of_prod_values)
-
-        ind, val = 0, 0
-        for i in range(len(list_of_prod_values)):
-            if list_of_prod_values[i] >= val:
-                ind = i
-                val = list_of_prod_values[i]
-
-        return clusters[ind]
+        return max(cluster_scores, key=cluster_scores.get)
 
     def _download(self, user_id: str, clean=False):
             # TODO: Add a separate option for cleaning when not downloading
