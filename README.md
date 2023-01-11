@@ -55,7 +55,7 @@ to input options for which process to trigger:
    1. `Clustering` performs clustering algorithms on data
    1. `Community Expansion` performs community expansion on data
    
-The only one we are currently using is `Community Expansion`
+The only one we are currently using is `Community Expansion`  
 For core detection, please checkout branch `clustering_trials` for the latest version of core detection algorithm
 
 ## Current Work
@@ -84,4 +84,4 @@ You will also use code in the following path for data analysis:
 
 ### Core Detection
 
-Please checkout branch `clustering_trials` for the latest version of core detection algorithm
+Please checkout branch `clustering_trials` for the latest version of core detection algorithm.
