@@ -1,0 +1,14 @@
+pymongo~=3.11.0
+DateTime~=4.3
+tweepy~=3.9.0
+python-dateutil~=2.8.2
+networkx~=2.5
+nltk~=3.5
+PyYAML~=5.3.1
+schedule~=0.6.0
+tqdm~=4.50.0
+numpy~=1.19.2
+sklearn~=0.0
+scikit-learn~=0.23.2
+matplotlib~=3.6.2
+click~=7.1.2

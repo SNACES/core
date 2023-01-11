@@ -17,7 +17,6 @@ import threading
 
 log = LoggerFactory.logger(__name__)
 
-
 apiThreadLock = threading.Lock()
 class BufferedUserTweetGetter():
     def __init__(self, num_tweets, subscriber, twitter_api, user_ids, q=Queue(), r=Queue()):

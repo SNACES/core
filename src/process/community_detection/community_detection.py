@@ -1,11 +1,5 @@
-from src.model.user import User
-from src.shared.utils import cosine_sim
 from typing import Dict, List
 from src.shared.logger_factory import LoggerFactory
-from tqdm import tqdm
-import json
-import seaborn as sns
-from matplotlib import pyplot as plt
 log = LoggerFactory.logger(__name__)
 
 

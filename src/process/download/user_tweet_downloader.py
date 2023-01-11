@@ -49,13 +49,13 @@ class UserTweetDownloader():
         """
         all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
         tweets = []
-        startDate = date.today() + relativedelta(months=-months_back)
+        # startDate = date.today() + relativedelta(months=-months_back)
 
         for tweet in all_tweets:
-            createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
-            createDate = datetime.strptime(createDate_str, '%b %d %Y')
-            if createDate.date() > startDate:
-                tweets.append(tweet)
+            # createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
+            # createDate = datetime.strptime(createDate_str, '%b %d %Y')
+            # if createDate.date() > startDate:
+            tweets.append(tweet)
         self.raw_tweet_setter.store_tweets(tweets)
         log.info(f"Downloaded {len(tweets)} Tweets for user {user_id}")
 
@@ -64,12 +64,12 @@ class UserTweetDownloader():
         count = 0
         for id in user_ids:
             # user = self.user_getter.get_user_by_id(id)
-            # tweet_count = self.raw_tweet_setter.get_num_user_tweets(id)
-            #
-            # if tweet_count >= 10:
-            #     log.info("Skipping " + str(id))
-            # else:
-            self.download_user_tweets_by_user_id(id, months_back)
+            tweet_count = self.raw_tweet_setter.get_num_user_tweets(id)
+
+            if tweet_count >= 10:
+                log.info("Skipping " + str(id))
+            else:
+                self.download_user_tweets_by_user_id(id, months_back)
             count += 1
 
             log.log_progress(log, count, num_ids)

@@ -59,6 +59,22 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         return tweets
 
+    def get_tweets_by_user_ids(self, user_ids: List[str]) -> List[Tweet]:
+        """
+        Return a list of tweet with user_id that matches the given user_ids
+
+        @param user_ids the ids of the user to retrieve tweets from
+
+        @return a list of tweets by the given user
+        """
+
+        tweets = []
+
+        for user in user_ids:
+            tweets = tweets + self.get_tweets_by_user_id(user)
+
+        return tweets
+
     def get_tweets_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
         """
         Return a list of tweet with user_id that matches the given user_id
