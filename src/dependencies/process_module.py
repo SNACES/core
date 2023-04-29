@@ -16,8 +16,8 @@ from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.production_utility_ranker import ProductionUtilityRanker
 from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
-from process.ranking.influence_one_ranker import InfluenceOneRanker
-from process.ranking.influence_two_ranker import InfluenceTwoRanker
+from src.process.ranking.influence_one_ranker import InfluenceOneRanker
+from src.process.ranking.influence_two_ranker import InfluenceTwoRanker
 from src.process.ranking.followers_ranker import FollowerRanker
 from src.process.ranking.local_followers_ranker import LocalFollowersRanker
 from src.process.community_ranking.community_production_ranker import CommunityProductionRanker
@@ -77,7 +77,7 @@ class ProcessModule():
             cluster_word_frequency_processor, cluster_word_frequency_getter,
             prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
                             user_tweet_getter, user_friend_getter)
-    
+
     def get_jaccard_core_detector(self):
         user_getter = self.dao_module.get_user_getter()
         user_downloader = self.get_user_downloader()
@@ -232,7 +232,7 @@ class ProcessModule():
         friends_getter = self.dao_module.get_user_friend_getter()
 
         if type == "Consumption":
-            ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+            ranker = ConsumptionUtilityRanker(cluster_getter, raw_tweet_getter, user_getter, ranking_setter)
         elif type == "Follower":
             ranker = FollowerRanker(cluster_getter, user_getter, ranking_setter)
         elif type == "LocalFollowers":
@@ -244,7 +244,7 @@ class ProcessModule():
         elif type == "InfluenceTwo":
             ranker = InfluenceTwoRanker(raw_tweet_getter, friends_getter, ranking_setter)
         else:
-            ranker = ProductionUtilityRanker(cluster_getter, raw_tweet_getter, ranking_setter)
+            ranker = ProductionUtilityRanker(cluster_getter, raw_tweet_getter, user_getter, ranking_setter)
 
         return ranker
 

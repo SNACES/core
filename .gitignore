@@ -9,3 +9,17 @@ src/clustering/label-propagation/label_propagation_results
 SNACES.egg-info/
 src/clustering_experiments/data/
 *.png
+test/cluster_tree_res.txt
+test/new_cluster_tree_res
+test/core_detection_data.txt
+test/new_profile
+test/profile.txt
+test/ranking_cluster_profile
+test/ranking_cluster_tree_res
+test/t.py
+test/t.txt
+test/t2.txt
+src/clustering_experiments/test.py
+src/dao/user_friend/setter/mongo_friend_setter.py
+src/dao/user_friend/setter/mongo_friend_setter.py
+src/dao/user_friend/setter/mongo_friend_setter.py
