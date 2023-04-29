@@ -20,11 +20,11 @@ class InfluenceOneRanker(Ranker):
 	def score_users(self, user_ids: List[str]):
 		# Score users with their average number of retweets from direct followers
 		friends = self.create_friends_dict(user_ids)
-		scores = {user_id: 0 for user_id in user_ids} # Initialize all scores to 0
+		scores = {user_id: [0,0] for user_id in user_ids} # Initialize all scores to 0
 
 		tweets = self.raw_tweet_getter.get_tweets_by_user_ids(user_ids)
 		valid_tweets = [tweet for tweet in tweets if tweet.retweet_user_id != tweet.user_id] # omit self-retweets
-		
+
 		# Define helper functions
 		tweets_by_retweet_group = self._group_by_retweet_id(valid_tweets)
 		def get_retweets_of_tweet_id(tweet_id):
@@ -42,22 +42,23 @@ class InfluenceOneRanker(Ranker):
 			for original_tweet in user_original_tweets:
 				retweets = get_retweets_of_tweet_id(original_tweet.id)
 				retweets_from_direct_followers = [rtw for rtw in retweets if is_direct_follower(id, str(rtw.user_id))]
-				scores[id] += len(retweets_from_direct_followers)
+				scores[id][0] += len(retweets_from_direct_followers)
 
 			# Score retweets
 			user_retweets = [tweet for tweet in user_tweets if tweet.retweet_id is not None]
 			for user_retweet in user_retweets:
 				retweets = get_later_retweets_of_tweet_id(user_retweet.retweet_id, user_retweet.created_at)
 				retweets_from_direct_followers = [rtw for rtw in retweets if is_direct_follower(id, str(rtw.user_id))]
-				scores[id] += len(retweets_from_direct_followers)
+				scores[id][0] += len(retweets_from_direct_followers)
 
 			if len(user_tweets) > 0:
-				scores[id] /= len(user_tweets)
+				scores[id][0] /= len(user_tweets)
+			scores[id][1] = len(user_tweets)
 		return scores
 
 	def _group_by_retweet_id(self, tweets) -> Dict:
 		# Puts all tweets with the same retweet_id in the same list
-		# Returns: A dictionary where the key is the retweet_id and 
+		# Returns: A dictionary where the key is the retweet_id and
 		# the value is the list of tweets with that retweet_id
 		dict = {}
 		for tweet in tweets:
@@ -66,5 +67,5 @@ class InfluenceOneRanker(Ranker):
 				dict[key].append(tweet)
 			else:
 				dict[key] = [tweet]
-		
+
 		return dict

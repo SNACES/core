@@ -14,7 +14,7 @@ class Ranker():
 
         scores = self.score_users(user_ids)
 
-        ranked_ids = list(sorted(scores, key=scores.get, reverse=True))
+        ranked_ids = list(sorted(scores, key=lambda x: (scores[x][0], scores[x][1]), reverse=True))
         ranking = Ranking(seed_id, ranked_ids, self.ranking_function_name, {})
 
         self.ranking_setter.store_ranking(ranking)
