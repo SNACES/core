@@ -16,7 +16,10 @@ class LocalNeighbourhood():
         return list(self.users.keys())
 
     def get_user_friends(self, id):
-        return self.users[id]
+        if id in self.users:
+            return self.users[id]
+        else:
+            return []
 
     def toJSON(self) -> str:
         """

@@ -8,6 +8,7 @@ from src.model.local_neighbourhood import LocalNeighbourhood
 from typing import Dict
 from src.shared.logger_factory import LoggerFactory
 import src.clustering_experiments.create_social_graph_and_cluster as csgc
+import src.clustering_experiments.build_cluster_tree as bct
 from src.clustering_experiments.ranking_users_in_clusters import rank_users
 
 log = LoggerFactory.logger(__name__)
@@ -68,10 +69,13 @@ class JaccardCoreDetector():
         prev_user_id = str(initial_user_id)
         curr_user_id = None
         top_10_users = []
-
+        top_10 = []
+        clusters = []
         # First iteration
         try:
-            curr_user_id, top_10_users = self.first_iteration(prev_user_id, skip_download, optimize_threshold)
+            curr_user_id, top_10_users, cluster = self.first_iteration(prev_user_id, skip_download, optimize_threshold)
+            top_10.append(top_10_users)
+            clusters.append(cluster)
         except Exception as e:
             log.exception(e)
             exit()
@@ -81,7 +85,9 @@ class JaccardCoreDetector():
             prev_user_id = curr_user_id
 
             try:
-                curr_user_id, top_10_users = self.loop_iteration(curr_user_id, top_10_users, skip_download, optimize_threshold)
+                curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, top_10_users, skip_download, optimize_threshold)
+                top_10.append(top_10_users)
+                clusters.append(cluster)
             except Exception as e:
                 log.exception(e)
                 exit()
@@ -89,6 +95,13 @@ class JaccardCoreDetector():
         log.info("The final user for initial user " + str(initial_user_id) + " is "
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
         log.info(f"The top 10 users for the selected cluster in the last iteration were: {top_10_users}")
+        log.info(f"The top 10 users for the selected cluster in each iteration were:")
+        for top in top_10:
+            log.info(top)
+        log.info(f"The selected cluster in each iteration were:")
+        for cluster in clusters:
+            users = [self.user_getter.get_user_by_id(user).screen_name for user in cluster.users]
+            log.info(users)
 
     def first_iteration(self, user_id: str, skip_download=False, optimize_threshold=False):
         if not skip_download:
@@ -104,16 +117,38 @@ class JaccardCoreDetector():
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
+        log.info("top_10 of chosen cluster:")
+        log.info(top_10_users)
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 
-        return curr_user, top_10_users
+        return curr_user, top_10_users, chosen_cluster
 
     def _pick_first_cluster(self, user_id, clusters):
         """Returns the largest cluster."""
         # TODO: Figure out a "better" arbitrary solution
-        log.info("Picking Default Cluster")
-        return clusters[0]
+        log.info(f"Here are the {len(clusters)} clusters that have been created:")
+        for i in range(len(clusters)):
+            log.info(f"All users in Cluster {i}:")
+            readable_users = [self.user_getter.get_user_by_id(user_id).screen_name
+                              for user_id in clusters[i].users]
+            log.info(readable_users)
+            log.info(f"Top_10 users in Cluster {i} before we download their tweets:")
+            screen_name = self.user_getter.get_user_by_id(user_id).screen_name
+            top_10_users = rank_users(screen_name, clusters[i])
+            log.info(top_10_users)
+            log.info("")
+        while True:
+            try:
+                i = int(input("Please input the index of the cluster you choose to explore:"))
+                if 0 <= i < len(clusters):
+                    break
+                else:
+                    print("Invalid input. Please enter a number associated to the cluster you want to choose")
+            except ValueError:
+                print("Invalid input. Please enter a number associated to the cluster you want to choose")
+        log.info(f"The user chooses cluster {i}")
+        return clusters[i]
 
     def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=False, optimize_threshold=False):
         if not skip_download:
@@ -132,7 +167,7 @@ class JaccardCoreDetector():
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 
-        return curr_user, top_10_users
+        return curr_user, top_10_users, chosen_cluster
 
     def _select_cluster(self, user_id, top_10_users, clusters):
         """Returns the cluster where the sum of the production utilities of the top 10 users of
@@ -146,7 +181,7 @@ class JaccardCoreDetector():
             cluster_user_ids = list(set([str(user_id) for user_id in cluster.users + top_10_users_ids]))
             prod_ranker_scores = self.prod_ranker.score_users(cluster_user_ids)
 
-            cluster_scores[cluster] = sum([prod_ranker_scores[str(user_id)] for user_id in top_10_users_ids])
+            cluster_scores[cluster] = sum([prod_ranker_scores[str(user_id)][0] for user_id in top_10_users_ids])
 
         return max(cluster_scores, key=cluster_scores.get)
 
@@ -202,9 +237,10 @@ class JaccardCoreDetector():
         """
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
 
-        social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
-        refined_social_graph = csgc.refine_social_graph_jaccard_users(screen_name, social_graph, local_neighbourhood, threshold=threshold)
-        refined_clusters = csgc.clustering_from_social_graph(screen_name, refined_social_graph)
+        # social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
+        # refined_social_graph = csgc.refine_social_graph_jaccard_users(screen_name, social_graph, local_neighbourhood, threshold=threshold)
+        # refined_clusters = csgc.clustering_from_social_graph(screen_name, refined_social_graph)
+        refined_clusters = bct.clustering_from_social_graph(screen_name)
         sorted_clusters = sorted(refined_clusters, key=lambda c: len(c.users), reverse=True)
 
         return sorted_clusters

@@ -13,7 +13,8 @@ class UnionSocialGraph(SocialGraph):
         graph = nx.DiGraph()
 
         user_list = local_neighbourhood.get_user_id_list()
-        user_list.remove(str(local_neighbourhood.seed_id))
+        if str(local_neighbourhood.seed_id) in user_list:
+            user_list.remove(str(local_neighbourhood.seed_id))
         log.info("Length of list " + str(len(user_list)))
 
         if remove_unconnected_nodes:

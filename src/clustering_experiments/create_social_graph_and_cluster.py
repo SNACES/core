@@ -1,4 +1,5 @@
 import src.dependencies.injector as sdi
+from src.clustering_experiments import ranking_users_in_clusters as rank
 from src.shared.utils import get_project_root
 from src.shared.logger_factory import LoggerFactory
 from src.process.data_cleaning.data_cleaning_distributions import jaccard_similarity
@@ -9,7 +10,7 @@ from src.model.user import User
 from src.model.social_graph.social_graph import SocialGraph
 from src.model.cluster import Cluster
 import matplotlib.pyplot as plt
-
+# import ranking_users_in_clusters as rank
 
 
 log = LoggerFactory.logger(__name__)
@@ -30,13 +31,27 @@ def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
         local_neighbourhood_getter = dao_module.get_local_neighbourhood_getter()
         local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(user.id)
         social_graph_constructor = process_module.get_social_graph_constructor()
-        social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user.id,
-                                                                                                local_neighbourhood)
+        social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(local_neighbourhood)
         return social_graph, local_neighbourhood
 
     except Exception as e:
         log.exception(e)
         log.exception(f'{user.screen_name} {user.id} {type(user.id)}')
+        exit()
+
+def create_social_graph_from_local_neighbourhood(local_neighbourhood: LocalNeighbourhood,
+                                                 path=DEFAULT_PATH):
+    """Returns a social graph of the local neighbourhood."""
+    try:
+        injector = sdi.Injector.get_injector_from_file(path)
+        process_module = injector.get_process_module()
+
+        social_graph_constructor = process_module.get_social_graph_constructor()
+        social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(local_neighbourhood)
+        return social_graph
+
+    except Exception as e:
+        log.exception(e)
         exit()
 
 
@@ -86,8 +101,7 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph, \
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, friends_map)
     social_graph_constructor = process_module.get_social_graph_constructor()
-    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id,
-                                                                                                    refined_local_neighbourhood)
+    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(refined_local_neighbourhood)
 
     return refined_social_graph
 
@@ -102,7 +116,10 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
     dao_module = injector.get_dao_module()
     user_friend_getter = dao_module.get_user_friend_getter()
 
-    user_id = get_user_by_screen_name(screen_name).id
+    if not screen_name.isnumeric():
+        user_id = get_user_by_screen_name(screen_name).id
+    else:
+        user_id = screen_name
     user_list = local_neighbourhood.get_user_id_list()
     jaccard_sim = []
 
@@ -142,8 +159,7 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, users_map)
     social_graph_constructor = process_module.get_social_graph_constructor()
-    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id,
-                                                                                                    refined_local_neighbourhood)
+    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(refined_local_neighbourhood)
 
     return refined_social_graph
 
@@ -156,8 +172,10 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
     process_module = injector.get_process_module()
     dao_module = injector.get_dao_module()
     user_friend_getter = dao_module.get_user_friend_getter()
-
-    user_id = get_user_by_screen_name(screen_name).id
+    if not screen_name.isnumeric():
+        user_id = get_user_by_screen_name(screen_name).id
+    else:
+        user_id = screen_name
     user_list = local_neighbourhood.get_user_id_list()
     jaccard_sim = []
 
@@ -185,8 +203,7 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(str(user_id), None, friends_map)
     social_graph_constructor = process_module.get_social_graph_constructor()
-    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(user_id,
-                                                                                                    refined_local_neighbourhood)
+    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(refined_local_neighbourhood)
 
     return refined_social_graph
 
@@ -254,7 +271,7 @@ def discard_small_clusters(clusters):
     gaps = []
     for i in range(1, len(updated_clusters)):
         gap = len(updated_clusters[i - 1].users) - len(updated_clusters[i].users)
-        # i is the number of updated_clusters larger than a 
+        # i is the number of updated_clusters larger than a
         # cut-off discard size chosen at the gap.
         gaps.append((i, gap))
     # Final gap is gap from 0 to the smallest cluster
@@ -294,7 +311,7 @@ def update_size_count_dict(size_count_dict, clusters):
     return size_count_dict
 
 
-def graph_cluster_size(cluster_set, threshold, user):
+def     graph_cluster_size(cluster_set, threshold, user):
     size_count_dict = update_size_count_dict({}, cluster_set)
 
     # Also consider the case where size_count_dict is empty:
@@ -328,7 +345,7 @@ def graph_cluster_size(cluster_set, threshold, user):
     plt.show()
 
 
-def compute_expected_cluster_size(cluster_lst: list[Cluster]) -> float:
+def compute_expected_cluster_size(cluster_lst: List[Cluster]) -> float:
     """
     Return the expected size of clusters given the list of clusters <cluster_lst>.
     """
@@ -343,7 +360,7 @@ def compute_expected_cluster_size(cluster_lst: list[Cluster]) -> float:
     return expected_size
 
 
-def filter_by_expected_size(cluster_lst: list[Cluster]) -> list[Cluster]:
+def filter_by_expected_size(cluster_lst: List[Cluster]) -> List[Cluster]:
     """
     cluster_lst: list of clusters to filter
 
@@ -365,7 +382,7 @@ def filter_by_expected_size(cluster_lst: list[Cluster]) -> list[Cluster]:
 
     filtered_clusters = []
     for cluster in cluster_lst:
-        if len(cluster.users) >= expected_size:
+        if len(cluster.users) >= min(expected_size, 10):
             filtered_clusters.append(cluster)
 
     return filtered_clusters
@@ -396,23 +413,35 @@ def filter_by_expected_size(cluster_lst: list[Cluster]) -> list[Cluster]:
 if __name__ == "__main__":
 
     thresh = 0.4
-
+    top = []
+    # timnitGebru
     # Play around with threshold multiplier and top num
-    social_graph, local_neighbourhood = create_social_graph("timnitGebru")
+    social_graph, local_neighbourhood = create_social_graph("fchollet")
 
     # refined_social_graph = refine_social_graph_jaccard_with_friends("timnitGebru", social_graph, local_neighbourhood, threshold=0.2)
-    refined_social_graph = refine_social_graph_jaccard_users("timnitGebru", social_graph, local_neighbourhood,
+    refined_social_graph = refine_social_graph_jaccard_users("fchollet", social_graph, local_neighbourhood,
                                                              threshold=thresh)
-
-    clusters = clustering_from_social_graph("timnitGebru", refined_social_graph)
+    clusters = clustering_from_social_graph("fchollet", refined_social_graph)
     clusters_filtered_by_size = filter_by_expected_size(clusters)
-
+    path = DEFAULT_PATH
     # refined_clusters = clustering_from_social_graph("mikarv", refined_social_graph)
-
-    # Compare the clusters before & after filtering
-    graph_cluster_size(clusters, thresh, "timnitGebru")
-    graph_cluster_size(clusters_filtered_by_size, thresh, "timnitGebru")
-
+    for cluster in clusters_filtered_by_size:
+        print("Users in the clusters:")
+        injector = sdi.Injector.get_injector_from_file(path)
+        dao_module = injector.get_dao_module()
+        user_getter = dao_module.get_user_getter()
+        base_user = user_getter.get_user_by_id(cluster.base_user)
+        users = []
+        for user in cluster.users:
+            users.append(user_getter.get_user_by_id(user).screen_name)
+        users.sort()
+        print(users)
+        top_10 = rank.rank_users("fchollet", cluster)
+        top.append(top_10)
+    # Compare the clusters before & after   filtering
+    # graph_cluster_size(clusters, thresh, "fchollet")
+    # graph_cluster_size(clusters_filtered_by_size, thresh, "fchollet")
+    print(top)
 
 
 

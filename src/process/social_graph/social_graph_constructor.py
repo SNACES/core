@@ -19,7 +19,7 @@ class SocialGraphConstructor():
         local_neighbourhood = self.local_neighbourhood_getter.get_local_neighbourhood(seed_id, params)
         return self.construct_social_graph_from_local_neighbourhood(seed_id, local_neighbourhood, params=params, is_union=is_union)
 
-    def construct_social_graph_from_local_neighbourhood(self, seed_id, local_neighbourhood, params=None, is_union=True, remove_unconnected_nodes=True):
+    def construct_social_graph_from_local_neighbourhood(self, local_neighbourhood, params=None, is_union=True, remove_unconnected_nodes=True):
         social_graph = None
         if is_union:
             social_graph = UnionSocialGraph.fromLocalNeighbourhood(local_neighbourhood, remove_unconnected_nodes=remove_unconnected_nodes)
