@@ -9,23 +9,18 @@ class ConsumptionUtilityRanker(Ranker):
         self.ranking_setter = ranking_setter
         self.ranking_function_name = "consumption utility"
 
-    def score_users(self, user_ids: List[str]):
+    def score_users(self, user_ids: List[str], respection: List[str]):
         scores = {}
-        for id in user_ids:
-            scores[str(id)] = 0
 
-        for id in tqdm(user_ids):
-            retweets = self.raw_tweet_getter.get_retweets_by_user_id(id)
+        for user_id in user_ids:
+            scores[user_id] = self.score_user(user_id, respection)
 
-            for retweet in retweets:
-                if str(retweet.retweet_user_id) in user_ids and \
-                        str(retweet.retweet_user_id) != str(id):
-                    # retweeting your own tweet does not count
-                    scores[str(id)] += 1
-            # scores[str(id)] *= coefficient
         return scores
 
     def score_user(self, user_id: str, user_ids: List[str]):
+        if user_id not in user_ids:
+            user_ids = user_ids + [user_id]
+
         score = 0
 
         retweets = self.raw_tweet_getter.get_retweets_by_user_id(user_id)
@@ -36,4 +31,4 @@ class ConsumptionUtilityRanker(Ranker):
                 # retweeting your own tweet does not count
                 score += 1
 
-        return score
+        return score / len(user_ids)

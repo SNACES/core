@@ -9,6 +9,7 @@ from typing import Optional
 from datetime import date
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import MACROS
 
 log = LoggerFactory.logger(__name__)
 
@@ -31,48 +32,61 @@ class UserTweetDownloader():
         @param months_back: the number of months we are going to count back from the current date,
         to get a new past date as our start date for downloading tweets. Any older tweets are ignored.
         """
-        all_tweets = self.twitter_getter.get_tweets_by_screen_name(screen_name)
-        tweets = []
-        startDate = date.today() + relativedelta(months=-months_back)
-        for tweet in all_tweets:
-            createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
-            createDate = datetime.strptime(createDate_str, '%b %d %Y')
-            if createDate.date() > startDate:
-                tweets.append(tweet)
-        log.info(f"Downloaded {len(tweets)} Tweets for user {screen_name}")
-        self.raw_tweet_setter.store_many_tweets(tweets)
+        if screen_name not in MACROS.DOWNLOAD_TWEETS_NAME:
+            all_tweets = self.twitter_getter.get_tweets_by_screen_name(screen_name)
+            tweets = []
+            startDate = date.today() + relativedelta(months=-months_back)
+            for tweet in all_tweets:
+                createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
+                createDate = datetime.strptime(createDate_str, '%b %d %Y')
+                if createDate.date() > startDate:
+                    tweets.append(tweet)
+            # log.info(f"Downloaded {len(tweets)} Tweets for user {screen_name}")
+            self.raw_tweet_setter.store_many_tweets(tweets)
+
+            MACROS.DOWNLOAD_TWEETS_NAME.append(screen_name)
 
     def download_user_tweets_by_user_id(self, user_id: str, months_back=12) -> None:
         """
         @param months_back: the number of months we are going to count back from the current date,
         to get a new past date as our start date for downloading tweets. Any older tweets are ignored.
         """
-        all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
-        tweets = []
-        # startDate = date.today() + relativedelta(months=-months_back)
+        if user_id not in MACROS.DOWNLOAD_TWEETS_ID:
+            all_tweets = self.twitter_getter.get_tweets_by_user_id(user_id)
+            tweets = []
+            # startDate = date.today() + relativedelta(months=-months_back)
 
-        for tweet in all_tweets:
-            # createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
-            # createDate = datetime.strptime(createDate_str, '%b %d %Y')
-            # if createDate.date() > startDate:
-            tweets.append(tweet)
-        self.raw_tweet_setter.store_tweets(tweets)
-        log.info(f"Downloaded {len(tweets)} Tweets for user {user_id}")
+            for tweet in all_tweets:
+                # createDate_str = tweet.created_at[4:10] + " " + tweet.created_at[-4:]
+                # createDate = datetime.strptime(createDate_str, '%b %d %Y')
+                # if createDate.date() > startDate:
+                tweets.append(tweet)
+            self.raw_tweet_setter.store_tweets(tweets)
+            # log.info(f"Downloaded {len(tweets)} Tweets for user {user_id}")
+
+            MACROS.DOWNLOAD_TWEETS_ID.append(user_id)
 
     def download_user_tweets_by_user_list(self, user_ids: List[str], months_back=12):
         num_ids = len(user_ids)
         count = 0
+
         for id in user_ids:
-            # user = self.user_getter.get_user_by_id(id)
-            tweet_count = self.raw_tweet_setter.get_num_user_tweets(id)
+            if id not in MACROS.DOWNLOAD_TWEETS_ID:
+                # user = self.user_getter.get_user_by_id(id)
+                tweet_count = self.raw_tweet_setter.get_num_user_tweets(id)
 
-            if tweet_count >= 10:
-                log.info("Skipping " + str(id))
+                if tweet_count >= 10:
+                    # log.info("Skipping " + str(id))
+                    MACROS.DOWNLOAD_TWEETS_ID.append(id)
+                else:
+                    self.download_user_tweets_by_user_id(id, months_back)
+                count += 1
+
+                log.log_progress(log, count, num_ids)
             else:
-                self.download_user_tweets_by_user_id(id, months_back)
-            count += 1
-
-            log.log_progress(log, count, num_ids)
+                # log.info("Skipping " + str(id))
+                count += 1
+                log.log_progress(log, count, num_ids)
 
         log.info("Done downloading for user list")
 

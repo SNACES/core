@@ -1,4 +1,5 @@
 import csv
+from src.process.ranking.intersection_ranker import IntersectionRanker
 
 
 class DatasetCreator:
@@ -20,21 +21,29 @@ class DatasetCreator:
         count = 0
         for user2 in user_ids:
             friend2 = self.user_friend_getter.get_user_friends_ids(user2)
-            friend2 = list(map(str, friend2))
-            if user in friend2:
-                count += 1
+            if friend2 is None:
+                count += 0
+            else:
+                friend2 = list(map(str, friend2))
+                if user in friend2:
+                    count += 1
+
         return count
 
     def _get_local_following_count(self, user, user_ids):
         friend1 = self.user_friend_getter.get_user_friends_ids(user)
-        friend1 = list(map(str, friend1))
-        count = 0
-        for user2 in user_ids:
-            if user2 in friend1:
-                count += 1
+        if friend1 is None:
+            count = 0
+        else:
+            friend1 = list(map(str, friend1))
+            count = 0
+            for user2 in user_ids:
+                if user2 in friend1:
+                    count += 1
+
         return count
 
-    def write_dataset(self, filename_prefix, iteration, user_ids,
+    def write_dataset(self, filename_prefix, iteration, user_ids, respection,
                       prev_user_ids):
         file_str = filename_prefix + "_iteration_" + str(iteration)
         f = open(self.file_path + file_str + '.csv', 'w')
@@ -42,7 +51,7 @@ class DatasetCreator:
         scores = []
         for ranker in self.ranker_list:
             content.append(ranker.ranking_function_name)
-            scores.append(ranker.score_users(user_ids))
+            scores.append(ranker.score_users(user_ids, respection))
         content.extend(["local follower",
                         "local following",
                         "global follower",

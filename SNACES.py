@@ -8,7 +8,7 @@ from src.tools.user_list_processor import UserListProcessor
 from src.dependencies.injector import Injector
 
 # Download
-import src.tools.download_daemon as download_daemon
+# import src.tools.download_daemon as download_daemon
 from src.shared.utils import get_date
 from src.process.download.twitter_downloader import TwitterTweetDownloader, \
     TwitterFriendsDownloader, TwitterFollowersDownloader
@@ -80,122 +80,122 @@ def get_user():
 
 
 # Event handlers
-def run_download():
-    click.echo(
-        "Provide the full path the the download config(leave blank to set to default)")
-    default_path = get_project_root() / 'src' / 'process' / 'download' / 'download_config.yaml'
-    download_config_path = click.prompt("Path", default_path)
-    download_config_parser = DownloadConfigParser(download_config_path)
-    tweepy_getter, user_friends_getter = download_config_parser.create_getter_DAOs()
-    tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config_parser.create_setter_DAOs()
-
-    click.echo("Download Types:")
-    click.echo("1. Twitter Tweet Download")
-    click.echo("2. Twitter Friends Download")
-    click.echo("3. Twitter Followers Download")
-    download_type = click.prompt("Choose a download type", type=int)
-
-    if download_type == 1:
-        tweet_downloader = TwitterTweetDownloader()
-        click.echo("Tweet types:")
-        click.echo("1. User Tweets")
-        click.echo("2. Random Tweets")
-        tweet_type = click.prompt("Choose what to download", type=int)
-        if tweet_type == 1:
-            # TODO: follow by this example
-            click.echo("Downloading User Tweets")
-            use_user_list, user_or_user_list, ulp = get_user()
-            num_tweets = click.prompt(
-                "Number of Tweets(leave blank to get all)", type=int)
-            if click.confirm("Do you want to specify a start and end date?"):
-                start_date = get_date(click.prompt("Start Date(YYYY-MM-DD)"))
-                end_date = get_date(click.prompt("End Date(YYYY-MM-DD)"))
-                if use_user_list:
-                    ulp.run_function_by_user_list(
-                        tweet_downloader.gen_user_tweets, user_or_user_list,
-                        tweepy_getter, tweet_mongo_setter, num_tweets,
-                        start_date, end_date)
-                else:
-                    tweet_downloader.gen_user_tweets(user_or_user_list,
-                                                     tweepy_getter,
-                                                     tweet_mongo_setter,
-                                                     num_tweets, start_date,
-                                                     end_date)
-            else:
-                if use_user_list:
-                    ulp.run_function_by_user_list(
-                        tweet_downloader.gen_user_tweets, user_or_user_list,
-                        tweepy_getter, tweet_mongo_setter, num_tweets)
-                else:
-                    tweet_downloader.gen_user_tweets(user_or_user_list,
-                                                     tweepy_getter,
-                                                     tweet_mongo_setter,
-                                                     num_tweets)
-        elif tweet_type == 2:
-            click.echo("Downloading Random Tweets")
-            click.echo(
-                "Due to Tweepy constraints, if you want to download multiple tweets, you should launch a daemon")
-            if click.confirm(
-                    "Do you wish to launch a daemon to download random tweets?"):
-                click.echo("Launching daemon")
-                download_daemon.download_random_tweet()
-            else:
-                tweet_downloader.gen_random_tweet(tweepy_getter,
-                                                  tweet_mongo_setter)
-    elif download_type == 2:
-        click.echo("Friend Download Types")
-        click.echo("1. User Friends")
-        click.echo("2. User Local Neighborhood")
-        friend_type = click.prompt("Choose which to download", type=int)
-
-        friends_downloader = TwitterFriendsDownloader()
-        if friend_type == 1:
-            click.echo("Downloading user friends")
-            use_user_list, user_or_user_list, ulp = get_user()
-            num_friends = click.prompt(
-                "Number of Friends(leave blank to get all)", type=int)
-            if use_user_list:
-                ulp.run_function_by_user_list(
-                    friends_downloader.gen_friends_by_screen_name,
-                    user_or_user_list, tweepy_getter, user_friends_setter,
-                    num_friends)
-            else:
-                friends_downloader.gen_friends_by_screen_name(user_or_user_list,
-                                                              tweepy_getter,
-                                                              user_friends_setter,
-                                                              num_friends)
-        elif friend_type == 2:
-            click.echo("Downloading user local neightborhood")
-            use_user_list, user_or_user_list, ulp = get_user()
-            if use_user_list:
-                ulp.run_function_by_user_list(
-                    friends_downloader.gen_user_local_neighborhood,
-                    user_or_user_list, tweepy_getter, user_friends_getter,
-                    user_friends_setter)
-            else:
-                friends_downloader.gen_user_local_neighborhood(
-                    user_or_user_list, tweepy_getter, user_friends_getter,
-                    user_friends_setter)
-        else:
-            raise Exception("Invalid input")
-    elif download_type == 3:
-        click.echo("Downloading followers")
-        use_user_list, user_or_user_list, ulp = get_user()
-        num_followers = click.prompt(
-            "Number of Followers(leave blank to get all)", type=int)
-        followers_downloader = TwitterFollowersDownloader()
-        if use_user_list:
-            ulp.run_function_by_user_list(
-                followers_downloader.gen_followers_by_screen_name,
-                user_or_user_list, tweepy_getter, user_followers_setter,
-                num_followers)
-        else:
-            followers_downloader.gen_followers_by_screen_name(user_or_user_list,
-                                                              tweepy_getter,
-                                                              user_followers_setter,
-                                                              num_followers)
-    else:
-        raise Exception("Invalid input")
+# def run_download():
+#     click.echo(
+#         "Provide the full path the the download config(leave blank to set to default)")
+#     default_path = get_project_root() / 'src' / 'process' / 'download' / 'download_config.yaml'
+#     download_config_path = click.prompt("Path", default_path)
+#     download_config_parser = DownloadConfigParser(download_config_path)
+#     tweepy_getter, user_friends_getter = download_config_parser.create_getter_DAOs()
+#     tweet_mongo_setter, user_friends_setter, user_followers_setter = download_config_parser.create_setter_DAOs()
+#
+#     click.echo("Download Types:")
+#     click.echo("1. Twitter Tweet Download")
+#     click.echo("2. Twitter Friends Download")
+#     click.echo("3. Twitter Followers Download")
+#     download_type = click.prompt("Choose a download type", type=int)
+#
+#     if download_type == 1:
+#         tweet_downloader = TwitterTweetDownloader()
+#         click.echo("Tweet types:")
+#         click.echo("1. User Tweets")
+#         click.echo("2. Random Tweets")
+#         tweet_type = click.prompt("Choose what to download", type=int)
+#         if tweet_type == 1:
+#             # follow by this example
+#             click.echo("Downloading User Tweets")
+#             use_user_list, user_or_user_list, ulp = get_user()
+#             num_tweets = click.prompt(
+#                 "Number of Tweets(leave blank to get all)", type=int)
+#             if click.confirm("Do you want to specify a start and end date?"):
+#                 start_date = get_date(click.prompt("Start Date(YYYY-MM-DD)"))
+#                 end_date = get_date(click.prompt("End Date(YYYY-MM-DD)"))
+#                 if use_user_list:
+#                     ulp.run_function_by_user_list(
+#                         tweet_downloader.gen_user_tweets, user_or_user_list,
+#                         tweepy_getter, tweet_mongo_setter, num_tweets,
+#                         start_date, end_date)
+#                 else:
+#                     tweet_downloader.gen_user_tweets(user_or_user_list,
+#                                                      tweepy_getter,
+#                                                      tweet_mongo_setter,
+#                                                      num_tweets, start_date,
+#                                                      end_date)
+#             else:
+#                 if use_user_list:
+#                     ulp.run_function_by_user_list(
+#                         tweet_downloader.gen_user_tweets, user_or_user_list,
+#                         tweepy_getter, tweet_mongo_setter, num_tweets)
+#                 else:
+#                     tweet_downloader.gen_user_tweets(user_or_user_list,
+#                                                      tweepy_getter,
+#                                                      tweet_mongo_setter,
+#                                                      num_tweets)
+#         elif tweet_type == 2:
+#             click.echo("Downloading Random Tweets")
+#             click.echo(
+#                 "Due to Tweepy constraints, if you want to download multiple tweets, you should launch a daemon")
+#             if click.confirm(
+#                     "Do you wish to launch a daemon to download random tweets?"):
+#                 click.echo("Launching daemon")
+#                 download_daemon.download_random_tweet()
+#             else:
+#                 tweet_downloader.gen_random_tweet(tweepy_getter,
+#                                                   tweet_mongo_setter)
+#     elif download_type == 2:
+#         click.echo("Friend Download Types")
+#         click.echo("1. User Friends")
+#         click.echo("2. User Local Neighborhood")
+#         friend_type = click.prompt("Choose which to download", type=int)
+#
+#         friends_downloader = TwitterFriendsDownloader()
+#         if friend_type == 1:
+#             click.echo("Downloading user friends")
+#             use_user_list, user_or_user_list, ulp = get_user()
+#             num_friends = click.prompt(
+#                 "Number of Friends(leave blank to get all)", type=int)
+#             if use_user_list:
+#                 ulp.run_function_by_user_list(
+#                     friends_downloader.gen_friends_by_screen_name,
+#                     user_or_user_list, tweepy_getter, user_friends_setter,
+#                     num_friends)
+#             else:
+#                 friends_downloader.gen_friends_by_screen_name(user_or_user_list,
+#                                                               tweepy_getter,
+#                                                               user_friends_setter,
+#                                                               num_friends)
+#         elif friend_type == 2:
+#             click.echo("Downloading user local neightborhood")
+#             use_user_list, user_or_user_list, ulp = get_user()
+#             if use_user_list:
+#                 ulp.run_function_by_user_list(
+#                     friends_downloader.gen_user_local_neighborhood,
+#                     user_or_user_list, tweepy_getter, user_friends_getter,
+#                     user_friends_setter)
+#             else:
+#                 friends_downloader.gen_user_local_neighborhood(
+#                     user_or_user_list, tweepy_getter, user_friends_getter,
+#                     user_friends_setter)
+#         else:
+#             raise Exception("Invalid input")
+#     elif download_type == 3:
+#         click.echo("Downloading followers")
+#         use_user_list, user_or_user_list, ulp = get_user()
+#         num_followers = click.prompt(
+#             "Number of Followers(leave blank to get all)", type=int)
+#         followers_downloader = TwitterFollowersDownloader()
+#         if use_user_list:
+#             ulp.run_function_by_user_list(
+#                 followers_downloader.gen_followers_by_screen_name,
+#                 user_or_user_list, tweepy_getter, user_followers_setter,
+#                 num_followers)
+#         else:
+#             followers_downloader.gen_followers_by_screen_name(user_or_user_list,
+#                                                               tweepy_getter,
+#                                                               user_followers_setter,
+#                                                               num_followers)
+#     else:
+#         raise Exception("Invalid input")
 
 
 def run_rt_processing():
@@ -520,8 +520,8 @@ def run_community_expansion(process_module, dao_module):
                                    process_module.get_friend_downloader(),
                                    ranker_list, dataset_creator)
         initial_user_list = core_refiner.refine_core(
-            threshold, top_size, candidates_size, large_account_threshold,
-            core_size, num_of_candidate, initial_user_list)
+            threshold=0.025, top_size=5, candidates_size=20, large_account_threshold=1.5, low_account_threshold=0.5,
+            follower_threshold=0.5, core_size=20, num_of_candidate=200, community=initial_user_list, mode=False)
 
     algorithm = CommunityExpansionAlgorithm(
         dao_module.get_user_getter(),
@@ -533,8 +533,9 @@ def run_community_expansion(process_module, dao_module):
         ranker_list, dataset_creator)
 
     algorithm.expand_community(
-        threshold, top_size, candidates_size,
-        large_account_threshold, num_of_candidate, initial_user_list)
+        threshold=0.025, top_size=10, candidates_size=30,
+        large_account_threshold=2.0, low_account_threshold=0.25, follower_threshold=0.2,
+        num_of_candidate=500, community=initial_user_list, mode=True)
 
 
 def run_community_expansion_graph():
@@ -589,9 +590,9 @@ def main():
     click.echo("7. Community Expansion - Create Graph")
 
     val = click.prompt("Choose a process")
-    if int(val) == 1:
-        run_download()
-    elif int(val) == 2:
+    # if int(val) == 1:
+    #     run_download()
+    if int(val) == 2:
         run_rt_processing()
     elif int(val) == 3:
         run_wf()

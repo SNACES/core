@@ -10,6 +10,7 @@ import datetime
 class Processor():
     def __init__(self):
         # Remove stop words
+        # nltk.download('stopwords')
         stopwords = set(nltk.corpus.stopwords.words('english'))
         stopwords.add('amp')
 

@@ -1,6 +1,7 @@
 from src.dao.twitter.tweepy_twitter_dao import TweepyTwitterGetter
 from src.dao.user_friend.setter.friend_setter import FriendSetter
 from src.shared.logger_factory import LoggerFactory
+import MACROS
 
 log = LoggerFactory.logger(__name__)
 
@@ -20,16 +21,24 @@ class FriendDownloader():
         """
         Gets a list of friends ids of a user by id
         """
-        if not self.user_friend_getter.contains_user(user_id):
-            id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
-            self.user_friend_setter.store_friends(id, friends_user_ids)
+        if user_id not in MACROS.DOWNLOAD_FRIENDSID_ID:
+            if not self.user_friend_getter.contains_user(user_id):
+                id, friends_user_ids = self.twitter_getter.get_friends_ids_by_user_id(user_id, num_friends=num_friends)
+                self.user_friend_setter.store_friends(id, friends_user_ids)
+
+            MACROS.DOWNLOAD_FRIENDSID_ID.append(user_id)
 
     def download_friends_ids_by_screen_name(self, screen_name: str, num_friends=0) -> None:
         """
         """
-        #if not self.user_friend_getter.contains_user(user_id):
-        id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name, num_friends=num_friends)
-        self.user_friend_setter.store_friends(id, friends_user_ids)
+        if screen_name not in MACROS.DOWNLOAD_FRIENDSID_NAME:
+            # if not self.user_friend_getter.contains_user(user_id):
+            id, friends_user_ids = self.twitter_getter.get_friends_ids_by_screen_name(screen_name,
+                                                                                      num_friends=num_friends)
+            self.user_friend_setter.store_friends(id, friends_user_ids)
+
+            MACROS.DOWNLOAD_FRIENDSID_NAME.append(screen_name)
+
 
     def download_friends_users_by_id(self, user_id: str, num_friends=0) -> None:
         """

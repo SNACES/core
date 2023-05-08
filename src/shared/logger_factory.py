@@ -31,7 +31,7 @@ class LoggerFactory():
 
 def _log_progress(log, i, total):
     percent_done = i/total * 100
-    if _passes_interval(i, total, 2):
+    if _passes_interval(i, total, 20):
         log.info("Done " + str(math.floor(percent_done)) + "% of process")
 
 def _passes_interval(i, total, interval):

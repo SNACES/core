@@ -6,6 +6,7 @@ from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.raw_tweet.getter.raw_tweet_getter import RawTweetGetter
 from datetime import datetime
+import MACROS
 
 
 class MongoRawTweetGetter(RawTweetGetter):
@@ -28,11 +29,14 @@ class MongoRawTweetGetter(RawTweetGetter):
         @return the Tweet object corresponding to the tweet id, or none if no
             tweet matches the given id
         """
-        tweet_doc = self.collection.find_one({"id": bson.int64.Int64(id)})
-        if tweet_doc is not None:
-            return Tweet.fromDict(tweet_doc)
-        else:
-            return None
+        if id not in MACROS.TWEETS_ID:
+            tweet_doc = self.collection.find_one({"id": bson.int64.Int64(id)})
+            if tweet_doc is not None:
+                MACROS.TWEETS_ID[id] = Tweet.fromDict(tweet_doc)
+            else:
+                MACROS.TWEETS_ID[id] = None
+
+        return MACROS.TWEETS_ID[id]
 
     def get_tweets_by_user(self, user: User) -> List[Tweet]:
         """
@@ -40,7 +44,7 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         @param user the user to retrieve tweets from
         """
-        return self.get_tweets_by_user_id(user.id)
+        return self.get_tweets_by_user_id(str(user.id))
 
     def get_tweets_by_user_id(self, user_id: str) -> List[Tweet]:
         """
@@ -50,14 +54,14 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         @return a list of tweets by the given user
         """
+        if user_id not in MACROS.TWEETS_USER:
+            tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
+            tweets = []
+            for doc in tweet_doc_list:
+                tweets.append(Tweet.fromDict(doc))
+            MACROS.TWEETS_USER[user_id] = tweets
 
-        tweet_doc_list = self.collection.find({"user_id": bson.int64.Int64(user_id)})
-
-        tweets = []
-        for doc in tweet_doc_list:
-            tweets.append(Tweet.fromDict(doc))
-
-        return tweets
+        return MACROS.TWEETS_USER[user_id]
 
     def get_tweets_by_user_ids(self, user_ids: List[str]) -> List[Tweet]:
         """
@@ -67,11 +71,9 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         @return a list of tweets by the given user
         """
-
         tweets = []
-
-        for user in user_ids:
-            tweets = tweets + self.get_tweets_by_user_id(user)
+        for user_id in user_ids:
+            tweets = tweets + self.get_tweets_by_user_id(user_id)
 
         return tweets
 
@@ -148,7 +150,6 @@ class MongoRawTweetGetter(RawTweetGetter):
 
         @return a list of tweets by the given user
         """
-
         tweets = self.get_tweets_by_user_id(user_id)
 
         retweets = []
@@ -176,13 +177,15 @@ class MongoRawTweetGetter(RawTweetGetter):
         return self.collection.count({})
 
     def get_retweets_of_user_by_user_id(self, user_id: str) -> List[Tweet]:
-        retweet_doc_list = self.collection.find({"retweet_user_id": bson.int64.Int64(user_id)})
+        if user_id not in MACROS.RETWEETS_USER:
+            retweet_doc_list = self.collection.find({"retweet_user_id": bson.int64.Int64(user_id)})
 
-        retweets = []
-        for doc in retweet_doc_list:
-            retweets.append(Tweet.fromDict(doc))
+            retweets = []
+            for doc in retweet_doc_list:
+                retweets.append(Tweet.fromDict(doc))
+            MACROS.RETWEETS_USER[user_id] = retweets
 
-        return retweets
+        return MACROS.RETWEETS_USER[user_id]
 
     def get_retweets_of_user_by_user_id_time_restricted(self, user_id: str) -> List[Tweet]:
 
