@@ -21,7 +21,7 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
 
     def generate_user_friends_from_tweets(user_id: int, tweet_thresh: int, path=DEFAULT_PATH):
         try:
-            # log.info(f"Creating friend graph of {screen_name} from tweets")
+            log.info(f"Creating friend graph of {user_id} from tweets")
 
             tweet_getter = dao_module.get_user_tweet_getter()
             friend_setter = dao_module.get_user_friend_from_tweets_setter()
@@ -46,7 +46,7 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
     user_getter = dao_module.get_user_getter()
     users = user_getter.get_all_users()
 
-    for user_id in users:
+    for user_id in users[23883:]:
         generate_user_friends_from_tweets(user_id, tweet_thresh, path)
 
 def evaluate_friends_list(friend_getter, user_id, friends: List[int]):

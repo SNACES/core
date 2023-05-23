@@ -82,6 +82,7 @@ class UserTweetDownloader():
             log.info("Checking Users")
             for user_id in user_ids:
                 # user = self.user_getter.get_user_by_id(user_id)
+                # Number of user tweets
                 count = self.raw_tweet_setter.get_num_user_tweets(user_id)
 
                 # if count >= 3000 or (user is not None and user.statuses_count <= count):
