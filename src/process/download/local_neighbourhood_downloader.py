@@ -29,11 +29,11 @@ class LocalNeighbourhoodDownloader():
         self.local_neighbourhood_setter = local_neighbourhood_setter
 
     def download_local_neighbourhood_by_id(self, user_id: str, params=None, clean=True):
-        user_friends_ids = self.cleaned_user_friend_getter.get_user_friends_ids(user_id)
-        if user_friends_ids is None:
-            log.info("Could not find user_friend list")
-            self.user_friends_downloader.download_friends_ids_by_id(user_id)
-            user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
+        # user_friends_ids = self.cleaned_user_friend_getter.get_user_friends_ids(user_id)
+        # if user_friends_ids is None:
+        #     log.info("Could not find user_friend list")
+        #     self.user_friends_downloader.download_friends_ids_by_id(user_id)
+        user_friends_ids = self.user_friend_getter.get_user_friends_ids(user_id)
 
         log.info(f"{ user_id} has {len(user_friends_ids)} friends")
         if clean:
@@ -49,10 +49,13 @@ class LocalNeighbourhoodDownloader():
             id = user_friends_ids[i]
 
             user_friends = self.user_friend_getter.get_user_friends_ids(id)
+            # The "if" doesn't work anyway as we can't download tweets
             if user_friends is None:
-                self.user_friends_downloader.download_friends_ids_by_id(id)
-                user_friends = self.user_friend_getter.get_user_friends_ids(id)
-                log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
+                # self.user_friends_downloader.download_friends_ids_by_id(id)
+                # user_friends = self.user_friend_getter.get_user_friends_ids(id)
+                # log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
+                user_friends = []
+                log.info("Could not get user friends for " + str(id))
             else:
                 log.info("Already stored " + str(len(user_friends)) + " user friends for " + str(id))
 
@@ -91,7 +94,7 @@ class LocalNeighbourhoodDownloader():
             for id in friends_list:
                 num_users -= 1
                 curr_user = self.user_getter.get_user_by_id(id)
-                if user is not None and curr_user.followers_count > follower_thresh and curr_user.friends_count > friend_thresh:
+                if user is not None and curr_user is not None and curr_user.followers_count > follower_thresh and curr_user.friends_count > friend_thresh:
                     clean_friends_list.append(id)
                     num_users += 1
             log.info(f"Increasing Data Cleaning Strength {t}, {num_users} remaining users")

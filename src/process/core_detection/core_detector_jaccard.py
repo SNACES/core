@@ -47,7 +47,7 @@ class JaccardCoreDetector():
         self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
 
-    def detect_core_by_screen_name(self, screen_name: str, skip_download=False, optimize_threshold=False):
+    def detect_core_by_screen_name(self, screen_name: str, skip_download=True, optimize_threshold=False):
         user = self.user_getter.get_user_by_screen_name(screen_name)
         if user is None:
             log.info("Downloading initial user " + str(screen_name))
@@ -63,7 +63,7 @@ class JaccardCoreDetector():
         log.info("Beginning Core detection algorithm with initial user " + str(screen_name))
         self.detect_core(user.id, skip_download, optimize_threshold)
 
-    def detect_core(self, initial_user_id: str, skip_download=False, optimize_threshold=False):
+    def detect_core(self, initial_user_id: str, skip_download=True, optimize_threshold=False):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
         prev_user_id = str(initial_user_id)
@@ -103,7 +103,7 @@ class JaccardCoreDetector():
             users = [self.user_getter.get_user_by_id(user).screen_name for user in cluster.users]
             log.info(users)
 
-    def first_iteration(self, user_id: str, skip_download=False, optimize_threshold=False):
+    def first_iteration(self, user_id: str, skip_download=True, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
 
@@ -115,7 +115,8 @@ class JaccardCoreDetector():
             thresh = 0.4
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
-        self._download_cluster_tweets(chosen_cluster)
+        if not skip_download:
+            self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
         log.info("top_10 of chosen cluster:")
         log.info(top_10_users)
@@ -150,7 +151,7 @@ class JaccardCoreDetector():
         log.info(f"The user chooses cluster {i}")
         return clusters[i]
 
-    def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=False, optimize_threshold=False):
+    def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=True, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
 
@@ -162,7 +163,8 @@ class JaccardCoreDetector():
             thresh = 0.4
         clusters = self._clustering(user_id, thresh)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
-        self._download_cluster_tweets(chosen_cluster)
+        if not skip_download:
+            self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
@@ -231,7 +233,7 @@ class JaccardCoreDetector():
     def _download_cluster_tweets(self, cluster):
         self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)
 
-    def _clustering(self, user_id: str, threshold: int=0.3):
+    def _clustering(self, user_id: str, threshold: int=0.3, use_tweets: bool=True):
         """Returns clusters in descending order of size after refining using jaccard similarity
         (all pairs of users).
         """
@@ -240,7 +242,7 @@ class JaccardCoreDetector():
         # social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
         # refined_social_graph = csgc.refine_social_graph_jaccard_users(screen_name, social_graph, local_neighbourhood, threshold=threshold)
         # refined_clusters = csgc.clustering_from_social_graph(screen_name, refined_social_graph)
-        refined_clusters = bct.clustering_from_social_graph(screen_name)
+        refined_clusters = bct.clustering_from_social_graph(screen_name, use_tweets)
         sorted_clusters = sorted(refined_clusters, key=lambda c: len(c.users), reverse=True)
 
         return sorted_clusters

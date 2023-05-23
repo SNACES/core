@@ -23,3 +23,7 @@ src/clustering_experiments/test.py
 src/dao/user_friend/setter/mongo_friend_setter.py
 src/dao/user_friend/setter/mongo_friend_setter.py
 src/dao/user_friend/setter/mongo_friend_setter.py
+**/data/
+/env
+/misc
+**/.DS_Store

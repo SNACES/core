@@ -17,19 +17,28 @@ log = LoggerFactory.logger(__name__)
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
 
-def create_social_graph(screen_name: str, path=DEFAULT_PATH) -> tuple:
+def create_social_graph(screen_name: str, use_tweets: bool, path=DEFAULT_PATH) -> tuple:
     """Returns a social graph and the local neighbourhood of the user with screen_name constructed
     out of the data in the local mongodb database.
     """
     try:
-        log.info("Creating a Social Graph:")
+        log.info(f"Creating a Social Graph, with tweets={use_tweets}:")
         injector = sdi.Injector.get_injector_from_file(path)
         process_module = injector.get_process_module()
         dao_module = injector.get_dao_module()
 
         user = get_user_by_screen_name(screen_name, path)
-        local_neighbourhood_getter = dao_module.get_local_neighbourhood_getter()
-        local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(user.id)
+        local_neighbourhood_getter = dao_module.get_local_nbhd_from_tweets_getter() if use_tweets \
+              else dao_module.get_local_neighbourhood_getter()
+        try:
+            local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(user.id)
+        except Exception as e:
+            # Download the local neighbourhood if it doesn't exist
+            log.info(f"Downloading local neighbourhood for {user.screen_name} {user.id}")
+            local_neighbourhood_downloader = process_module.get_local_nbhd_from_tweets_downloader() if use_tweets else process_module.get_local_neighbourhood_downloader()
+            local_neighbourhood_downloader.download_local_neighbourhood_by_id(user.id)
+            local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(user.id)
+
         social_graph_constructor = process_module.get_social_graph_constructor()
         social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(local_neighbourhood)
         return social_graph, local_neighbourhood

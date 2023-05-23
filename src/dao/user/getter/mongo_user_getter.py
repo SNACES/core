@@ -20,3 +20,7 @@ class MongoUserGetter(UserGetter):
 
     def get_user_by_screen_name(self, screen_name: str) -> User:
         return User.fromDict(self.user_collection.find_one({"screen_name": screen_name}))
+    
+    # Get all users
+    def get_all_users(self) -> List[User]:
+        return [doc["id"] for doc in self.user_collection.find()]

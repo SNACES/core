@@ -184,6 +184,19 @@ class ProcessModule():
             friend_downloader, user_getter, user_friend_getter, cleaned_user_friend_getter, local_neighbourhood_setter)
 
         return local_neighbourhood_downloader
+    
+    def get_local_nbhd_from_tweets_downloader(self):
+        user_downloader = self.get_user_downloader()
+        friend_downloader = self.get_friend_downloader()
+        user_getter = self.dao_module.get_user_getter()
+        user_friend_getter = self.dao_module.get_user_friend_from_tweets_getter()
+        cleaned_user_friend_getter = self.dao_module.get_cleaned_user_friend_getter()
+        local_neighbourhood_setter = self.dao_module.get_local_nbhd_from_tweets_setter()
+
+        local_neighbourhood_downloader = LocalNeighbourhoodDownloader(user_downloader,
+            friend_downloader, user_getter, user_friend_getter, cleaned_user_friend_getter, local_neighbourhood_setter)
+        
+        return local_neighbourhood_downloader
 
     def get_local_neighbourhood_tweet_downloader(self):
         user_tweet_downloader = self.get_user_tweet_downloader()

@@ -14,6 +14,8 @@ from src.dao.cluster_word_frequency.cluster_word_frequency_dao_factory import Cl
 from src.dao.cluster_relative_word_frequency.cluster_relative_word_frequency_dao_factory import ClusterRelativeWordFrequencyDAOFactory
 from src.dao.global_word_frequency.global_word_frequency_dao_factory import GlobalWordFrequencyDAOFactory
 from src.dao.community.community_dao_factory import CommunityDAOFactory
+from src.dao.user_friend.user_friend_from_tweets_dao_factory import UserFriendFromTweetsDAOFactory
+from src.dao.local_neighbourhood.local_nbhd_from_tweets_dao_factory import LocalNbhdFromTweetsDAOFactory
 
 
 class DAOModule():
@@ -31,6 +33,14 @@ class DAOModule():
         # (with inout taking priority)
         self.output_datastore = output_datastore
         self.output_datastore.update(inout_datastore)
+
+    def get_local_nbhd_from_tweets_getter(self):
+        return LocalNbhdFromTweetsDAOFactory.create_getter(
+            self.input_datastore["LocalNbhdFromTweets"])
+    
+    def get_local_nbhd_from_tweets_setter(self):
+        return LocalNbhdFromTweetsDAOFactory.create_setter(
+            self.output_datastore["LocalNbhdFromTweets"])
 
     def get_twitter_getter(self):
         return TwitterDAOFactory.create_getter(
@@ -107,6 +117,14 @@ class DAOModule():
     def get_user_follower_setter(self):
         return UserFollowerDAOFactory.create_setter(
             self.output_datastore["Followers"])
+    
+    def get_user_friend_from_tweets_getter(self):
+        return UserFriendFromTweetsDAOFactory.create_getter(
+            self.input_datastore["FriendsFromTweets"])
+    
+    def get_user_friend_from_tweets_setter(self):
+        return UserFriendFromTweetsDAOFactory.create_setter(
+            self.output_datastore["FriendsFromTweets"])
 
     def get_user_friend_getter(self):
         return UserFriendDAOFactory.create_getter(

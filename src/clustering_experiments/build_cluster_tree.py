@@ -288,7 +288,8 @@ def clusters_to_forest(start_thresh: float,
 def dividing_social_graph(start_thresh: float,
                           end_thresh: float,
                           increment: float,
-                          user: str) -> List[ClusterNode]:
+                          user: str,
+                          use_tweets: bool) -> List[ClusterNode]:
 
     assert(0 < start_thresh < end_thresh < 1)
     assert(increment != 0)
@@ -301,7 +302,7 @@ def dividing_social_graph(start_thresh: float,
 
     # Keep track of all the nodes in the forest, so that we can find main_roots later
 
-    soc_graph, neighbourhood = csgc.create_social_graph(user)
+    soc_graph, neighbourhood = csgc.create_social_graph(user, use_tweets=use_tweets)
     refined_soc_graph = \
         csgc.refine_social_graph_jaccard_users(user, soc_graph,
                                                neighbourhood, threshold=start_thresh)
@@ -407,13 +408,13 @@ def trace_no_split_nodes(roots: List[ClusterNode]) -> List[ClusterNode]:
     return result
 
 
-def clustering_from_social_graph(screen_name: str) -> List[Cluster]:
+def clustering_from_social_graph(screen_name: str, use_tweets: bool) -> List[Cluster]:
     """Returns clusters from the social graph and screen name of user."""
     try:
         log.info("Clustering:")
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
-        main_roots = dividing_social_graph(0.3, 0.8, 0.01, screen_name)
+        main_roots = dividing_social_graph(0.3, 0.8, 0.01, screen_name, use_tweets=use_tweets)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
         for n in no_split_nodes:

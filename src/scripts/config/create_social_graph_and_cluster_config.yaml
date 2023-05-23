@@ -15,6 +15,12 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "LocalNeighbourhoods"
+    LocalNbhdFromTweets:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "LocalNbhdFromTweets"
     ProcessedTweet:
         type: "Mongo"
         config:
@@ -51,6 +57,12 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
+    FriendsFromTweets:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "FriendsFromTweets"
     CleanedFriends:
         type: "Mongo"
         config:

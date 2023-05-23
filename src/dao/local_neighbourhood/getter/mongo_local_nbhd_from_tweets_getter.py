@@ -4,7 +4,7 @@ from typing import Dict
 import bson
 
 
-class MongoLocalNeighbourhoodGetter():
+class MongoLocalNbhdFromTweetsGetter():
     def __init__(self):
         self.collection = None
 
