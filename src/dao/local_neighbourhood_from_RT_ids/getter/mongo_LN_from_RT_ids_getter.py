@@ -1,10 +1,10 @@
-from src.dao.local_neighbourhood.getter.local_neighbourhood_getter import LocalNeighbourhoodGetter
+from src.dao.local_neighbourhood_from_RT_users.getter.local_neighbourhood_getter import LocalNeighbourhoodGetter
 from src.model.local_neighbourhood import LocalNeighbourhood
 from typing import Dict
 import bson
 
 
-class MongoLocalNbhdFromTweetsGetter():
+class MongoLocalNeighbourhoodGetter(LocalNeighbourhoodGetter):
     def __init__(self):
         self.collection = None
 

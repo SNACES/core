@@ -1,15 +1,15 @@
-from src.dao.user_friend.setter.friend_setter import FriendSetter
-from src.dao.user_friend.setter.mongo_friend_from_tweets_setter import MongoFriendSetter
-from src.dao.user_friend.getter.friend_getter import FriendGetter
-from src.dao.user_friend.getter.mongo_friend_from_tweets_getter import MongoFriendGetter
+from src.dao.retweeted_users.setter.retweet_users_setter import RetweetUsersSetter
+from src.dao.retweeted_users.setter.mongo_retweeted_users_setter import MongoRetweetUsersSetter
+from src.dao.retweeted_users.getter.retweet_users_getter import RetweetUsersGetter
+from src.dao.retweeted_users.getter.mongo_retweeted_users_getter import MongoRetweetUsersGetter
 from src.shared.mongo import get_collection_from_config
 from typing import Dict
 
-class UserFriendFromTweetsDAOFactory():
-    def create_setter(friends: Dict) -> FriendSetter:
+class RetweetedUsersDAOFactory():
+    def create_setter(friends: Dict) -> RetweetUsersSetter:
         friend_setter = None
         if friends["type"] == "Mongo":
-            friend_setter = MongoFriendSetter()
+            friend_setter = MongoRetweetUsersSetter()
             collection = get_collection_from_config(friends["config"])
             friend_setter.set_friend_collection(collection)
         else:
@@ -17,10 +17,10 @@ class UserFriendFromTweetsDAOFactory():
 
         return friend_setter
 
-    def create_getter(friends: Dict) -> FriendGetter:
+    def create_getter(friends: Dict) -> RetweetUsersGetter:
         friend_getter = None
         if friends["type"] == "Mongo":
-            friend_getter = MongoFriendGetter()
+            friend_getter = MongoRetweetUsersGetter()
             collection = get_collection_from_config(friends["config"])
             friend_getter.set_friend_collection(collection)
         else:

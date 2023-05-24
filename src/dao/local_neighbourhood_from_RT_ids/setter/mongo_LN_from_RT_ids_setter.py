@@ -1,4 +1,4 @@
-from src.dao.local_neighbourhood.setter.local_neighbourhood_setter import LocalNeighbourhoodSetter
+from src.dao.local_neighbourhood_from_RT_users.setter.local_neighbourhood_setter import LocalNeighbourhoodSetter
 from src.model.local_neighbourhood import LocalNeighbourhood
 import bson
 

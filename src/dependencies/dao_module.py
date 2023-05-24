@@ -14,8 +14,10 @@ from src.dao.cluster_word_frequency.cluster_word_frequency_dao_factory import Cl
 from src.dao.cluster_relative_word_frequency.cluster_relative_word_frequency_dao_factory import ClusterRelativeWordFrequencyDAOFactory
 from src.dao.global_word_frequency.global_word_frequency_dao_factory import GlobalWordFrequencyDAOFactory
 from src.dao.community.community_dao_factory import CommunityDAOFactory
-from src.dao.user_friend.user_friend_from_tweets_dao_factory import UserFriendFromTweetsDAOFactory
-from src.dao.local_neighbourhood.local_nbhd_from_tweets_dao_factory import LocalNbhdFromTweetsDAOFactory
+from src.dao.retweeted_users.retweeted_users_dao_factory import RetweetedUsersDAOFactory
+from src.dao.local_neighbourhood_from_RT_users.LN_from_RT_users_dao_factory import LNFromRTUsersDAOFactory
+from src.dao.user_activity.user_activity_dao_factory import UserActivityDAOFactory
+from src.dao.local_neighbourhood_from_RT_ids.LN_from_RT_ids_dao_factory import LNFromRTIdsDAOFactory
 
 
 class DAOModule():
@@ -34,13 +36,16 @@ class DAOModule():
         self.output_datastore = output_datastore
         self.output_datastore.update(inout_datastore)
 
-    def get_local_nbhd_from_tweets_getter(self):
-        return LocalNbhdFromTweetsDAOFactory.create_getter(
-            self.input_datastore["LocalNbhdFromTweets"])
-    
-    def get_local_nbhd_from_tweets_setter(self):
-        return LocalNbhdFromTweetsDAOFactory.create_setter(
-            self.output_datastore["LocalNbhdFromTweets"])
+    def get_user_activity_getter(self, user_activity: str):
+        if self.user_activity == 'friends':
+        # self.activity_getter = MongoFriendGetter()
+            return UserActivityDAOFactory.create_getter(self.get_user_friend_getter(), user_activity)
+        elif self.user_activity == 'user retweets':
+        # self.activity_getter = MongoRetweetedUsersGetter()
+            return UserActivityDAOFactory.create_getter(self.get_retweeted_users_getter(), user_activity)
+        elif self.user_activity == 'user retweets ids':
+        # self.activity_getter = MongoRawTweetGetter()
+            return UserActivityDAOFactory.create_getter(self.get_raw_tweet_getter(), user_activity)
 
     def get_twitter_getter(self):
         return TwitterDAOFactory.create_getter(
@@ -54,13 +59,27 @@ class DAOModule():
         return ClusterDAOFactory.create_setter(
             self.output_datastore["Cluster"])
 
-    def get_local_neighbourhood_getter(self):
-        return LocalNeighbourhoodDAOFactory.create_getter(
+    def get_local_neighbourhood_getter(self, user_activity: str):
+        if user_activity == 'friends':
+            return LocalNeighbourhoodDAOFactory.create_getter(
             self.input_datastore["LocalNeighbourhood"])
+        elif user_activity == 'user retweets':
+            return LNFromRTUsersDAOFactory.create_getter(
+            self.input_datastore["LocalNeighbourhoodsFromRTUsers"])
+        elif user_activity == 'user retweets ids':
+            return LNFromRTIdsDAOFactory.create_getter(
+            self.input_datastore["LocalNeighbourhoodsFromRTIds"])
 
-    def get_local_neighbourhood_setter(self):
-        return LocalNeighbourhoodDAOFactory.create_setter(
+    def get_local_neighbourhood_setter(self, user_activity: str):
+        if user_activity == 'friends':
+            return LocalNeighbourhoodDAOFactory.create_setter(
             self.output_datastore["LocalNeighbourhood"])
+        elif user_activity == 'user retweets':
+            return LNFromRTUsersDAOFactory.create_setter(
+            self.output_datastore["LocalNeighbourhoodsFromRTUsers"])
+        elif user_activity == 'user retweets ids':
+            return LNFromRTIdsDAOFactory.create_setter(
+            self.output_datastore["LocalNeighbourhoodsFromRTIds"])
 
     def get_processed_tweet_getter(self):
         return ProcessedTweetDAOFactory.create_getter(
@@ -117,14 +136,14 @@ class DAOModule():
     def get_user_follower_setter(self):
         return UserFollowerDAOFactory.create_setter(
             self.output_datastore["Followers"])
-    
-    def get_user_friend_from_tweets_getter(self):
-        return UserFriendFromTweetsDAOFactory.create_getter(
-            self.input_datastore["FriendsFromTweets"])
-    
-    def get_user_friend_from_tweets_setter(self):
-        return UserFriendFromTweetsDAOFactory.create_setter(
-            self.output_datastore["FriendsFromTweets"])
+
+    def get_retweeted_users_getter(self):
+        return RetweetedUsersDAOFactory.create_getter(
+            self.input_datastore["RetweetedUsers"])
+
+    def get_retweeted_users_setter(self):
+        return RetweetedUsersDAOFactory.create_setter(
+            self.output_datastore["RetweetedUsers"])
 
     def get_user_friend_getter(self):
         return UserFriendDAOFactory.create_getter(
@@ -181,7 +200,7 @@ class DAOModule():
     def get_user_relative_word_frequency_setter(self):
         return UserRelativeWordFrequencyDAOFactory.create_setter(
             self.output_datastore["UserRelativeWordFrequency"])
-    
+
     def get_community_setter(self):
         return CommunityDAOFactory.create_setter(
             self.output_datastore["Community"])

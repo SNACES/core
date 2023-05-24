@@ -233,7 +233,7 @@ class JaccardCoreDetector():
     def _download_cluster_tweets(self, cluster):
         self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)
 
-    def _clustering(self, user_id: str, threshold: int=0.3, use_tweets: bool=True):
+    def _clustering(self, user_id: str, threshold: int=0.3, user_activity: str="user retweets"):
         """Returns clusters in descending order of size after refining using jaccard similarity
         (all pairs of users).
         """
@@ -242,7 +242,7 @@ class JaccardCoreDetector():
         # social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
         # refined_social_graph = csgc.refine_social_graph_jaccard_users(screen_name, social_graph, local_neighbourhood, threshold=threshold)
         # refined_clusters = csgc.clustering_from_social_graph(screen_name, refined_social_graph)
-        refined_clusters = bct.clustering_from_social_graph(screen_name, use_tweets)
+        refined_clusters = bct.clustering_from_social_graph(screen_name, user_activity=user_activity)
         sorted_clusters = sorted(refined_clusters, key=lambda c: len(c.users), reverse=True)
 
         return sorted_clusters

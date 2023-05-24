@@ -23,10 +23,10 @@ class IntersectionSocialGraph(SocialGraph):
             graph.add_node(user)
 
         for user in user_list:
-            friends = local_neighbourhood.get_user_friends(user)
+            friends = local_neighbourhood.get_user_activities(user)
             for friend in friends:
                 if friend != str(local_neighbourhood.seed_id):
-                    if user in local_neighbourhood.get_user_friends(str(friend)):
+                    if user in local_neighbourhood.get_user_activities(str(friend)):
                         graph.add_edge(user, friend)
 
         # Remove Unconnected Nodes

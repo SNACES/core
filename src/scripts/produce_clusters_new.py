@@ -72,10 +72,10 @@ def produce_plots(user_name: str, thresh, iteration, path=DEFAULT_PATH):
         print('1012256833816363008' in user_list)
         for user in user_list:
             friends_list = []
-            friends = local_neighbourhood.get_user_friends(user)
+            friends = local_neighbourhood.get_user_activities(user)
             # print(len(friends))
             for friend in friends:
-                if user in local_neighbourhood.get_user_friends(str(friend)):
+                if user in local_neighbourhood.get_user_activities(str(friend)):
                     friends_list.append(str(friend))
                 if user == str(seed_id):
                     if int(user) in user_friend_getter.get_user_friends_ids(str(friend)):

@@ -15,12 +15,18 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "LocalNeighbourhoods"
-    LocalNbhdFromTweets:
+    LocalNeighbourhoodsFromRTUsers:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "LocalNbhdFromTweets"
+            collection-name: "LocalNeighbourhoodsFromRTUsers"
+    LocalNeighbourhoodsFromRTIds:
+        type: "Mongo"
+        config:
+            location: "mongodb://localhost:27017"
+            datastore-name: "Data"
+            collection-name: "LocalNeighbourhoodsFromRTIds"
     ProcessedTweet:
         type: "Mongo"
         config:
@@ -57,12 +63,12 @@ inout-datastore:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
             collection-name: "Friends"
-    FriendsFromTweets:
+    RetweetedUsers:
         type: "Mongo"
         config:
             location: "mongodb://localhost:27017"
             datastore-name: "Data"
-            collection-name: "FriendsFromTweets"
+            collection-name: "RetweetedUsers"
     CleanedFriends:
         type: "Mongo"
         config:

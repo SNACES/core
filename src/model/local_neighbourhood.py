@@ -7,19 +7,23 @@ class LocalNeighbourhood():
     A class which represents a twitter local local neighbourhood
     """
 
-    def __init__(self, seed_id: str, params, users: Dict):
+    def __init__(self, seed_id: str, params, users: Dict, user_activity: str):
         self.seed_id = seed_id
         self.params = params
         self.users = users
+        self.user_activity = user_activity
 
     def get_user_id_list(self) -> List:
         return list(self.users.keys())
 
-    def get_user_friends(self, id):
+    def get_user_activities(self, id):
         if id in self.users:
             return self.users[id]
         else:
             return []
+        
+    def get_user_activity(self) -> str:
+        return self.user_activity
 
     def toJSON(self) -> str:
         """
@@ -43,7 +47,8 @@ class LocalNeighbourhood():
         localNeighbourhood = LocalNeighbourhood(
             obj.get("seed_id"),
             obj.get("params"),
-            obj.get("users")
+            obj.get("users"),
+            obj.get("user_activity")
         )
 
         return localNeighbourhood
@@ -51,7 +56,7 @@ class LocalNeighbourhood():
     def fromDict(dict: Dict):
 
         localNeighbourhood = LocalNeighbourhood(
-            dict["seed_id"], dict["params"], dict["users"]
+            dict["seed_id"], dict["params"], dict["users"], dict["user_activity"]
         )
 
         return localNeighbourhood

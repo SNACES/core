@@ -28,7 +28,7 @@ class UnionSocialGraph(SocialGraph):
             graph.add_node(user)
 
         for user in user_list:
-            friends = local_neighbourhood.get_user_friends(user)
+            friends = local_neighbourhood.get_user_activities(user)
             for friend in friends:
                 graph.add_edge(user, str(friend))
         log.info(graph.order())
