@@ -65,12 +65,13 @@ class LocalNeighbourhoodDownloader():
                 log.info("Could not get user activities for " + str(id))
             else:
                 log.info("Already stored " + str(len(user_activities)) +
-                         " user friends for " + str(id))
+                         " user activities for " + str(id))
 
             assert user_activities is not None
 
+            # Remove the check where id is in user_friends_ids 
             user_dict[str(id)] = [str(id)
-                                  for id in user_activities if (id in user_friends_ids)]
+                                  for id in user_activities]
 
             log.log_progress(log, i, num_ids)
 

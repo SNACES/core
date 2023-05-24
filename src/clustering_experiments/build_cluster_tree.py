@@ -305,13 +305,13 @@ def dividing_social_graph(start_thresh: float,
     soc_graph, neighbourhood = csgc.create_social_graph(user, user_activity=user_activity)
     refined_soc_graph = \
         csgc.refine_social_graph_jaccard_users(user, soc_graph,
-                                               neighbourhood, threshold=start_thresh)
+                                               neighbourhood, user_activity, threshold=start_thresh)
     top_nodes = generate_clusters(user, refined_soc_graph, neighbourhood,
-                      start_thresh, increment, end_thresh)
+                      start_thresh, increment, end_thresh, user_activity)
     return top_nodes
 
 
-def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbourhood: LocalNeighbourhood) -> tuple:
+def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbourhood: LocalNeighbourhood, user_activity) -> tuple:
     cluster = node.root
     friends_map = {}
     for user in cluster.users:
@@ -320,13 +320,14 @@ def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbo
     cluster_neighbourhood = \
         LocalNeighbourhood(cluster.base_user, None, friends_map)
     cluster_soc_graph = \
-        csgc.create_social_graph_from_local_neighbourhood(cluster_neighbourhood)
+        csgc.create_social_graph_from_local_neighbourhood(cluster_neighbourhood, user_activity)
     return cluster_neighbourhood, cluster_soc_graph, base_user_friends
 
 
 def generate_clusters(base_user: str, soc_graph,
                                         neighbourhood: LocalNeighbourhood,
-                                        thresh: float, increment: float, end_thresh: float) -> List[ClusterNode]:
+                                        thresh: float, increment: float, end_thresh: float,
+                                        user_activity: str) -> List[ClusterNode]:
 
     if thresh > end_thresh:
         return []
@@ -343,15 +344,17 @@ def generate_clusters(base_user: str, soc_graph,
     for parent_node in parent_nodes:
         cluster_neighbourhood, cluster_soc_graph, base_user_friends = \
             generate_soc_graph_and_neighbourhood_from_cluster(parent_node,
-                                                              neighbourhood)
+                                                              neighbourhood, user_activity)
         refined_cluster_soc_graph = \
             csgc.refine_social_graph_jaccard_users(base_user, cluster_soc_graph,
                                                    cluster_neighbourhood,
+                                                   user_activity,
                                                    threshold=thresh)
         cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_friends
         child_nodes = generate_clusters(base_user, refined_cluster_soc_graph,
                                         cluster_neighbourhood,
-                                        thresh, increment, end_thresh)
+                                        thresh, increment, end_thresh,
+                                        user_activity)
         for child_node in child_nodes:
             child_node.parent = parent_node
             # if this child does in fact have a parent:
@@ -414,7 +417,8 @@ def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[C
         log.info("Clustering:")
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
-        main_roots = dividing_social_graph(0.3, 0.8, 0.01, screen_name, user_activity=user_activity)
+        # We set lower thresholds for non-friend activities
+        main_roots = dividing_social_graph(0.3, 0.6, 0.01, screen_name, user_activity=user_activity)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
         for n in no_split_nodes:

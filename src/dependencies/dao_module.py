@@ -37,15 +37,15 @@ class DAOModule():
         self.output_datastore.update(inout_datastore)
 
     def get_user_activity_getter(self, user_activity: str):
-        if self.user_activity == 'friends':
+        if user_activity == 'friends':
         # self.activity_getter = MongoFriendGetter()
             return UserActivityDAOFactory.create_getter(self.get_user_friend_getter(), user_activity)
-        elif self.user_activity == 'user retweets':
+        elif user_activity == 'user retweets':
         # self.activity_getter = MongoRetweetedUsersGetter()
             return UserActivityDAOFactory.create_getter(self.get_retweeted_users_getter(), user_activity)
-        elif self.user_activity == 'user retweets ids':
+        elif user_activity == 'user retweets ids':
         # self.activity_getter = MongoRawTweetGetter()
-            return UserActivityDAOFactory.create_getter(self.get_raw_tweet_getter(), user_activity)
+            return UserActivityDAOFactory.create_getter(self.get_user_tweet_getter(), user_activity)
 
     def get_twitter_getter(self):
         return TwitterDAOFactory.create_getter(

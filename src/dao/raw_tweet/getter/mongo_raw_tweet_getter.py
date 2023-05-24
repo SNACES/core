@@ -141,6 +141,15 @@ class MongoRawTweetGetter(RawTweetGetter):
                 retweets.append(tweet)
 
         return retweets
+    
+    def get_retweets_ids_by_user_id(self, user_id: str) -> List[int]:
+        tweets = self.get_tweets_by_user_id(user_id)
+
+        retweets = []
+        for tweet in tweets:
+            if tweet.retweet_user_id is not None:
+                retweets.append(tweet.retweet_id)
+        return retweets
 
     def contains_tweets_from_user(self, user_id: str):
         # if self.collection.count_documents({"user_id": bson.int64.Int64(user_id)}, limit=1) > 0:

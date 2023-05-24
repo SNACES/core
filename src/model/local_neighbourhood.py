@@ -7,7 +7,7 @@ class LocalNeighbourhood():
     A class which represents a twitter local local neighbourhood
     """
 
-    def __init__(self, seed_id: str, params, users: Dict, user_activity: str):
+    def __init__(self, seed_id: str, params, users: Dict, user_activity: str="unknown"):
         self.seed_id = seed_id
         self.params = params
         self.users = users

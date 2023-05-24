@@ -78,16 +78,16 @@ class ProcessModule():
                             prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
                             user_tweet_getter, user_friend_getter)
 
-    def get_jaccard_core_detector(self):
+    def get_jaccard_core_detector(self, user_activity: str):
         user_getter = self.dao_module.get_user_getter()
         user_downloader = self.get_user_downloader()
         friend_downloader = self.get_friend_downloader()
         extended_friends_cleaner = self.get_extended_friends_cleaner()
-        local_neighbourhood_downloader = self.get_local_neighbourhood_downloader()
-        local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader()
-        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
+        local_neighbourhood_downloader = self.get_local_neighbourhood_downloader(user_activity=user_activity)
+        local_neighbourhood_tweet_downloader = self.get_local_neighbourhood_tweet_downloader(user_activity=user_activity)
+        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter(user_activity=user_activity)
         tweet_processor = self.get_tweet_processor()
-        social_graph_constructor = self.get_social_graph_constructor()
+        social_graph_constructor = self.get_social_graph_constructor(user_activity=user_activity)
         clusterer = self.get_clusterer()
         cluster_getter = self.dao_module.get_cluster_getter()
         cluster_word_frequency_processor = self.get_cluster_word_frequency_processor()
@@ -191,9 +191,9 @@ class ProcessModule():
 
         return local_neighbourhood_downloader
 
-    def get_local_neighbourhood_tweet_downloader(self):
+    def get_local_neighbourhood_tweet_downloader(self, user_activity: str):
         user_tweet_downloader = self.get_user_tweet_downloader()
-        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
+        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter(user_activity=user_activity)
         raw_tweet_getter = self.dao_module.get_user_tweet_getter()
 
         local_neighbourhood_tweet_downloader = LocalNeighbourhoodTweetDownloader(user_tweet_downloader,
@@ -291,8 +291,8 @@ class ProcessModule():
         return tweet_processor
 
     # Social Graph
-    def get_social_graph_constructor(self):
-        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter()
+    def get_social_graph_constructor(self, user_activity: str):
+        local_neighbourhood_getter = self.dao_module.get_local_neighbourhood_getter(user_activity=user_activity)
         social_graph_setter = self.dao_module.get_social_graph_setter()
 
         social_graph_constructor = SocialGraphConstructor(

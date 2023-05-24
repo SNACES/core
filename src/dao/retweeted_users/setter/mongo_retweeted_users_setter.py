@@ -8,7 +8,7 @@ class MongoRetweetUsersSetter(RetweetUsersSetter):
     def __init__(self):
         self.friend_collection = None
 
-    def set_friend_collection(self, retweet_users_collection: str) -> None:
+    def set_retweet_user_collection(self, retweet_users_collection: str) -> None:
         self.retweet_users_collection = retweet_users_collection
 
     def store_retweet_users(self, user_id: str, retweet_user_ids: List[str]):

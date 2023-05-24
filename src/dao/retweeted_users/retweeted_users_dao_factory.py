@@ -11,7 +11,7 @@ class RetweetedUsersDAOFactory():
         if friends["type"] == "Mongo":
             friend_setter = MongoRetweetUsersSetter()
             collection = get_collection_from_config(friends["config"])
-            friend_setter.set_friend_collection(collection)
+            friend_setter.set_retweet_user_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 
@@ -22,7 +22,7 @@ class RetweetedUsersDAOFactory():
         if friends["type"] == "Mongo":
             friend_getter = MongoRetweetUsersGetter()
             collection = get_collection_from_config(friends["config"])
-            friend_getter.set_friend_collection(collection)
+            friend_getter.set_retweet_user_collection(collection)
         else:
             raise Exception("Datastore type not supported")
 

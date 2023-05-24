@@ -15,4 +15,4 @@ class MongoActivityGetter():
             return self.activity_getter.get_retweet_users_ids(user_id)
         elif self.user_activity == 'user retweets ids':
             # self.activity_getter = MongoRawTweetGetter()
-            return map(lambda x: x.retweet_id, self.activity_getter.get_retweets_by_user_id(user_id))
+            return self.activity_getter.get_retweets_ids_by_user_id(user_id)

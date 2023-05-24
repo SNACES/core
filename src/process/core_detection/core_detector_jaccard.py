@@ -47,7 +47,7 @@ class JaccardCoreDetector():
         self.con_ranker = con_ranker
         self.ranking_getter = ranking_getter
 
-    def detect_core_by_screen_name(self, screen_name: str, skip_download=True, optimize_threshold=False):
+    def detect_core_by_screen_name(self, screen_name: str, user_activity:str, skip_download=True, optimize_threshold=False):
         user = self.user_getter.get_user_by_screen_name(screen_name)
         if user is None:
             log.info("Downloading initial user " + str(screen_name))
@@ -61,9 +61,9 @@ class JaccardCoreDetector():
                 raise Exception(msg)
 
         log.info("Beginning Core detection algorithm with initial user " + str(screen_name))
-        self.detect_core(user.id, skip_download, optimize_threshold)
+        self.detect_core(user.id, user_activity, skip_download, optimize_threshold)
 
-    def detect_core(self, initial_user_id: str, skip_download=True, optimize_threshold=False):
+    def detect_core(self, initial_user_id: str, user_activity: str, skip_download=True, optimize_threshold=False):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
         prev_user_id = str(initial_user_id)
@@ -73,7 +73,7 @@ class JaccardCoreDetector():
         clusters = []
         # First iteration
         try:
-            curr_user_id, top_10_users, cluster = self.first_iteration(prev_user_id, skip_download, optimize_threshold)
+            curr_user_id, top_10_users, cluster = self.first_iteration(prev_user_id, user_activity, skip_download, optimize_threshold)
             top_10.append(top_10_users)
             clusters.append(cluster)
         except Exception as e:
@@ -85,7 +85,7 @@ class JaccardCoreDetector():
             prev_user_id = curr_user_id
 
             try:
-                curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, top_10_users, skip_download, optimize_threshold)
+                curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, user_activity, top_10_users, skip_download, optimize_threshold)
                 top_10.append(top_10_users)
                 clusters.append(cluster)
             except Exception as e:
@@ -103,7 +103,7 @@ class JaccardCoreDetector():
             users = [self.user_getter.get_user_by_id(user).screen_name for user in cluster.users]
             log.info(users)
 
-    def first_iteration(self, user_id: str, skip_download=True, optimize_threshold=False):
+    def first_iteration(self, user_id: str, user_activity:str, skip_download=True, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
 
@@ -113,7 +113,7 @@ class JaccardCoreDetector():
             thresh = self._pick_optimal_threshold(user_id)
         else:
             thresh = 0.4
-        clusters = self._clustering(user_id, thresh)
+        clusters = self._clustering(user_id, user_activity, thresh)
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
@@ -151,7 +151,7 @@ class JaccardCoreDetector():
         log.info(f"The user chooses cluster {i}")
         return clusters[i]
 
-    def loop_iteration(self, user_id: str, curr_top_10_users, skip_download=True, optimize_threshold=False):
+    def loop_iteration(self, user_id: str, user_activity, curr_top_10_users, skip_download=True, optimize_threshold=False):
         if not skip_download:
             self._download(user_id)
 
@@ -161,7 +161,7 @@ class JaccardCoreDetector():
             thresh = self._pick_optimal_threshold(user_id)
         else:
             thresh = 0.4
-        clusters = self._clustering(user_id, thresh)
+        clusters = self._clustering(user_id, user_activity, thresh)
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
@@ -233,7 +233,7 @@ class JaccardCoreDetector():
     def _download_cluster_tweets(self, cluster):
         self.user_tweet_downloader.stream_tweets_by_user_list(cluster.users)
 
-    def _clustering(self, user_id: str, threshold: int=0.3, user_activity: str="user retweets"):
+    def _clustering(self, user_id: str, user_activity:str,threshold: int=0.3):
         """Returns clusters in descending order of size after refining using jaccard similarity
         (all pairs of users).
         """

@@ -4,7 +4,7 @@ from src.model.user import User
 from src.dao.retweeted_users.getter.retweet_users_getter import RetweetUsersGetter
 
 
-class MongoRetweetUsersGetter(FriendGetter):
+class MongoRetweetUsersGetter(RetweetUsersGetter):
     def __init__(self):
         self.retweet_user_collection = None
 
