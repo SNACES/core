@@ -134,7 +134,7 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph,
                 sim = jaccard_similarity(
                     friends, local_neighbourhood.get_user_activities(user2))
                 if sim >= threshold:
-                    friends_map[user].append(user2)
+                    friends_map[user1].append(user2)
 
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(
@@ -251,7 +251,7 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
                 sim = jaccard_similarity(
                     friends, local_neighbourhood.get_user_activities(user2))
                 if sim >= threshold:
-                    friends_map[user].append(user2)
+                    friends_map[user1].append(user2)
 
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(
