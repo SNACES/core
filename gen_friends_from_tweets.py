@@ -26,7 +26,7 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
             log.info(f"Creating friend graph of {user_id} from tweets")
 
             tweet_getter = dao_module.get_user_tweet_getter()
-            friend_setter = dao_module.get_retweeted_users_setter()
+            retweeted_user_setter = dao_module.get_retweeted_users_setter()
 
             retweets = tweet_getter.get_retweets_by_user_id(user_id)
             dic = {}
@@ -37,9 +37,9 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
                 else:
                     dic[retweet.retweet_user_id] = 1
 
-            friends = [k for k, v in dic.items() if v >= tweet_thresh]
-            # evaluate_friends_list(dao_module.get_user_friend_getter(), user.id, friends)
-            friend_setter.store_friends(user_id, friends)
+            retweeted_users = [k for k, v in dic.items() if v >= tweet_thresh]
+            # evaluate_friends_list(dao_module.get_user_friend_getter(), user.id, retweeted_users)
+            retweeted_user_setter.store_retweet_users(user_id, retweeted_users)
         except Exception as e:
             log.exception(e)
             log.exception(f'{user_id} {type(user_id)}')
@@ -48,7 +48,7 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
     user_getter = dao_module.get_user_getter()
     users = user_getter.get_all_users()
 
-    for user_id in users[23883:]:
+    for user_id in users:
         generate_user_friends_from_tweets(user_id, tweet_thresh, path)
 
 

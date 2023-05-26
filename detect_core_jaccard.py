@@ -25,6 +25,7 @@ if __name__ == "__main__":
     """
     Short script to download tweets
     """
+    # act: friends, user retweets, user retweets ids
     parser = argparse.ArgumentParser(description='Downloads the given number of tweets')
     parser.add_argument('-n', '--name', dest='name', required=True,
         help='The name of the user to start on', type=str)
