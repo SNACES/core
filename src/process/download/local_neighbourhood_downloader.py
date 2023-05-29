@@ -69,9 +69,13 @@ class LocalNeighbourhoodDownloader():
 
             assert user_activities is not None
 
-            # Remove the check where id is in user_friends_ids 
-            user_dict[str(id)] = [str(id)
-                                  for id in user_activities]
+            # Remove the check where id is in user_friends_ids ONLY FOR activity set friends because users have many friends
+            if self.user_activity == 'friends':
+                user_dict[str(id)] = [str(id)
+                                    for id in user_activities if id in user_friends_ids]
+            else:
+                user_dict[str(id)] = [str(id)
+                                      for id in user_activities]
 
             log.log_progress(log, i, num_ids)
 
