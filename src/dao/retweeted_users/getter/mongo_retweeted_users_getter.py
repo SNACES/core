@@ -14,7 +14,7 @@ class MongoRetweetUsersGetter(RetweetUsersGetter):
     def get_retweet_users_ids(self, user_id: str) -> List[str]:
         doc = self.retweet_user_collection.find_one({"user_id": bson.int64.Int64(user_id)})
         if doc is not None:
-            return doc["friends_ids"]
+            return doc["retweet_user_ids"]
         else:
             return None
 
