@@ -290,7 +290,8 @@ def dividing_social_graph(start_thresh: float,
                           increment: float,
                           user: str,
                           sample_prop: float,
-                          user_activity: str) -> List[ClusterNode]:
+                          user_activity: str,
+                          weighted_graph: bool) -> List[ClusterNode]:
 
     assert(0 < start_thresh < end_thresh < 1)
     assert(increment != 0)
@@ -307,9 +308,10 @@ def dividing_social_graph(start_thresh: float,
     refined_soc_graph = \
         csgc.refine_social_graph_jaccard_users(user, soc_graph,
                                                neighbourhood, user_activity, threshold=start_thresh,
-                                               sample_prop=sample_prop)
+                                               sample_prop=sample_prop,
+                                               weighted=weighted_graph)
     top_nodes = generate_clusters(user, refined_soc_graph, neighbourhood,
-                      start_thresh, increment, end_thresh, sample_prop, user_activity)
+                      start_thresh, increment, end_thresh, sample_prop, user_activity, weighted_graph)
     return top_nodes
 
 
@@ -330,7 +332,8 @@ def generate_clusters(base_user: str, soc_graph,
                                         neighbourhood: LocalNeighbourhood,
                                         thresh: float, increment: float, end_thresh: float,
                                         sample_prop: float,
-                                        user_activity: str) -> List[ClusterNode]:
+                                        user_activity: str,
+                                        weighted_graph: bool) -> List[ClusterNode]:
 
     if thresh > end_thresh:
         return []
@@ -353,7 +356,8 @@ def generate_clusters(base_user: str, soc_graph,
                                                    cluster_neighbourhood,
                                                    user_activity,
                                                    sample_prop=sample_prop,
-                                                   threshold=thresh)
+                                                   threshold=thresh,
+                                                   weighted=weighted_graph)
         cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_friends
         child_nodes = generate_clusters(base_user, refined_cluster_soc_graph,
                                         cluster_neighbourhood,
@@ -426,8 +430,9 @@ def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[C
         For experiments: this is where we set
         - thresholds: start_thresh, end_thresh, increment
         - sample_prop: if we want to investigate the effect of smaller samples
+        - weighted_graph: make graph weighted by Jaccard similarity
         """
-        main_roots = dividing_social_graph(0.3, 0.6, 0.01, screen_name, sample_prop = 1.0, user_activity=user_activity)
+        main_roots = dividing_social_graph(0.3, 0.6, 0.01, screen_name, sample_prop = 1.0, user_activity=user_activity, weighted_graph=False)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
         for n in no_split_nodes:

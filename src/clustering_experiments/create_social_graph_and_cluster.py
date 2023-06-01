@@ -148,9 +148,11 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph,
 
 
 def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGraph,
-                                      local_neighbourhood: LocalNeighbourhood, user_activity: str, top_num: int = 10,
+                                      local_neighbourhood: LocalNeighbourhood, user_activity: str,
+                                      top_num: int = 10,
                                       thresh_multiplier: float = 0.1, threshold: float = -1.0,
                                       sample_prop: float = 1,
+                                      weighted: bool = False,
                                       path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = sdi.Injector.get_injector_from_file(path)
@@ -193,11 +195,15 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
         threshold = calculate_threshold()
 
     log.info("Refining by Jaccard Similarity:")
+
     MIN_RETWEETS = 1
+    
     users_map = {}
+    weights_map = {}
     for user_1 in user_list:
         activities1 = local_neighbourhood.get_user_activities(user_1, sample_prop)
         users_map[user_1] = []
+        weights_map[user_1] = {}
         for user_2 in user_list:
             if user_1 != user_2:
                 activities2 = local_neighbourhood.get_user_activities(user_2, sample_prop)
@@ -208,12 +214,16 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
                     activities1, activities2)
                 if sim >= threshold:
                     users_map[user_1].append(user_2)
+                    weights_map[user_1][user_2] = sim
 
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(
         str(user_id), None, users_map)
     social_graph_constructor = process_module.get_social_graph_constructor(user_activity)
-    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(
+
+    refined_social_graph = social_graph_constructor.construct_weighted_social_graph_from_local_neighbourhood(
+        refined_local_neighbourhood, weights_map) if weighted else \
+    social_graph_constructor.construct_social_graph_from_local_neighbourhood(
         refined_local_neighbourhood)
 
     return refined_social_graph

@@ -8,7 +8,9 @@ import logging
 log = LoggerFactory.logger(__name__, logging.INFO)
 
 class IntersectionSocialGraph(SocialGraph):
-    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None, remove_unconnected_nodes=True):
+    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None,
+                            weights_map=None,
+                            remove_unconnected_nodes=True):
         graph = nx.DiGraph()
 
         user_list = local_neighbourhood.get_user_id_list()
@@ -27,7 +29,10 @@ class IntersectionSocialGraph(SocialGraph):
             for friend in friends:
                 if friend != str(local_neighbourhood.seed_id):
                     if user in local_neighbourhood.get_user_activities(str(friend)):
-                        graph.add_edge(user, friend)
+                        if weights_map is None:
+                            graph.add_edge(user, friend)
+                        else:
+                            graph.add_edge(user, friend, weight=weights_map[user][friend])
 
         # Remove Unconnected Nodes
         remove = []

@@ -9,7 +9,9 @@ log = LoggerFactory.logger(__name__, logging.INFO)
 
 
 class UnionSocialGraph(SocialGraph):
-    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None, remove_unconnected_nodes=True):
+    def fromLocalNeighbourhood(local_neighbourhood: LocalNeighbourhood, params=None,
+                               weights_map=None,
+                               remove_unconnected_nodes=True):
         graph = nx.DiGraph()
 
         user_list = local_neighbourhood.get_user_id_list()
@@ -28,9 +30,13 @@ class UnionSocialGraph(SocialGraph):
             graph.add_node(user)
 
         for user in user_list:
+            # In this case, user activities are (always) friends 
             friends = local_neighbourhood.get_user_activities(user)
             for friend in friends:
-                graph.add_edge(user, str(friend))
+                if weights_map is not None:
+                    graph.add_edge(user, str(friend), weight=weights_map[user][friend])
+                else:
+                    graph.add_edge(user, str(friend))
         log.info(graph.order())
 
         params = deepcopy(local_neighbourhood.params)
