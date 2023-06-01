@@ -197,7 +197,7 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
     log.info("Refining by Jaccard Similarity:")
 
     MIN_RETWEETS = 1
-    
+
     users_map = {}
     weights_map = {}
     for user_1 in user_list:
@@ -209,7 +209,8 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
                 activities2 = local_neighbourhood.get_user_activities(user_2, sample_prop)
                 if user_activity == "user retweets":
                     # Filters out retweeted users with less than MIN_RETWEETS retweets
-                    activities1, activities2 = _find_k_repeats(activities1, activities2, MIN_RETWEETS)
+                    activities1, activities2 = _find_k_repeats(activities1, MIN_RETWEETS), \
+                                            _find_k_repeats(activities2, MIN_RETWEETS)
                 sim = jaccard_similarity(
                     activities1, activities2)
                 if sim >= threshold:
