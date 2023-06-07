@@ -20,6 +20,7 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     infl1_ranker = process_module.get_ranker("InfluenceOne")
     infl2_ranker = process_module.get_ranker("InfluenceTwo")
 
+    # Second argument is the return of score_users
     prod_rank, prod = prod_ranker.rank(user_id, cluster)
     con_rank, con = con_ranker.rank(user_id, cluster)
     infl1_rank, infl1 = infl1_ranker.rank(user_id, cluster)

@@ -94,6 +94,7 @@ class JaccardCoreDetector():
 
         log.info("The final user for initial user " + str(initial_user_id) + " is "
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
+        # This is the core
         log.info(f"The top 10 users for the selected cluster in the last iteration were: {top_10_users}")
         log.info(f"The top 10 users for the selected cluster in each iteration were:")
         for top in top_10:
@@ -162,6 +163,7 @@ class JaccardCoreDetector():
         else:
             thresh = 0.4
         clusters = self._clustering(user_id, user_activity, thresh)
+        # clusters only keeps the largest intact ones, as in the report
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
