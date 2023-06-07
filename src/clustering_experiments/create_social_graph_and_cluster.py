@@ -75,6 +75,7 @@ def create_social_graph_from_local_neighbourhood(local_neighbourhood: LocalNeigh
 def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph,
                                 local_neighbourhood: LocalNeighbourhood, user_activity: str, top_num: int = 10,
                                 thresh_multiplier: float = 0.1, threshold: float = -1.0,
+                                sample_prop: float = 1,
                                 path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = sdi.Injector.get_injector_from_file(path)
@@ -127,12 +128,12 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph,
     log.info("Refining by Jaccard Similarity:")
     friends_map = {}
     for user1 in user_list:
-        friends = local_neighbourhood.get_user_activities(user1)
+        activities = local_neighbourhood.get_user_activities(user1, sample_prop)
         friends_map[user1] = []
         for user2 in user_list:
             if user1 != user2:
                 sim = jaccard_similarity(
-                    friends, local_neighbourhood.get_user_activities(user2))
+                    activities, local_neighbourhood.get_user_activities(user2, sample_prop))
                 if sim >= threshold:
                     friends_map[user1].append(user2)
 
@@ -147,8 +148,11 @@ def refine_social_graph_jaccard(screen_name: str, social_graph: SocialGraph,
 
 
 def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGraph,
-                                      local_neighbourhood: LocalNeighbourhood, user_activity: str, top_num: int = 10,
+                                      local_neighbourhood: LocalNeighbourhood, user_activity: str,
+                                      top_num: int = 10,
                                       thresh_multiplier: float = 0.1, threshold: float = -1.0,
+                                      sample_prop: float = 1,
+                                      weighted: bool = False,
                                       path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = sdi.Injector.get_injector_from_file(path)
@@ -191,22 +195,36 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
         threshold = calculate_threshold()
 
     log.info("Refining by Jaccard Similarity:")
+
+    MIN_RETWEETS = 1
+
     users_map = {}
+    weights_map = {}
     for user_1 in user_list:
-        activities = local_neighbourhood.get_user_activities(user_1)
+        activities1 = local_neighbourhood.get_user_activities(user_1, sample_prop)
         users_map[user_1] = []
+        weights_map[user_1] = {}
         for user_2 in user_list:
             if user_1 != user_2:
+                activities2 = local_neighbourhood.get_user_activities(user_2, sample_prop)
+                if user_activity == "user retweets":
+                    # Filters out retweeted users with less than MIN_RETWEETS retweets
+                    activities1, activities2 = _find_k_repeats(activities1, MIN_RETWEETS), \
+                                            _find_k_repeats(activities2, MIN_RETWEETS)
                 sim = jaccard_similarity(
-                    activities, local_neighbourhood.get_user_activities((user_2)))
+                    activities1, activities2)
                 if sim >= threshold:
                     users_map[user_1].append(user_2)
+                    weights_map[user_1][user_2] = sim
 
     log.info("Setting Local Neighbourhood:")
     refined_local_neighbourhood = LocalNeighbourhood(
         str(user_id), None, users_map)
     social_graph_constructor = process_module.get_social_graph_constructor(user_activity)
-    refined_social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(
+
+    refined_social_graph = social_graph_constructor.construct_weighted_social_graph_from_local_neighbourhood(
+        refined_local_neighbourhood, weights_map) if weighted else \
+    social_graph_constructor.construct_social_graph_from_local_neighbourhood(
         refined_local_neighbourhood)
 
     return refined_social_graph
@@ -214,6 +232,7 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
 
 def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: SocialGraph,
                                              local_neighbourhood: LocalNeighbourhood, user_activity: str, threshold=0.5,
+                                             sample_prop: float = 1,
                                              path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = sdi.Injector.get_injector_from_file(path)
@@ -229,11 +248,11 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
 
     graph_user_following(user_list, local_neighbourhood)
     for user1 in user_list:
-            activities = local_neighbourhood.get_user_activities(user1)
-            for user2 in user_list:
-                if user1 != user2:
-                    sim = jaccard_similarity(activities, local_neighbourhood.get_user_activities(user2))
-                    jaccard_sim.append(sim)
+        activities = local_neighbourhood.get_user_activities(user1)
+        for user2 in user_list:
+            if user1 != user2:
+                sim = jaccard_similarity(activities, local_neighbourhood.get_user_activities(user2))
+                jaccard_sim.append(sim)
 
     jaccard_sim.sort(reverse=True)
     graph_list(jaccard_sim, "Pairs of Users",
@@ -244,12 +263,12 @@ def refine_social_graph_jaccard_with_friends(screen_name: str, social_graph: Soc
     log.info("Refining by Jaccard Similarity:")
     friends_map = {}
     for user1 in user_list:
-        friends = local_neighbourhood.get_user_activities(user1)
+        activities = local_neighbourhood.get_user_activities(user1, sample_prop)
         friends_map[user1] = []
         for user2 in user_list:
             if user1 != user2:
                 sim = jaccard_similarity(
-                    friends, local_neighbourhood.get_user_activities(user2))
+                    activities, local_neighbourhood.get_user_activities(user2, sample_prop))
                 if sim >= threshold:
                     friends_map[user1].append(user2)
 
@@ -290,17 +309,17 @@ def get_user_by_screen_name(screen_name: str, path=DEFAULT_PATH) -> User:
 
 
 def graph_user_following(user_list, local_neighbourhood):
-    friends_list_val = []
+    activities_list_val = []
     for user in user_list:
         if user == '359831209':
             continue
-        friends = local_neighbourhood.get_user_activities(user)
-        friends_list_val.append(len(friends))
-    friends_list_val.sort(reverse=True)
-    graph_list(friends_list_val, "Users",
-               "Number of Friends", "all_following.png")
-    graph_list(friends_list_val[:10], "Users",
-               "number of Friends", "top_following.png")
+        activities = local_neighbourhood.get_user_activities(user)
+        activities_list_val.append(len(activities))
+    activities_list_val.sort(reverse=True)
+    graph_list(activities_list_val, "Users",
+               "Number of activities", "all_following.png")
+    graph_list(activities_list_val[:10], "Users",
+               "number of activities", "top_following.png")
 
 
 def graph_list(y_val, x_label, y_label, fig_name):
@@ -368,6 +387,10 @@ def update_size_count_dict(size_count_dict, clusters):
             size_count_dict[size] += 1
     print(size_count_dict)
     return size_count_dict
+
+def _find_k_repeats(lst, k):
+    """Filters out elements that appear less than k times in lst."""
+    return [x for x in lst if lst.count(x) >= k]
 
 
 def graph_cluster_size(cluster_set, threshold, user):

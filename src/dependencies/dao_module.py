@@ -41,7 +41,7 @@ class DAOModule():
         # self.activity_getter = MongoFriendGetter()
             return UserActivityDAOFactory.create_getter(self.get_user_friend_getter(), user_activity)
         elif user_activity == 'user retweets':
-        # self.activity_getter = MongoRetweetedUsersGetter()
+        # self.activity_getter =  ()
             return UserActivityDAOFactory.create_getter(self.get_retweeted_users_getter(), user_activity)
         elif user_activity == 'user retweets ids':
         # self.activity_getter = MongoRawTweetGetter()
@@ -58,7 +58,7 @@ class DAOModule():
     def get_cluster_setter(self):
         return ClusterDAOFactory.create_setter(
             self.output_datastore["Cluster"])
-
+         
     def get_local_neighbourhood_getter(self, user_activity: str):
         if user_activity == 'friends':
             return LocalNeighbourhoodDAOFactory.create_getter(
