@@ -29,15 +29,16 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
             retweeted_user_setter = dao_module.get_retweeted_users_setter()
 
             retweets = tweet_getter.get_retweets_by_user_id(user_id)
-            dic = {}
-            # If number of retweets of tweets from retweet user is greater than threshold, add to friend set
-            for retweet in retweets:
-                if retweet.retweet_user_id in dic:
-                    dic[retweet.retweet_user_id] += 1
-                else:
-                    dic[retweet.retweet_user_id] = 1
+            # dic = {}
+            # # If number of retweets of tweets from retweet user is greater than threshold, add to friend set
+            # for retweet in retweets:
+            #     if retweet.retweet_user_id in dic:
+            #         dic[retweet.retweet_user_id] += 1
+            #     else:
+            #         dic[retweet.retweet_user_id] = 1
 
-            retweeted_users = [k for k, v in dic.items() if v >= tweet_thresh]
+            # retweeted_users = [k for k, v in dic.items() if v >= tweet_thresh]
+            retweeted_users = [retweet.retweet_user_id for retweet in retweets]
             # evaluate_friends_list(dao_module.get_user_friend_getter(), user.id, retweeted_users)
             retweeted_user_setter.store_retweet_users(user_id, retweeted_users)
         except Exception as e:
