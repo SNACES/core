@@ -47,7 +47,8 @@ class LocalNeighbourhoodDownloader():
                 user_id, user_friends_ids)
 
         user_dict = {}
-        user_dict[str(user_id)] = user_friends_ids
+        # Append user_id to user_friends_ids
+        user_friends_ids.append(user_id)
 
         num_ids = len(user_friends_ids)
         log.info(f"Cleaning Threshold: {t}")

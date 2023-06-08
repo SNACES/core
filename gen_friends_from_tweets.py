@@ -23,7 +23,7 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
 
     def generate_user_friends_from_tweets(user_id: int, tweet_thresh: int, path=DEFAULT_PATH):
         try:
-            log.info(f"Creating friend graph of {user_id} from tweets")
+            # log.info(f"Creating friend graph of {user_id} from tweets")
 
             tweet_getter = dao_module.get_user_tweet_getter()
             retweeted_user_setter = dao_module.get_retweeted_users_setter()
@@ -53,7 +53,8 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
 
     for user_id in users:
         curUsers += 1
-        log.info(f"{curUsers} of {len(users)} done")
+        if curUsers % 100 == 0:
+            log.info(f"{curUsers} of {len(users)} done")
         generate_user_friends_from_tweets(user_id, tweet_thresh, path)
 
 
