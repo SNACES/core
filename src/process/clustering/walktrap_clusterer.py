@@ -6,15 +6,15 @@ from collections import Counter
 
 import networkx as nx
 from networkx.utils import groups, not_implemented_for, py_random_state
-import bayanpy
+from cdlib import algorithms
 
 log = LoggerFactory.logger(__name__)
 
-class BayanClusterer(Clusterer):
+class WalktrapClusterer(Clusterer):
     def cluster_by_social_graph(self, seed_id, social_graph, params):
         clusters_data = []
         if social_graph.graph.number_of_nodes() > 0:
-            clusters_data = bayanpy.bayan(social_graph.graph.to_undirected())[2]
+            clusters_data = algorithms.walktrap(social_graph.graph).communities
 
         clusters = []
         for data in clusters_data:

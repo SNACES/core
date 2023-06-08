@@ -49,7 +49,11 @@ def generate_friend_graph_from_tweets(tweet_thresh=1, path=DEFAULT_PATH):
     user_getter = dao_module.get_user_getter()
     users = user_getter.get_all_users()
 
+    curUsers = 0
+
     for user_id in users:
+        curUsers += 1
+        log.info(f"{curUsers} of {len(users)} done")
         generate_user_friends_from_tweets(user_id, tweet_thresh, path)
 
 
@@ -72,3 +76,6 @@ def evaluate_friends_list(friend_getter, user_id, friends: List[int]):
 
 if __name__ == "__main__":
     generate_friend_graph_from_tweets(1)
+
+
+# last one was userid = 1353025057115660288

@@ -239,6 +239,7 @@ class JaccardCoreDetector():
         """Returns clusters in descending order of size after refining using jaccard similarity
         (all pairs of users).
         """
+
         screen_name = self.user_getter.get_user_by_id(user_id).screen_name
 
         # social_graph, local_neighbourhood = csgc.create_social_graph(screen_name)
