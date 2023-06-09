@@ -10,7 +10,7 @@ from cdlib import algorithms
 
 log = LoggerFactory.logger(__name__)
 
-class WalktrapClusterer(Clusterer):
+class WalktrapClustererUnweighted(Clusterer):
     def cluster_by_social_graph(self, seed_id, social_graph, params):
         clusters_data = []
         if social_graph.graph.number_of_nodes() > 0:

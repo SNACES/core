@@ -230,10 +230,12 @@ class DataCleaningDistributions():
 def jaccard_similarity(user_list1, user_list2):
     intersection = len(set(user_list1).intersection(set(user_list2)))
     union = (len(user_list1) + len(user_list2)) - intersection
-
+    if union == 0:
+        return 0
     return float(intersection) / union
 
 def overlap(user_list1, user_list2):
     intersection = len(set(user_list1).intersection(set(user_list2)))
-
+    if len(user_list1) == 0:
+        return 0
     return float(intersection) / len(user_list1)
