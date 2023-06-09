@@ -152,7 +152,7 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
                                       top_num: int = 10,
                                       thresh_multiplier: float = 0.1, threshold: float = -1.0,
                                       sample_prop: float = 1,
-                                      weighted: bool = False,
+                                      weighted: bool = True,
                                       path=DEFAULT_PATH) -> SocialGraph:
     """Returns a social graph refined using Jaccard Set Similarity using the social graph and the screen name of the user."""
     injector = sdi.Injector.get_injector_from_file(path)
@@ -200,17 +200,23 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
 
     users_map = {}
     weights_map = {}
+
+    user_to_activity = {}
+
     for user_1 in user_list:
         activities1 = local_neighbourhood.get_user_activities(user_1, sample_prop)
+        if user_activity == "user retweets":
+            # Filters out retweeted users with less than MIN_RETWEETS retweets
+            activities1 = _find_k_repeats(activities1, MIN_RETWEETS)
+        user_to_activity[user_1] = activities1
+
+    for user_1 in user_list:
+        activities1 = user_to_activity[user_1]
         users_map[user_1] = []
         weights_map[user_1] = {}
         for user_2 in user_list:
             if user_1 != user_2:
-                activities2 = local_neighbourhood.get_user_activities(user_2, sample_prop)
-                if user_activity == "user retweets":
-                    # Filters out retweeted users with less than MIN_RETWEETS retweets
-                    activities1, activities2 = _find_k_repeats(activities1, MIN_RETWEETS), \
-                                            _find_k_repeats(activities2, MIN_RETWEETS)
+                activities2 = user_to_activity[user_2]
                 sim = jaccard_similarity(
                     activities1, activities2)
                 if sim >= threshold:
