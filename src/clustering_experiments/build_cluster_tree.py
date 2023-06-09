@@ -418,7 +418,7 @@ def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[C
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
-        main_roots = dividing_social_graph(0.12, 0.16, 0.01, screen_name, user_activity=user_activity)
+        main_roots = dividing_social_graph(0.02, 0.04, 0.005, screen_name, user_activity=user_activity)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
         for n in no_split_nodes:
