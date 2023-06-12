@@ -40,7 +40,7 @@ class LocalNeighbourhoodDownloader():
         #     self.user_friends_downloader.download_friends_ids_by_id(user_id)
         user_friends_ids = self.user_friend_getter.get_user_friends_ids(
             user_id)
-
+        log.info(f"Downloading local neighbourhood of {user_id}")
         log.info(f"{ user_id} has {len(user_friends_ids)} friends")
         if clean:
             user_friends_ids, t = self.clean_user_friends_global(
@@ -63,10 +63,11 @@ class LocalNeighbourhoodDownloader():
                 # user_friends = self.user_friend_getter.get_user_friends_ids(id)
                 # log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
                 user_activities = []
-                log.info("Could not get user activities for " + str(id))
+                # log.info("Could not get user activities for " + str(id))
             else:
-                log.info("Already stored " + str(len(user_activities)) +
-                         " user activities for " + str(id))
+                pass
+                # log.info("Already stored " + str(len(user_activities)) +
+                #         " user activities for " + str(id))
 
             assert user_activities is not None
 

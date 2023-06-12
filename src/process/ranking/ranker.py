@@ -11,7 +11,6 @@ class Ranker():
 
     def rank(self, seed_id, cluster):
         user_ids = cluster.users
-
         scores = self.score_users(user_ids)
 
         ranked_ids = list(sorted(scores, key=lambda x: (scores[x][0], scores[x][1]), reverse=True))

@@ -12,8 +12,8 @@ class ClustererFactory():
         # Uncomment desired clusterer algorithm
 
         # clusterer = LabelPropagationClusterer(social_graph_getter, cluster_setter, user_friends_getter)
-        # clusterer = WalktrapClustererWeighted(social_graph_getter, cluster_setter, user_friends_getter)
+        clusterer = WalktrapClustererWeighted(social_graph_getter, cluster_setter, user_friends_getter)
         # clusterer = WalktrapClustererUnweighted(social_graph_getter, cluster_setter, user_friends_getter)
-        clusterer = BayanClusterer(social_graph_getter, cluster_setter, user_friends_getter)
+        # clusterer = BayanClusterer(social_graph_getter, cluster_setter, user_friends_getter)
 
         return clusterer

@@ -1,4 +1,5 @@
 import enum
+import pickle
 import os
 import json
 from re import I
@@ -92,6 +93,10 @@ class JaccardCoreDetector():
                 log.exception(e)
                 exit()
 
+        # Save selected clusters to file
+        # with open(f"selected_clusters_{initial_user_id}", "wb") as f:
+        #     pickle.dump(clusters, f)
+
         log.info("The final user for initial user " + str(initial_user_id) + " is "
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
         # This is the core
@@ -115,6 +120,11 @@ class JaccardCoreDetector():
         else:
             thresh = 0.4
         clusters = self._clustering(user_id, user_activity, thresh)
+        log.info("Saving initial clusters to file")
+        # Save initial clusters to file
+        # with open(f"initial_clusters_{screen_name}", "wb") as f:
+        #     pickle.dump(clusters, f)
+
         chosen_cluster = self._pick_first_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
@@ -164,6 +174,7 @@ class JaccardCoreDetector():
             thresh = 0.4
         clusters = self._clustering(user_id, user_activity, thresh)
         # clusters only keeps the largest intact ones, as in the report
+        # now it selects by production utility
         chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)

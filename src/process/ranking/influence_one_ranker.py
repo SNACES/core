@@ -48,6 +48,7 @@ class InfluenceOneRanker(Ranker):
 			user_retweets = [tweet for tweet in user_tweets if tweet.retweet_id is not None]
 			for user_retweet in user_retweets:
 				retweets = get_later_retweets_of_tweet_id(user_retweet.retweet_id, user_retweet.created_at)
+				# The person who retweeted is a direct follower of id.
 				retweets_from_direct_followers = [rtw for rtw in retweets if is_direct_follower(id, str(rtw.user_id))]
 				scores[id][0] += len(retweets_from_direct_followers)
 

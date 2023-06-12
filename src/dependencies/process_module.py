@@ -16,6 +16,7 @@ from src.process.download.user_downloader import TwitterUserDownloader
 from src.process.download.user_tweet_downloader import UserTweetDownloader
 from src.process.ranking.production_utility_ranker import ProductionUtilityRanker
 from src.process.ranking.consumption_utility_ranker import ConsumptionUtilityRanker
+from src.process.ranking.social_support_ranker import SocialSupportRanker
 from src.process.ranking.influence_one_ranker import InfluenceOneRanker
 from src.process.ranking.influence_two_ranker import InfluenceTwoRanker
 from src.process.ranking.followers_ranker import FollowerRanker
@@ -256,6 +257,9 @@ class ProcessModule():
         elif type == "InfluenceTwo":
             ranker = InfluenceTwoRanker(
                 raw_tweet_getter, friends_getter, ranking_setter)
+        elif type == "SocialSupport":
+            ranker = SocialSupportRanker(
+                cluster_getter, raw_tweet_getter, user_getter, ranking_setter)
         else:
             ranker = ProductionUtilityRanker(
                 cluster_getter, raw_tweet_getter, user_getter, ranking_setter)
