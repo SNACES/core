@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import datetime
+import certifi
 
 
 def get_collection_from_config(mongo_config, gen_new_collection=False):
@@ -10,7 +11,7 @@ def get_collection_from_config(mongo_config, gen_new_collection=False):
     else:
         db_name = mongo_config['datastore-name']
 
-    client = MongoClient(db_location)
+    client = MongoClient(db_location, connect=False)
     db = client[db_name]
     collection_name = mongo_config['collection-name']
 

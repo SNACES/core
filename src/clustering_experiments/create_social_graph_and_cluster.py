@@ -196,7 +196,7 @@ def refine_social_graph_jaccard_users(screen_name: str, social_graph: SocialGrap
 
     log.info("Refining by Jaccard Similarity:")
 
-    MIN_RETWEETS = 2
+    MIN_RETWEETS = 3
 
     users_map = {}
     weights_map = {}

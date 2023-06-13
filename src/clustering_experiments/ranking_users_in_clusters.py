@@ -28,6 +28,7 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     infl1_rank, infl1 = infl1_ranker.rank(user_id, cluster)
     infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
 
+    # intersection_ranking = get_intersection_ranking(prod, con, infl1, infl2)
     intersection_ranking = get_new_intersection_ranking(sosu, infl1)
 
     top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
@@ -92,7 +93,7 @@ def get_new_intersection_ranking(sosu, infl1):
     for user in infl1_ranking:
         if user in sosu_ranking:
             sosu_ranking.remove(user)
-        if len(sosu_ranking) == 10:
+        if len(sosu_ranking) <= 10:
             break
     return sosu_ranking
 
