@@ -10,7 +10,7 @@ from typing import Dict
 from src.shared.logger_factory import LoggerFactory
 import src.clustering_experiments.create_social_graph_and_cluster as csgc
 import src.clustering_experiments.build_cluster_tree as bct
-from src.clustering_experiments.ranking_users_in_clusters import rank_users
+from src.clustering_experiments.ranking_users_in_clusters import rank_users, get_new_intersection_ranking
 
 log = LoggerFactory.logger(__name__)
 
@@ -26,7 +26,7 @@ class JaccardCoreDetector():
             local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
             tweet_processor, social_graph_constructor, clusterer, cluster_getter,
             cluster_word_frequency_processor, cluster_word_frequency_getter,
-            prod_ranker, con_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter,
+            prod_ranker, con_ranker, sosu_ranker, ranking_getter, user_tweet_downloader, user_tweet_getter,
                  user_friend_getter):
         self.user_getter = user_getter
         self.user_downloader = user_downloader
@@ -46,6 +46,7 @@ class JaccardCoreDetector():
         self.cluster_word_frequency_getter = cluster_word_frequency_getter
         self.prod_ranker = prod_ranker
         self.con_ranker = con_ranker
+        self.sosu_ranker = sosu_ranker
         self.ranking_getter = ranking_getter
 
     def detect_core_by_screen_name(self, screen_name: str, user_activity:str, skip_download=True, optimize_threshold=False):
@@ -67,14 +68,14 @@ class JaccardCoreDetector():
     def detect_core(self, initial_user_id: str, user_activity: str, skip_download=True, optimize_threshold=False):
         log.info("Beginning core detection algorithm for user with id " + str(initial_user_id))
 
-        prev_user_id = str(initial_user_id)
+        prev_user_id = [str(initial_user_id)]
         curr_user_id = None
         top_10_users = []
         top_10 = []
         clusters = []
         # First iteration
         try:
-            curr_user_id, top_10_users, cluster = self.first_iteration(prev_user_id, user_activity, skip_download, optimize_threshold)
+            curr_user_id, top_10_users, cluster = self.first_iteration(prev_user_id[0], user_activity, skip_download, optimize_threshold)
             top_10.append(top_10_users)
             clusters.append(cluster)
         except Exception as e:
@@ -82,16 +83,18 @@ class JaccardCoreDetector():
             exit()
 
         # Other iterations
-        while str(curr_user_id) != str(prev_user_id):
-            prev_user_id = curr_user_id
+        # while str(curr_user_id) not in prev_user_id:
+        #     log.info("Curr user id: " + str(curr_user_id))
+        #     log.info(f"Prev users list: {prev_user_id}")
+        #     prev_user_id.append(str(curr_user_id))
 
-            try:
-                curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, user_activity, top_10_users, skip_download, optimize_threshold)
-                top_10.append(top_10_users)
-                clusters.append(cluster)
-            except Exception as e:
-                log.exception(e)
-                exit()
+        #     try:
+        #         curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, user_activity, top_10_users, skip_download, optimize_threshold)
+        #         top_10.append(top_10_users)
+        #         clusters.append(cluster)
+        #     except Exception as e:
+        #         log.exception(e)
+        #         exit()
 
         # Save selected clusters to file
         # with open(f"selected_clusters_{initial_user_id}", "wb") as f:
@@ -125,7 +128,8 @@ class JaccardCoreDetector():
         # with open(f"initial_clusters_{screen_name}", "wb") as f:
         #     pickle.dump(clusters, f)
 
-        chosen_cluster = self._pick_first_cluster(user_id, clusters)
+        # chosen_cluster = self._pick_first_cluster(user_id, clusters)
+        chosen_cluster = self._auto_select_first_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
@@ -138,7 +142,6 @@ class JaccardCoreDetector():
 
     def _pick_first_cluster(self, user_id, clusters):
         """Returns the largest cluster."""
-        # TODO: Figure out a "better" arbitrary solution
         log.info(f"Here are the {len(clusters)} clusters that have been created:")
         for i in range(len(clusters)):
             log.info(f"All users in Cluster {i}:")
@@ -183,6 +186,35 @@ class JaccardCoreDetector():
         curr_user = curr_user.id
 
         return curr_user, top_10_users, chosen_cluster
+    
+    def _auto_select_first_cluster(self, user_id, clusters):
+        """Returns the cluster where the sum of the production utilities of the top 10 users of
+        the previous iteration is the highest."""
+        log.info(f"Here are the {len(clusters)} clusters that have been created:")
+        cluster_scores = {cluster: 0 for cluster in clusters}
+        screen_name = self.user_getter.get_user_by_id(user_id).screen_name
+        for i in range(len(clusters)):
+            log.info(f"All users in Cluster {i}:")
+            readable_users = [self.user_getter.get_user_by_id(user_id).screen_name
+                              for user_id in clusters[i].users]
+            log.info(readable_users)
+            log.info(f"Top_10 users in Cluster {i} before we download their tweets:")
+            top_10_users = rank_users(screen_name, clusters[i])
+            log.info(top_10_users)
+            log.info("")
+
+        log.info("Selecting Cluster based on production utilities")
+
+        for cluster in cluster_scores:
+            sosu, infl1, intersection_ranking = get_new_intersection_ranking(screen_name, cluster)
+            if len(intersection_ranking) > 0:
+                cluster_scores[cluster] = sum([sosu[str(user_id)][0] for user_id in intersection_ranking]) / len(intersection_ranking)
+            else: 
+                cluster_scores[cluster] = 0
+
+        index = clusters.index(max(cluster_scores, key=cluster_scores.get))
+        log.info(f"Cluster {index} has been chosen\n")
+        return clusters[index]
 
     def _select_cluster(self, user_id, top_10_users, clusters):
         """Returns the cluster where the sum of the production utilities of the top 10 users of

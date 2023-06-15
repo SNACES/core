@@ -95,6 +95,7 @@ class ProcessModule():
         cluster_word_frequency_getter = self.dao_module.get_cluster_word_frequency_getter()
         prod_ranker = self.get_ranker()  # Production
         con_ranker = self.get_ranker("Consumption")
+        sosu_ranker = self.get_ranker("SocialSupport")
         ranking_getter = self.dao_module.get_ranking_getter()
         user_tweet_downloader = self.get_user_tweet_downloader()
         user_tweet_getter = self.dao_module.get_user_tweet_getter()
@@ -105,7 +106,7 @@ class ProcessModule():
                                    local_neighbourhood_tweet_downloader, local_neighbourhood_getter,
                                    tweet_processor, social_graph_constructor, clusterer, cluster_getter,
                                    cluster_word_frequency_processor, cluster_word_frequency_getter,
-                                   prod_ranker, con_ranker, ranking_getter, user_tweet_downloader,
+                                   prod_ranker, con_ranker, sosu_ranker, ranking_getter, user_tweet_downloader,
                                    user_tweet_getter, user_friend_getter)
 
     def get_community_detector(self):

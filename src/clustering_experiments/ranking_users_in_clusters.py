@@ -9,6 +9,18 @@ DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_grap
 
 def rank_users(user, cluster, path=DEFAULT_PATH):
     """Returns the top 10 ranked users from the given cluster with the seed id as user's id."""
+    injector = sdi.Injector.get_injector_from_file(path)
+    dao_module = injector.get_dao_module()
+    user_getter = dao_module.get_user_getter()
+
+    # intersection_ranking = get_intersection_ranking(prod, con, infl1, infl2)
+    sosu, infl1, intersection_ranking = get_new_intersection_ranking(user, cluster, path)
+
+    top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
+    # top_n_users = filter_user_by_clustering(intersection_ranking, "fchollet", user_getter)
+    return top_n_users
+
+def get_rankings(user, cluster, path=DEFAULT_PATH):
     user_id = csgc.get_user_by_screen_name(user).id
     injector = sdi.Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
@@ -28,12 +40,7 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     infl1_rank, infl1 = infl1_ranker.rank(user_id, cluster)
     infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
 
-    # intersection_ranking = get_intersection_ranking(prod, con, infl1, infl2)
-    intersection_ranking = get_new_intersection_ranking(sosu, infl1)
-
-    top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
-    # top_n_users = filter_user_by_clustering(intersection_ranking, "fchollet", user_getter)
-    return top_n_users
+    return sosu, infl1
 
 def filter_user_by_clustering(intersection_ranking, screen_name, user_getter):
     thresh = 0.3
@@ -74,7 +81,7 @@ def filter_user_by_clustering(intersection_ranking, screen_name, user_getter):
                                                    threshold=thresh)
         cluster_neighbourhood.users[str(cur_node.root.base_user)] = base_user_friends
 
-def get_new_intersection_ranking(sosu, infl1):
+def get_new_intersection_ranking(user, cluster, path=DEFAULT_PATH):
     """Produces a ranking that aggregates the Social Support and Influence One rankings
 
     Args:
@@ -84,6 +91,7 @@ def get_new_intersection_ranking(sosu, infl1):
     Returns:
         An ordered list of about 10 highest ranked users sorted by highest rank.
     """
+    sosu, infl1 = get_rankings(user, cluster, path)
     # Get top 20 users from sosu_ranking
     sosu_ranking = list(sorted(sosu, key=lambda x: (sosu[x][0], sosu[x][1]), reverse=True))[:20]
     infl1_ranking = list(sorted(sosu, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=False))
@@ -91,11 +99,11 @@ def get_new_intersection_ranking(sosu, infl1):
     
     # Remove lowest infl1_ranking users from sosu_ranking until 10 users are left
     for user in infl1_ranking:
-        if user in sosu_ranking:
-            sosu_ranking.remove(user)
         if len(sosu_ranking) <= 10:
             break
-    return sosu_ranking
+        if user in sosu_ranking:
+            sosu_ranking.remove(user)
+    return sosu, infl1, sosu_ranking
 
 def get_intersection_ranking(prod, con, infl1, infl2):
     """Produces a ranking that is the intersection of the Production,

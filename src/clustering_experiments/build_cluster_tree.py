@@ -299,6 +299,7 @@ def dividing_social_graph(start_thresh: float,
     print(f"Dividing the social graphs into forest starting from threshold: {start_thresh}\n"
           f"ending at threshold: {end_thresh}\n"
           f"increment threshold by {increment} each time\n")
+    print(f"User name: {user}\n")
 
     # Keep track of all the nodes in the forest, so that we can find main_roots later
 
