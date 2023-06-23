@@ -83,23 +83,23 @@ class JaccardCoreDetector():
             exit()
 
         # Other iterations
-        # while str(curr_user_id) not in prev_user_id:
-        #     log.info("Curr user id: " + str(curr_user_id))
-        #     log.info(f"Prev users list: {prev_user_id}")
-        #     prev_user_id.append(str(curr_user_id))
+        while str(curr_user_id) not in prev_user_id:
+            log.info("Curr user id: " + str(curr_user_id))
+            log.info(f"Prev users list: {prev_user_id}")
+            prev_user_id.append(str(curr_user_id))
 
-        #     try:
-        #         curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, user_activity, top_10_users, skip_download, optimize_threshold)
-        #         top_10.append(top_10_users)
-        #         clusters.append(cluster)
-        #     except Exception as e:
-        #         log.exception(e)
-        #         exit()
+            try:
+                curr_user_id, top_10_users, cluster = self.loop_iteration(curr_user_id, user_activity, top_10_users, skip_download, optimize_threshold)
+                top_10.append(top_10_users)
+                clusters.append(cluster)
+            except Exception as e:
+                log.exception(e)
+                exit()
 
         # Save selected clusters to file
         # with open(f"selected_clusters_{initial_user_id}", "wb") as f:
         #     pickle.dump(clusters, f)
-
+        log.info("The previous user id list is " + str(prev_user_id))
         log.info("The final user for initial user " + str(initial_user_id) + " is "
                  + self.user_getter.get_user_by_id(str(curr_user_id)).screen_name)
         # This is the core
@@ -128,14 +128,18 @@ class JaccardCoreDetector():
         # with open(f"initial_clusters_{screen_name}", "wb") as f:
         #     pickle.dump(clusters, f)
 
-        # chosen_cluster = self._pick_first_cluster(user_id, clusters)
-        chosen_cluster = self._auto_select_first_cluster(user_id, clusters)
+        chosen_cluster = self._pick_first_cluster(user_id, clusters)
+        # chosen_cluster = self._auto_select_first_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
         log.info("top_10 of chosen cluster:")
         log.info(top_10_users)
-        curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
+        # If we don't want to stop after first iter, choose first in top_10_users that is not user_id
+        if top_10_users[0] == screen_name:
+            curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
+        else:
+            curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 
         return curr_user, top_10_users, chosen_cluster

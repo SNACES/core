@@ -260,7 +260,7 @@ class ProcessModule():
                 raw_tweet_getter, friends_getter, ranking_setter)
         elif type == "SocialSupport":
             ranker = SocialSupportRanker(
-                cluster_getter, raw_tweet_getter, user_getter, ranking_setter)
+                raw_tweet_getter, user_getter, friends_getter, ranking_setter)
         else:
             ranker = ProductionUtilityRanker(
                 cluster_getter, raw_tweet_getter, user_getter, ranking_setter)

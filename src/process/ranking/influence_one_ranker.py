@@ -26,12 +26,15 @@ class InfluenceOneRanker(Ranker):
 		valid_tweets = [tweet for tweet in tweets if tweet.retweet_user_id != tweet.user_id] # omit self-retweets
 
 		# Define helper functions
+		# NOTE: The get_retweets functions are dependent on valid_tweets and therefore user_ids
+		# i.e. retweets of tweet id by users in user_ids
 		tweets_by_retweet_group = self._group_by_retweet_id(valid_tweets)
 		def get_retweets_of_tweet_id(tweet_id):
 			return tweets_by_retweet_group.get(str(tweet_id), [])
 		def get_later_retweets_of_tweet_id(tweet_id, created_at):
 			return [tweet for tweet in get_retweets_of_tweet_id(tweet_id) if tweet.created_at > created_at]
 		def is_direct_follower(a, b):
+			# b follows a
 			return a in friends.get(b, [])
 
 		for id in tqdm(user_ids):
