@@ -1,6 +1,7 @@
 from src.process.community_expansion.community_expansion import \
     CommunityExpansionAlgorithm
 from src.process.ranking.intersection_ranker import IntersectionRanker
+from src.process.ranking.ss_intersection_ranker import SSIntersectionRanker
 from src.shared.logger_factory import LoggerFactory
 from src.shared.utils import get_project_root
 import csv
@@ -57,7 +58,9 @@ class CoreRefiner(CommunityExpansionAlgorithm):
 
         initial_list = community.copy()
         iteration = 0
-        intersection_ranker = IntersectionRanker(self.ranker_list)
+        # Uncomment depending on using Social Support
+        # intersection_ranker = IntersectionRanker(self.ranker_list)
+        intersection_ranker = SSIntersectionRanker(self.ranker_list)
         prev_community = initial_list.copy()
         # self._download_user_info_and_tweet(community, initial_list)
         more_potential_candidate = True

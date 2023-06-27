@@ -55,6 +55,7 @@ from src.process.community_expansion.community_expansion import \
     CommunityExpansionAlgorithm
 from src.process.ranking.influence_one_ranker import InfluenceOneRanker
 from src.process.ranking.influence_two_ranker import InfluenceTwoRanker
+from src.process.ranking.social_support_ranker import SocialSupportRanker
 from src.process.ranking.consumption_utility_ranker import \
     ConsumptionUtilityRanker
 from src.process.ranking.production_utility_ranker import \
@@ -478,6 +479,12 @@ def run_community_expansion(process_module, dao_module):
         use_utility = click.prompt("Use Consumption Utility?(y/n)", type=str)
         if use_utility == "y":
             ranker_list.append(ConsumptionUtilityRanker(
+                dao_module.get_user_tweet_getter(),
+                dao_module.get_user_friend_getter(),
+                dao_module.get_ranking_setter()))
+        use_utility = click.prompt("Use Social Support?(y/n)", type=str)
+        if use_utility == "y":
+            ranker_list.append(SocialSupportRanker(
                 dao_module.get_user_tweet_getter(),
                 dao_module.get_user_friend_getter(),
                 dao_module.get_ranking_setter()))

@@ -1,4 +1,5 @@
 from src.process.ranking.intersection_ranker import IntersectionRanker
+from src.process.ranking.ss_intersection_ranker import SSIntersectionRanker
 from src.shared.utils import get_project_root
 from src.shared.logger_factory import LoggerFactory
 import csv
@@ -20,7 +21,9 @@ class CommunityExpansionAlgorithm:
         self.user_friend_getter = user_friend_getter
         self.user_friends_downloader = user_friends_downloader
         self.ranker_list = ranker_list
-        self.intersection_ranker = IntersectionRanker(self.ranker_list)
+        # Uncomment if using Social Support
+        self.intersection_ranker = SSIntersectionRanker(self.ranker_list)
+        # self.intersection_ranker = IntersectionRanker(self.ranker_list)
         self.dataset_creator = dataset_creator
 
     def _download_friends(self, community):
@@ -94,11 +97,18 @@ class CommunityExpansionAlgorithm:
                  " users in the community.")
         # Calculate threshold for each utility
         thresholds = []
+
+        # Uncomment if Social Support
+        ranker_scores = []
+        for i in range(len(self.ranker_list)):
+            ranker_scores.append(self.ranker_list[i].score_users(community, respection))
+
         for i in range(len(self.ranker_list)):
             thresholds.append(0)
             for j in range(top_size):
                 user = community[j]
-                thresholds[i] += self.ranker_list[i].score_user(user, respection)
+                thresholds[i] += ranker_scores[i][user]
+                # thresholds[i] += self.ranker_list[i].score_user(user, respection)
             thresholds[i] = thresholds[i] / float(top_size)
             log.info("Top " + str(top_size) + " users average " +
                      self.ranker_list[i].ranking_function_name + " is " +
@@ -138,11 +148,29 @@ class CommunityExpansionAlgorithm:
             log.info("Candidate number of follower must be no less than " +
                      str(threshold_followers_small))
 
+        # Uncomment if Social Support
+
+        ranker_scores = []
+        candidates_str = []
+        for candidate in candidates:
+            candidates_str.append(str(candidate))
+        for i in range(len(self.ranker_list)):
+            ranker_scores.append(self.ranker_list[i].score_users(candidates_str, respection))
+
+
         filtered_candidates = []
         for candidate in candidates:
             accept = True
 
             if mode is True:
+                # Uncomment if Social Support
+                score_influence_1 = ranker_scores[0][str(candidate)]
+                score_social_support = ranker_scores[1][str(candidate)]
+                if (score_influence_1 >= thresholds[0] and score_social_support >= thresholds[1]):
+                    accept = True
+                else:
+                    accept = False
+                '''
                 score_influence_1 = self.ranker_list[0].score_user(str(candidate), respection)
                 score_influence_2 = self.ranker_list[1].score_user(str(candidate), respection)
                 score_production = self.ranker_list[2].score_user(str(candidate), respection)
@@ -152,6 +180,7 @@ class CommunityExpansionAlgorithm:
                     accept = True
                 else:
                     accept = False
+                '''
             else:
                 for i in range(len(self.ranker_list)):
                     # log.info("Calculating ranking " + str(self.ranker_list[i].ranking_function_name))
