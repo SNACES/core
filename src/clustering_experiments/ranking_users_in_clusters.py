@@ -13,34 +13,40 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     dao_module = injector.get_dao_module()
     user_getter = dao_module.get_user_getter()
 
-    # intersection_ranking = get_intersection_ranking(prod, con, infl1, infl2)
-    sosu, infl1, intersection_ranking = get_new_intersection_ranking(user, cluster, path)
+    #intersection_ranking = get_intersection_ranking(user, cluster, path)
+    intersection_ranking = get_new_intersection_ranking(user, cluster, path)
 
     top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
     # top_n_users = filter_user_by_clustering(intersection_ranking, "fchollet", user_getter)
     return top_n_users
 
-def get_rankings(user, cluster, path=DEFAULT_PATH):
+def get_rankings(user, cluster, new=True, path=DEFAULT_PATH):
     user_id = csgc.get_user_by_screen_name(user).id
     injector = sdi.Injector.get_injector_from_file(path)
     process_module = injector.get_process_module()
     dao_module = injector.get_dao_module()
     user_getter = dao_module.get_user_getter()
 
-    # prod_ranker = process_module.get_ranker()
-    # con_ranker = process_module.get_ranker("Consumption")
+    prod_ranker = process_module.get_ranker()
+    con_ranker = process_module.get_ranker("Consumption")
+    infl2_ranker = process_module.get_ranker("InfluenceTwo")
     sosu_ranker = process_module.get_ranker("SocialSupport")
     infl1_ranker = process_module.get_ranker("InfluenceOne")
-    infl2_ranker = process_module.get_ranker("InfluenceTwo")
 
     # Second argument is the return of score_users
     # prod_rank, prod = prod_ranker.rank(user_id, cluster)
     # con_rank, con = con_ranker.rank(user_id, cluster)
-    sosu_rank, sosu = sosu_ranker.rank(user_id, cluster)
+    # infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
     infl1_rank, infl1 = infl1_ranker.rank(user_id, cluster)
-    infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
+    if new:
+        sosu_rank, sosu = sosu_ranker.rank(user_id, cluster)
+        return sosu, infl1
+    else:
+        prod_rank, prod = prod_ranker.rank(user_id, cluster)
+        con_rank, con = con_ranker.rank(user_id, cluster)
+        infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
+        return prod, con, infl1, infl2
 
-    return sosu, infl1
 
 def filter_user_by_clustering(intersection_ranking, screen_name, user_getter):
     thresh = 0.3
@@ -103,9 +109,9 @@ def get_new_intersection_ranking(user, cluster, path=DEFAULT_PATH):
             break
         if user in sosu_ranking:
             sosu_ranking.remove(user)
-    return sosu, infl1, sosu_ranking
+    return sosu_ranking
 
-def get_intersection_ranking(prod, con, infl1, infl2):
+def get_intersection_ranking(user, cluster, path=DEFAULT_PATH):
     """Produces a ranking that is the intersection of the Production,
     Consumption, Influence One, and Influence Two rankings
 
@@ -116,6 +122,7 @@ def get_intersection_ranking(prod, con, infl1, infl2):
     Returns:
         An ordered list of about 10 highest ranked users sorted by highest rank.
     """
+    prod, con, infl1, infl2 = get_rankings(user, cluster, False, path)
     prod_ranking = list(sorted(prod, key=lambda x: (prod[x][0], prod[x][1]), reverse=True))
     con_ranking = list(sorted(prod, key=lambda x: (con[x][0], con[x][1]), reverse=True))
     infl1_ranking = list(sorted(prod, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=True))

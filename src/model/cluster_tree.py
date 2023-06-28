@@ -2,6 +2,7 @@ from src.model.cluster import Cluster
 import src.dependencies.injector as sdi
 from src.shared.utils import get_project_root
 from src.clustering_experiments import ranking_users_in_clusters as rank
+import pygraphviz as pgv
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
 
 class ClusterNode:
@@ -30,7 +31,7 @@ class ClusterNode:
         for child in self.children:
             child.display(indent + 1)
 
-    def display_cluster(self, indent=0):
+    def display_cluster(self, G, id, indent=0):
         """Display the tree rooted at current node"""
         path = DEFAULT_PATH
         cluster = self.root
@@ -49,9 +50,17 @@ class ClusterNode:
         else:
             l = len(self.parent.root.users)
             t = self.parent.threshold
-        print(("   " * indent), str(self.threshold), len(users), top_10, l, t)
-        for child in self.children:
-            child.display_cluster(indent + 1)
+
+        rounded_t = round(self.threshold, 2)
+        print(("   " * indent), str(rounded_t), len(users), top_10, l, round(t, 2))
+        # Draw the graph
+        G.add_node(f"t={rounded_t}\n size={len(users)}\n id={id}")
+        if self.parent is not None:
+            G.add_edge(f"t={round(t, 2)}\n size={l}\n id={id[:-1]}", f"t={rounded_t}\n size={len(users)}\n id={id}")
+        for i, child in enumerate(self.children):
+            child.display_cluster(G, id + str(i), indent + 1)
+
+        
 
 
 

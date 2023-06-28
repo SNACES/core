@@ -97,7 +97,7 @@ class JaccardCoreDetector():
                 exit()
 
         # Save selected clusters to file
-        # with open(f"selected_clusters_{initial_user_id}", "wb") as f:
+        # with open(f"data/selected_clusters_{initial_user_id}_ww_friends", "wb") as f:
         #     pickle.dump(clusters, f)
         log.info("The previous user id list is " + str(prev_user_id))
         log.info("The final user for initial user " + str(initial_user_id) + " is "
