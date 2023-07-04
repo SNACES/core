@@ -40,8 +40,7 @@ def create_social_graph(screen_name: str, user_activity: str, path=DEFAULT_PATH)
             local_neighbourhood_downloader = process_module.get_local_neighbourhood_downloader(user_activity)
             local_neighbourhood_downloader.download_local_neighbourhood_by_id(
                 user.id)
-            local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(
-                user.id)
+            local_neighbourhood = local_neighbourhood_getter.get_local_neighbourhood(user.id)
 
         social_graph_constructor = process_module.get_social_graph_constructor(user_activity)
         social_graph = social_graph_constructor.construct_social_graph_from_local_neighbourhood(

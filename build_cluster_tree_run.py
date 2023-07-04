@@ -178,10 +178,12 @@ def visualize_forest1(main_roots: List[ClusterNode]) -> None:
     """
     assert(len(main_roots) != 0)
     # If we can't find any main_roots in our forest, then something is wrong since a tree must be rooted somewhere
-
-    for main_root in main_roots:
+    G = pgv.AGraph(strict=False, directed=True)
+    for i, main_root in enumerate(main_roots):
         # main_root.display()
-        main_root.display_cluster()
+        main_root.display_cluster(G, str(i))
+    G.layout(prog='dot') # use dot
+    G.draw('thuy_graph.png')
 
 
 def _get_core_detector(user_activity: str):
@@ -318,15 +320,16 @@ def dividing_social_graph(start_thresh: float,
 
 def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbourhood: LocalNeighbourhood, user_activity) -> tuple:
     cluster = node.root
-    friends_map = {}
+    user_map = {}
     for user in cluster.users:
-        friends_map[user] = list(set(neighbourhood.get_user_activities(user)).intersection(cluster.users))
-    base_user_friends = friends_map[str(cluster.base_user)]
+        user_map[user] = list(set(neighbourhood.get_user_activities(user)).intersection(cluster.users)) if user_activity == 'friends' else neighbourhood.get_user_activities(user)
+
+    base_user_activities = user_map[str(cluster.base_user)]
     cluster_neighbourhood = \
-        LocalNeighbourhood(cluster.base_user, None, friends_map)
+        LocalNeighbourhood(cluster.base_user, None, user_map, neighbourhood.user_activity)
     cluster_soc_graph = \
         csgc.create_social_graph_from_local_neighbourhood(cluster_neighbourhood, user_activity)
-    return cluster_neighbourhood, cluster_soc_graph, base_user_friends
+    return cluster_neighbourhood, cluster_soc_graph, base_user_activities
 
 
 def generate_clusters(base_user: str, soc_graph,
@@ -344,18 +347,21 @@ def generate_clusters(base_user: str, soc_graph,
     clusters = csgc.clustering_from_social_graph(base_user, soc_graph)
 
     clusters_filtered = csgc.filter_by_expected_size(clusters)
-    parent_nodes = package_cluster_nodes(clusters_filtered, thresh)
+    # Set ranked=True when visualizing tree
+    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=True)
     thresh += increment
     for parent_node in parent_nodes:
-        cluster_neighbourhood, cluster_soc_graph, base_user_friends = \
+        cluster_neighbourhood, cluster_soc_graph, base_user_activities = \
             generate_soc_graph_and_neighbourhood_from_cluster(parent_node,
                                                               neighbourhood, user_activity)
+        if cluster_neighbourhood == neighbourhood:
+            continue
         refined_cluster_soc_graph = \
-            csgc.refine_social_graph_jaccard_users(base_user, cluster_soc_graph,
-                                                   cluster_neighbourhood,
-                                                   user_activity,
-                                                   threshold=thresh)
-        cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_friends
+            csgc.refine_social_graph_jaccard_users(base_user,   cluster_soc_graph,
+            cluster_neighbourhood,
+            user_activity,
+            threshold=thresh)
+        cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_activities
         child_nodes = generate_clusters(base_user, refined_cluster_soc_graph,
                                         cluster_neighbourhood,
                                         thresh, increment, end_thresh,
@@ -423,10 +429,11 @@ def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[C
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
-        main_roots = dividing_social_graph(0.0001, 0.001, 0.0003, screen_name, user_activity=user_activity)
+        main_roots = dividing_social_graph(0.3, 0.6, 0.05, screen_name, user_activity=user_activity)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
         for n in no_split_nodes:
+            # n.root is the cluster at the node n
             clusters.append(n.root)
         return clusters
     except Exception as e:
@@ -440,15 +447,16 @@ if __name__ == "__main__":
     # Find the no_split_nodes for a particular user, given some starting threshold, some finishing threshold,
     # and an increment.
     # timnitGebru
-    all_nodes = clusters_to_forest(0.3, 0.6, 0.05, "fchollet", "friends")
-    # top_nodes = dividing_social_graph(0.3, 0.8, 0.01, "fchollet")
-    visualize_forest(all_nodes)
-    #visualize_forest1(top_nodes)
+    #all_nodes = clusters_to_forest(0.3, 0.6, 0.05, "fchollet", "friends")
+    top_nodes = dividing_social_graph(0.0001, 0.001, 0.0003, "chessable", "user retweets")
+    #top_nodes = dividing_social_graph(0.3, 0.6, 0.05, "hardmaru", "friends")
+    #visualize_forest(all_nodes)
+    visualize_forest1(top_nodes)
     # Find the oldest nodes in any longest non-divergent path in our resulting forest
     print("============================================================")
     print("The leading nodes in longest non-divergent paths are:")
-    #main_roots = top_nodes
-    main_roots = get_main_roots(all_nodes)
+    main_roots = top_nodes
+    #main_roots = get_main_roots(all_nodes)
     no_split_nodes = trace_no_split_nodes(main_roots)
 
     for n in no_split_nodes:
@@ -463,7 +471,7 @@ if __name__ == "__main__":
             users.append(user_getter.get_user_by_id(user).screen_name)
         users.sort()
         top_10 = n.top_users
-        print("Top 10 users in the clusters by intersection ranking:")
+        print(f"Top 10 users in the cluster {n.id} by intersection ranking:")
         print(top_10)
 
     # Want to visually confirm that, these are the leading nodes of the longest non-divergent paths
@@ -485,14 +493,3 @@ if __name__ == "__main__":
     #                                       cluster_neighbourhood,
     #                                       n.threshold, 0.05, 0.8)
     #         visualize_forest1(top_nodes)
-
-
-
-
-
-
-
-
-
-
-
