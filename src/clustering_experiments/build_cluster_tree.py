@@ -5,10 +5,11 @@ from src.model.cluster_tree import ClusterNode
 from src.shared.utils import get_project_root
 from src.shared.logger_factory import LoggerFactory
 from src.model.local_neighbourhood import LocalNeighbourhood
-from typing import List
+from typing import List, Optional
 from src.clustering_experiments import ranking_users_in_clusters as rank
 import src.dependencies.injector as sdi
 import pygraphviz as pgv
+import os
 
 log = LoggerFactory.logger(__name__)
 DEFAULT_PATH = str(get_project_root()) + "/src/scripts/config/create_social_graph_and_cluster_config.yaml"
@@ -172,19 +173,22 @@ def visualize_forest(all_nodes: List[ClusterNode]) -> None:
     G.draw('graph.png')
 
 
-def visualize_forest1(main_roots: List[ClusterNode]) -> None:
+def visualize_forest1(screen_name: str, main_roots: List[ClusterNode], iter: Optional[int]) -> None:
     """
     Visualize the entire forest, where all_nodes contains all the nodes in the forest
     """
     assert(len(main_roots) != 0)
     # If we can't find any main_roots in our forest, then something is wrong since a tree must be rooted somewhere
+    img_path = f"trees/{screen_name[:5]}_tree_{iter}.png"
+    file_path = f"trees/{screen_name[:5]}_cluster_nodes_{iter}.txt"
+
     G = pgv.AGraph(strict=False, directed=True)
     for i, main_root in enumerate(main_roots):
         # main_root.display()
-        main_root.display_cluster(G, str(i))
+        main_root.display_cluster(G, str(i), file_path)
     G.layout(prog='dot') # use dot
-    G.draw('thuy_graph.png')
-
+    G.draw(img_path)
+    
 
 def _get_core_detector(user_activity: str):
     """
@@ -348,7 +352,7 @@ def generate_clusters(base_user: str, soc_graph,
 
     clusters_filtered = csgc.filter_by_expected_size(clusters)
     # Set ranked=True when visualizing tree
-    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=False)
+    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=True)
     thresh += increment
     for parent_node in parent_nodes:
         cluster_neighbourhood, cluster_soc_graph, base_user_activities = \
@@ -422,7 +426,7 @@ def trace_no_split_nodes(roots: List[ClusterNode]) -> List[ClusterNode]:
     return result
 
 
-def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[Cluster]:
+def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Optional[int]) -> List[Cluster]:
     """Returns clusters from the social graph and screen name of user."""
     try:
         log.info("Clustering:")
@@ -430,11 +434,18 @@ def clustering_from_social_graph(screen_name: str, user_activity: str) -> List[C
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
         main_roots = dividing_social_graph(0.3, 0.6, 0.05, screen_name, user_activity=user_activity)
+        visualize_forest1(screen_name, main_roots, iter)
         no_split_nodes = trace_no_split_nodes(main_roots)
         clusters = []
-        for n in no_split_nodes:
+        def traverse_tree(node: ClusterNode):
+            clusters.append(node.root)
+            if len(node.children) == 0:
+                return
+            for child in node.children:
+                traverse_tree(child)
+        for n in main_roots:
             # n.root is the cluster at the node n
-            clusters.append(n.root)
+            traverse_tree(n)
         return clusters
     except Exception as e:
         log.exception(e)

@@ -32,9 +32,10 @@ class ClusterNode:
         for child in self.children:
             child.display(indent + 1)
 
-    def display_cluster(self, G, id, indent=0):
+    def display_cluster(self, G, id, file_path, indent=0):
         """Display the tree rooted at current node"""
         self.id = id
+        self.root.id = id
         path = DEFAULT_PATH
         cluster = self.root
         injector = sdi.Injector.get_injector_from_file(path)
@@ -54,13 +55,18 @@ class ClusterNode:
             t = self.parent.threshold
 
         rounded_t = round(self.threshold, 4)
-        print(("   " * indent), f"id={id}", str(rounded_t), len(users), top_10, l, round(t, 4))
+        text = f"{('   ' * indent)} id={id}, {str(rounded_t)}, {len(users)}, {top_10}, {l}, {round(t, 4)}"
+        #print(text)
+        with open(file_path, "a") as f:
+            f.write(str(text) + "\n")
+            f.close()
+
         # Draw the graph
         G.add_node(f"t={rounded_t}\n size={len(users)}\n id={id}")
         if self.parent is not None:
             G.add_edge(f"t={round(t, 4)}\n size={l}\n id={id[:-1]}", f"t={rounded_t}\n size={len(users)}\n id={id}")
         for i, child in enumerate(self.children):
-            child.display_cluster(G, id + str(i), indent + 1)
+            child.display_cluster(G, id + str(i), file_path, indent + 1)
 
         
 

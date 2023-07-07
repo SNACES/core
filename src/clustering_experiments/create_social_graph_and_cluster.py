@@ -476,7 +476,8 @@ def filter_by_expected_size(cluster_lst: List[Cluster]) -> List[Cluster]:
 
     filtered_clusters = []
     for cluster in cluster_lst:
-        if len(cluster.users) >= min(expected_size, 10):
+        # Size threshold between 10 and 20
+        if len(cluster.users) >= min(max(expected_size, 10), 20):
             filtered_clusters.append(cluster)
 
     return filtered_clusters

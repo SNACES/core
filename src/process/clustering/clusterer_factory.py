@@ -2,7 +2,7 @@ from src.process.clustering.label_propagation_clusterer import LabelPropagationC
 from src.process.clustering.walktrap_clusterer_weighted import WalktrapClustererWeighted
 from src.process.clustering.walktrap_clusterer_unweighted import WalktrapClustererUnweighted
 from src.process.clustering.bayan_clusterer import BayanClusterer
-
+import random
 
 from typing import Dict, List
 
@@ -10,7 +10,7 @@ from typing import Dict, List
 class ClustererFactory():
     def create_clusterer(type, social_graph_getter, cluster_setter, user_friends_getter):
         # Uncomment desired clusterer algorithm
-
+        random.seed(0)
         # clusterer = LabelPropagationClusterer(social_graph_getter, cluster_setter, user_friends_getter)
         clusterer = WalktrapClustererWeighted(social_graph_getter, cluster_setter, user_friends_getter)
         # clusterer = WalktrapClustererUnweighted(social_graph_getter, cluster_setter, user_friends_getter)

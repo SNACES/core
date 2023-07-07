@@ -6,6 +6,7 @@ conf/credentials.py
 *.log
 *.pkl
 *.csv
+*.txt
 *.pickle
 src/twitter-download/user_list
 src/clustering/label-propagation/label_propagation_results
