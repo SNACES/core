@@ -145,13 +145,17 @@ class JaccardCoreDetector():
 
     def _user_select_cluster(self, user_id, clusters):
         """User chooses cluster."""
+        use_id = True
         cluster_id_map = {clusters[i].id: i for i in range(len(clusters))}
         log.info(f"Here are the {len(clusters)} clusters that have been created:")
+        # If None in key
+        if None in cluster_id_map:
+            use_id = False
         for i in range(len(clusters)):
-            log.info(f"All users in Cluster id={clusters[i].id}:")
+            log.info(f"All users in Cluster id={clusters[i].id if use_id else i}:")
             readable_users = [self.user_getter.get_user_by_id(user_id).screen_name for user_id in clusters[i].users]
             log.info(readable_users)
-            log.info(f"Top_10 users in Cluster id={clusters[i].id} before we download their tweets:")
+            log.info(f"Top_10 users in Cluster id={clusters[i].id if use_id else i} before we download their tweets:")
             screen_name = self.user_getter.get_user_by_id(user_id).screen_name
             top_10_users = rank_users(screen_name, clusters[i])
             log.info(top_10_users)
@@ -159,14 +163,17 @@ class JaccardCoreDetector():
         while True:
             try:
                 i = str(input("Please input the id of the cluster you choose to explore:"))
-                if i in cluster_id_map:
+                if use_id and i in cluster_id_map:
+                    break
+                elif not use_id and 0 <= int(i) < len(clusters):
                     break
                 else:
                     print("Invalid input. Please enter a number associated to the cluster you want to choose")
             except ValueError:
                 print("Invalid input. Please enter a number associated to the cluster you want to choose")
         log.info(f"The user chooses cluster {i}")
-        return clusters[cluster_id_map[i]]
+        selected_cluster = clusters[cluster_id_map[i]] if use_id else clusters[int(i)]
+        return selected_cluster
 
     def loop_iteration(self, user_id: str, user_activity, curr_top_10_users, iter, skip_download=True, optimize_threshold=False):
         if not skip_download:
@@ -181,9 +188,9 @@ class JaccardCoreDetector():
         clusters = self._clustering(user_id, user_activity, thresh, iter=iter)
         # clusters only keeps the largest intact ones, as in the report
         # now it selects by production utility
-        # chosen_cluster = self._select_cluster(user_id, curr_top_10_users, clusters)
+        chosen_cluster = self._select_cluster2(user_id, curr_top_10_users, clusters)
         # Alternatively, the user can choose the cluster
-        chosen_cluster = self._user_select_cluster(user_id, clusters)
+        # chosen_cluster = self._user_select_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)
@@ -234,6 +241,41 @@ class JaccardCoreDetector():
             prod_ranker_scores = self.prod_ranker.score_users(cluster_user_ids)
 
             cluster_scores[cluster] = sum([prod_ranker_scores[str(user_id)][0] for user_id in top_10_users_ids])
+
+        return max(cluster_scores, key=cluster_scores.get)
+    
+    def _select_cluster1(self, user_id, top_10_users, clusters):
+        """Returns the cluster where the sum of the social support score of the top 10 users of the previous iteration is the highest."""
+
+        log.info("Selecting Cluster based on social support")
+
+        cluster_scores = {cluster: 0 for cluster in clusters}
+        top_10_users_ids = [self.user_getter.get_user_by_screen_name(top_user).id for top_user in top_10_users]
+
+        for cluster in clusters:
+            cluster_user_ids = list(set([str(user_id) for user_id in cluster.users + top_10_users_ids]))
+            sosu_ranker_scores = self.sosu_ranker.score_users(cluster_user_ids)
+
+            cluster_scores[cluster] = sum([sosu_ranker_scores[str(user_id)][0] for user_id in top_10_users_ids])
+
+        return max(cluster_scores, key=cluster_scores.get)
+    
+    def _select_cluster2(self, user_id, top_10_users, clusters):
+        """Returns the cluster where the modified Jaccard similarity with the top 10 users of the previous iteration is the highest."""
+        log.info("Selecting Cluster based on modified Jaccard similarity")
+        cluster_scores = {cluster: 0 for cluster in clusters}
+        top_10_users_ids = [self.user_getter.get_user_by_screen_name(top_user).id for top_user in top_10_users]
+
+        for cluster in clusters:
+            sosu_ranker_scores = self.sosu_ranker.score_users(cluster.users)
+            sosu_ranking = list(sorted(sosu_ranker_scores, key=lambda x: (sosu_ranker_scores[x][0], sosu_ranker_scores[x][1]), reverse=True))
+            for i, user_id in enumerate(top_10_users_ids):
+                if user_id in sosu_ranking:
+                    distance = abs(i - sosu_ranking.index(user_id))
+                    weight = 1 / (i + 1) # higher ranked users are more important
+                    cluster_scores[cluster] += weight / (distance + 1)
+
+            cluster_scores[cluster] /= len(cluster.users)
 
         return max(cluster_scores, key=cluster_scores.get)
 

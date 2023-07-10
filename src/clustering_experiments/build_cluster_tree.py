@@ -179,8 +179,8 @@ def visualize_forest1(screen_name: str, main_roots: List[ClusterNode], iter: Opt
     """
     assert(len(main_roots) != 0)
     # If we can't find any main_roots in our forest, then something is wrong since a tree must be rooted somewhere
-    img_path = f"trees/{screen_name[:5]}_tree_{iter}.png"
-    file_path = f"trees/{screen_name[:5]}_cluster_nodes_{iter}.txt"
+    img_path = f"trees/{screen_name[:6]}_tree_{iter}.png"
+    file_path = f"trees/{screen_name[:6]}_cluster_nodes_{iter}.txt"
 
     G = pgv.AGraph(strict=False, directed=True)
     for i, main_root in enumerate(main_roots):
@@ -352,7 +352,7 @@ def generate_clusters(base_user: str, soc_graph,
 
     clusters_filtered = csgc.filter_by_expected_size(clusters)
     # Set ranked=True when visualizing tree
-    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=True)
+    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=False)
     thresh += increment
     for parent_node in parent_nodes:
         cluster_neighbourhood, cluster_soc_graph, base_user_activities = \
@@ -425,6 +425,34 @@ def trace_no_split_nodes(roots: List[ClusterNode]) -> List[ClusterNode]:
 
     return result
 
+def trace_no_redundant_nodes(roots: List[ClusterNode]) -> List[ClusterNode]:
+    """
+    Let a "longest non-divergent path" denote any subtree in the forest, such that:
+    - it is a path from node A to B without any divergence in between, and
+    - it is the longest such path that passes nodes A and B.
+
+    For example:
+         A
+        / \
+       B   C
+      /
+     D
+
+    In the above graph, "B-D" and "C" are the longest non-divergent paths.
+
+    Return a list of tree nodes, where each node is the first node in some longest non-divergent path
+    within our forest.
+    - Each tree in our forest is rooted at a node in roots
+    """
+    result = []
+
+    for root in roots:
+        # if root has no splitting
+        result.append(root)
+        if not _has_no_split(root):
+            result.extend(trace_no_redundant_nodes(root.children))         
+
+    return result
 
 def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Optional[int]) -> List[Cluster]:
     """Returns clusters from the social graph and screen name of user."""
@@ -433,9 +461,10 @@ def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Opt
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
-        main_roots = dividing_social_graph(0.3, 0.6, 0.05, screen_name, user_activity=user_activity)
-        visualize_forest1(screen_name, main_roots, iter)
-        no_split_nodes = trace_no_split_nodes(main_roots)
+        main_roots = dividing_social_graph(0.0001, 0.001, 0.0003, screen_name, user_activity=user_activity)
+        # visualize_forest1(screen_name, main_roots, iter)
+        # no_split_nodes = trace_no_split_nodes(main_roots)
+        no_redundant_nodes = trace_no_redundant_nodes(main_roots)
         clusters = []
         def traverse_tree(node: ClusterNode):
             clusters.append(node.root)
@@ -443,9 +472,10 @@ def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Opt
                 return
             for child in node.children:
                 traverse_tree(child)
-        for n in main_roots:
+        for n in no_redundant_nodes:
             # n.root is the cluster at the node n
-            traverse_tree(n)
+            # traverse_tree(n)
+            clusters.append(n.root)
         return clusters
     except Exception as e:
         log.exception(e)
