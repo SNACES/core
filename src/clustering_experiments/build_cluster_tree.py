@@ -179,8 +179,8 @@ def visualize_forest1(screen_name: str, main_roots: List[ClusterNode], iter: Opt
     """
     assert(len(main_roots) != 0)
     # If we can't find any main_roots in our forest, then something is wrong since a tree must be rooted somewhere
-    img_path = f"trees/{screen_name[:6]}_tree_{iter}.png"
-    file_path = f"trees/{screen_name[:6]}_cluster_nodes_{iter}.txt"
+    img_path = f"trees2/{screen_name[:6]}_tree_{iter}.png"
+    file_path = f"trees2/{screen_name[:6]}_cluster_nodes_{iter}.txt"
 
     G = pgv.AGraph(strict=False, directed=True)
     for i, main_root in enumerate(main_roots):
@@ -328,12 +328,12 @@ def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbo
     for user in cluster.users:
         user_map[user] = list(set(neighbourhood.get_user_activities(user)).intersection(cluster.users)) if user_activity == 'friends' else neighbourhood.get_user_activities(user)
 
-    base_user_activities = user_map[str(cluster.base_user)]
+    #base_user_activities = user_map[str(cluster.base_user)]
     cluster_neighbourhood = \
         LocalNeighbourhood(cluster.base_user, None, user_map, neighbourhood.user_activity)
     cluster_soc_graph = \
         csgc.create_social_graph_from_local_neighbourhood(cluster_neighbourhood, user_activity)
-    return cluster_neighbourhood, cluster_soc_graph, base_user_activities
+    return cluster_neighbourhood, cluster_soc_graph#, base_user_activities
 
 
 def generate_clusters(base_user: str, soc_graph,
@@ -348,14 +348,20 @@ def generate_clusters(base_user: str, soc_graph,
     # Generate the cluster nodes on parent level (for 1st iteration)
 
     # generate the clusters
+    # log.info(f"Social graph users: {list(soc_graph.graph.nodes)}")
     clusters = csgc.clustering_from_social_graph(base_user, soc_graph)
+    # Intersection of users in clusters
+    # ref_set = set([-1]) if len(clusters) <= 1 else set(clusters[0].users)
+    # for cluster in clusters:
+    #     ref_set = ref_set.intersection(set(cluster.users))
+    # log.info(f"Intersection of users in clusters: {ref_set}")
 
     clusters_filtered = csgc.filter_by_expected_size(clusters)
     # Set ranked=True when visualizing tree
     parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=False)
     thresh += increment
     for parent_node in parent_nodes:
-        cluster_neighbourhood, cluster_soc_graph, base_user_activities = \
+        cluster_neighbourhood, cluster_soc_graph = \
             generate_soc_graph_and_neighbourhood_from_cluster(parent_node,
                                                               neighbourhood, user_activity)
         if cluster_neighbourhood == neighbourhood:
@@ -365,15 +371,22 @@ def generate_clusters(base_user: str, soc_graph,
             cluster_neighbourhood,
             user_activity,
             threshold=thresh)
-        cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_activities
+        # cluster_neighbourhood.users[str(parent_node.root.base_user)] = base_user_activities
         child_nodes = generate_clusters(base_user, refined_cluster_soc_graph,
                                         cluster_neighbourhood,
                                         thresh, increment, end_thresh,
                                         user_activity)
+        # Intersection in the child nodes
+        # ref_set = set(-1)
+        # if len(child_nodes) > 1:
+        #     ref_set = set(child_nodes[0].root.users)
         for child_node in child_nodes:
+            # ref_set = ref_set.intersection(set(child_node.root.users))
             child_node.parent = parent_node
             # if this child does in fact have a parent:
             parent_node.children.append(child_node)
+        # log.info(f"Parent size: {len(parent_node.root.users)}")
+        # log.info(f"Ref set: {list(ref_set)}")
     return parent_nodes
 
 
@@ -462,7 +475,7 @@ def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Opt
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
         main_roots = dividing_social_graph(0.0001, 0.001, 0.0003, screen_name, user_activity=user_activity)
-        # visualize_forest1(screen_name, main_roots, iter)
+        visualize_forest1(screen_name, main_roots, iter)
         # no_split_nodes = trace_no_split_nodes(main_roots)
         no_redundant_nodes = trace_no_redundant_nodes(main_roots)
         clusters = []

@@ -83,7 +83,7 @@ class JaccardCoreDetector():
         except Exception as e:
             log.exception(e)
             exit()
-
+        # self._visualize_cluster(top_10_users, cluster, user_activity)
         # Other iterations
         while str(curr_user_id) not in prev_user_id:
             log.info("Curr user id: " + str(curr_user_id))
@@ -100,6 +100,8 @@ class JaccardCoreDetector():
                 exit()
 
         # Save selected clusters to file
+        with open(f"graph_data/selected_clusters_{initial_user_id}_ba.pkl", "wb") as f:
+            pickle.dump([cluster, top_10_users], f)
         # with open(f"data/selected_clusters_{initial_user_id}_ww_friends", "wb") as f:
         #     pickle.dump(clusters, f)
         log.info("The previous user id list is " + str(prev_user_id))
@@ -189,8 +191,13 @@ class JaccardCoreDetector():
         # clusters only keeps the largest intact ones, as in the report
         # now it selects by production utility
         chosen_cluster = self._select_cluster2(user_id, curr_top_10_users, clusters)
+        log.info("The algorithm chooses cluster...")
+        if chosen_cluster.id is None:
+            log.info("Cluster index: " + str(clusters.index(chosen_cluster)))
+        else:
+            log.info("Cluster id: " + str(chosen_cluster.id))
         # Alternatively, the user can choose the cluster
-        # chosen_cluster = self._user_select_cluster(user_id, clusters)
+        chosen_cluster = self._user_select_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
         top_10_users = rank_users(screen_name, chosen_cluster)

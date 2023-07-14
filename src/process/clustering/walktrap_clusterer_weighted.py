@@ -29,9 +29,11 @@ class WalktrapClustererWeighted(Clusterer):
         clusters = []
         for data in clusters_data:
             users = list(data)
-
-            if str(seed_id) in users: # Why is this needed?
-                users.remove(str(seed_id))
+            # log.info("Users in cluster: ", users)
+            # if str(seed_id) in users: # Why is this needed?
+            #     log.info("Removing seed from cluster")
+            #     # log.info("Count:", users.count(str(seed_id)))
+            #     users.remove(str(seed_id))
 
             #cleaned_users = self.clean_cluster_users(users)
 

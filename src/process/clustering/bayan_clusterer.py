@@ -20,8 +20,8 @@ class BayanClusterer(Clusterer):
         for data in clusters_data:
             users = list(data)
 
-            if str(seed_id) in users: # Why is this needed?
-                users.remove(str(seed_id))
+            # if str(seed_id) in users: # Why is this needed?
+            #     users.remove(str(seed_id))
 
             #cleaned_users = self.clean_cluster_users(users)
 

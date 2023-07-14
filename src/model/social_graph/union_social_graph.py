@@ -37,6 +37,8 @@ class UnionSocialGraph(SocialGraph):
                     graph.add_edge(user, str(friend), weight=weights_map[user][friend])
                 else:
                     graph.add_edge(user, str(friend))
+                    
+        # Seed user may be re-introduced
         log.info(graph.order())
 
         params = deepcopy(local_neighbourhood.params)
