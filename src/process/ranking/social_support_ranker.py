@@ -24,7 +24,9 @@ class SocialSupportRanker(Ranker):
         friends = self.create_friends_dict(user_ids)
         tweets = self.raw_tweet_getter.get_tweets_by_user_ids(user_ids)
         # Omit self-retweets
-        tweets = [tweet for tweet in tweets if tweet.user_id != tweet.retweet_id]
+        tweets = [tweet for tweet in tweets if tweet.user_id != tweet.retweet_user_id]
+        # Remove duplicate tweets
+        tweets = list({tweet.id: tweet for tweet in tweets}.values())
         tweets_by_retweet_group = self._group_by_retweet_id(tweets)
         def get_retweets_of_tweet_id(tweet_id):
             return tweets_by_retweet_group.get(str(tweet_id), [])
@@ -41,14 +43,18 @@ class SocialSupportRanker(Ranker):
             for original_tweet_id in original_tweet_ids:
                 retweets = get_retweets_of_tweet_id(original_tweet_id)
                 scores[id][0] += len(retweets)
-
+            # if id == '929791330519322624': print(scores[id][0])
             user_retweets = [tweet for tweet in user_tweets if tweet.retweet_id is not None]
             for user_retweet in user_retweets:
                 retweets = get_later_retweets_of_tweet_id(user_retweet.retweet_id, user_retweet.created_at)
                 # The person who retweeted is a direct follower of id.
                 retweets_from_direct_followers = [rtw for rtw in retweets if is_direct_follower(id, str(rtw.user_id))]
                 scores[id][0] += len(retweets_from_direct_followers) * self.alpha
-
+            # if id == '929791330519322624': 
+            #     print(scores[id][0])
+            #     print("User tweets: ", len(user_tweets))
+            #     print("Original tweets: ", len(original_tweet_ids))
+            #     print("User retweets: ", len(user_retweets))
         return scores
 
     def _group_by_retweet_id(self, tweets) -> Dict:

@@ -140,6 +140,7 @@ def package_cluster_nodes(clusters: List[Cluster], thresh, ranked=False) -> List
         else:
             top_users = None
         tree = ClusterNode(thresh=thresh, root=c, top_users=top_users)
+        c.top_users = top_users
         trees.append(tree)
 
     return trees
@@ -186,6 +187,9 @@ def visualize_forest1(screen_name: str, main_roots: List[ClusterNode], iter: Opt
     for i, main_root in enumerate(main_roots):
         # main_root.display()
         main_root.display_cluster(G, str(i), file_path)
+    with open(file_path, "a") as f:
+            f.write("--------------------\n")
+            f.close()
     G.layout(prog='dot') # use dot
     G.draw(img_path)
     
@@ -339,7 +343,8 @@ def generate_soc_graph_and_neighbourhood_from_cluster(node: ClusterNode, neighbo
 def generate_clusters(base_user: str, soc_graph,
                                         neighbourhood: LocalNeighbourhood,
                                         thresh: float, increment: float, end_thresh: float,
-                                        user_activity: str) -> List[ClusterNode]:
+                                        user_activity: str,
+                                        just_first_level: bool = False) -> List[ClusterNode]:
 
     if thresh > end_thresh:
         return []
@@ -358,7 +363,9 @@ def generate_clusters(base_user: str, soc_graph,
 
     clusters_filtered = csgc.filter_by_expected_size(clusters)
     # Set ranked=True when visualizing tree
-    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=False)
+    parent_nodes = package_cluster_nodes(clusters_filtered, thresh, ranked=True)
+    if just_first_level:
+        return parent_nodes
     thresh += increment
     for parent_node in parent_nodes:
         cluster_neighbourhood, cluster_soc_graph = \
@@ -505,7 +512,7 @@ if __name__ == "__main__":
     top_nodes = dividing_social_graph(0.001, 0.01, 0.002, "chessable", "user retweets")
     #top_nodes = dividing_social_graph(0.3, 0.6, 0.05, "hardmaru", "friends")
     #visualize_forest(all_nodes)
-    visualize_forest1(top_nodes)
+    # visualize_forest1(top_nodes)
     # Find the oldest nodes in any longest non-divergent path in our resulting forest
     print("============================================================")
     print("The leading nodes in longest non-divergent paths are:")

@@ -137,7 +137,7 @@ class JaccardCoreDetector():
         # chosen_cluster = self._auto_select_first_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)
+        top_10_users = rank_users(screen_name, chosen_cluster) if chosen_cluster.top_users is None else chosen_cluster.top_users
         log.info("top_10 of chosen cluster:")
         log.info(top_10_users)
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
@@ -159,7 +159,7 @@ class JaccardCoreDetector():
             log.info(readable_users)
             log.info(f"Top_10 users in Cluster id={clusters[i].id if use_id else i} before we download their tweets:")
             screen_name = self.user_getter.get_user_by_id(user_id).screen_name
-            top_10_users = rank_users(screen_name, clusters[i])
+            top_10_users = rank_users(screen_name, clusters[i]) if clusters[i].top_users is None else clusters[i].top_users
             log.info(top_10_users)
             log.info("")
         while True:
@@ -200,7 +200,7 @@ class JaccardCoreDetector():
         chosen_cluster = self._user_select_cluster(user_id, clusters)
         if not skip_download:
             self._download_cluster_tweets(chosen_cluster)
-        top_10_users = rank_users(screen_name, chosen_cluster)
+        top_10_users = rank_users(screen_name, chosen_cluster) if chosen_cluster.top_users is None else chosen_cluster.top_users
         curr_user = self.user_getter.get_user_by_screen_name(top_10_users[0])
         curr_user = curr_user.id
 

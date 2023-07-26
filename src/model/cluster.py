@@ -13,6 +13,7 @@ class Cluster():
         #     users = [str(base_user)] + users
         self.users = users
         self.id = id
+        self.top_users = None
         
     def fromDict(dict: Dict):
         base_user = dict["base_user"]

@@ -302,7 +302,10 @@ def clustering_from_social_graph(screen_name: str, social_graph: SocialGraph, pa
         process_module = injector.get_process_module()
         dao_module = injector.get_dao_module()
         clusterer = process_module.get_clusterer()
-
+        
+        # Return nothing if social graph too small
+        if len(social_graph.graph.nodes) < 5:
+            return []
         clusters = clusterer.cluster_by_social_graph(
             user.id, social_graph, None)
         return clusters
