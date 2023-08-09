@@ -180,8 +180,8 @@ def visualize_forest1(screen_name: str, main_roots: List[ClusterNode], iter: Opt
     """
     assert(len(main_roots) != 0)
     # If we can't find any main_roots in our forest, then something is wrong since a tree must be rooted somewhere
-    img_path = f"trees2/{screen_name[:6]}_tree_{iter}.png"
-    file_path = f"trees2/{screen_name[:6]}_cluster_nodes_{iter}.txt"
+    img_path = f"ls_results_trees/{screen_name[:6]}_tree_{iter}.png"
+    file_path = f"ls_results_trees/{screen_name[:6]}_cluster_nodes_{iter}.txt"
 
     G = pgv.AGraph(strict=False, directed=True)
     for i, main_root in enumerate(main_roots):
@@ -481,7 +481,8 @@ def clustering_from_social_graph(screen_name: str, user_activity: str, iter: Opt
         #all_nodes = clusters_to_forest(0.3, 0.60, 0.05, screen_name)
         #main_roots = get_main_roots(all_nodes)
         # We set lower thresholds for non-friend activities
-        main_roots = dividing_social_graph(0.0001, 0.001, 0.0003, screen_name, user_activity=user_activity)
+        # main_roots = dividing_social_graph(0.0001, 0.001, 0.0003, screen_name, user_activity=user_activity)
+        main_roots = dividing_social_graph(0.005, 0.01, 0.001, screen_name, user_activity=user_activity)
         visualize_forest1(screen_name, main_roots, iter)
         # no_split_nodes = trace_no_split_nodes(main_roots)
         no_redundant_nodes = trace_no_redundant_nodes(main_roots)

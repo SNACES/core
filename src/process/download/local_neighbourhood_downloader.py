@@ -38,6 +38,8 @@ class LocalNeighbourhoodDownloader():
         # if user_friends_ids is None:
         #     log.info("Could not find user_friend list")
         #     self.user_friends_downloader.download_friends_ids_by_id(user_id)
+        
+        # If using the JSON DAO, user_friends_ids will be users we retweeted
         user_friends_ids = self.user_friend_getter.get_user_friends_ids(
             user_id)
         log.info(f"Downloading local neighbourhood of {user_id}")
@@ -59,15 +61,7 @@ class LocalNeighbourhoodDownloader():
 
             user_activities = self.user_activity_getter.get_user_activities(id)
             if user_activities is None:
-                # self.user_friends_downloader.download_friends_ids_by_id(id)
-                # user_friends = self.user_friend_getter.get_user_friends_ids(id)
-                # log.info("Downloaded " + str(len(user_friends)) + " user friends for " + str(id))
                 user_activities = []
-                # log.info("Could not get user activities for " + str(id))
-            else:
-                pass
-                # log.info("Already stored " + str(len(user_activities)) +
-                #         " user activities for " + str(id))
 
             assert user_activities is not None
 

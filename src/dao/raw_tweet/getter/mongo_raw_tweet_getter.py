@@ -192,7 +192,7 @@ class MongoRawTweetGetter(RawTweetGetter):
     def get_tweets_by_user_ids(self, user_ids: List[str]) -> List[Tweet]:
         # Get all tweets of all users in the list
         user_ids = [bson.int64.Int64(user_id) for user_id in user_ids]
-        from_date = datetime.today() + relativedelta(months=-12)
+        from_date = datetime(2023, 7, 16) + relativedelta(months=-12)
 
         # tweet_doc_list = self.collection.find({"user_id": {"$in": user_ids}})
         

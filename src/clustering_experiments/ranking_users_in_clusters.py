@@ -111,6 +111,49 @@ def get_new_intersection_ranking(user, cluster, path=DEFAULT_PATH):
             sosu_ranking.remove(user)
     return sosu_ranking
 
+def get_simple_prod_ranking(user, cluster, path=DEFAULT_PATH):
+    """Produces a ranking that is the Production ranking
+
+    Args:
+        prod:
+            Is a dictionary where the key is the user id and the value is their
+            score for the respective ranker
+    Returns:
+        An ordered list of about 10 highest ranked users sorted by highest rank.
+    """
+    prod, con, infl1, infl2 = get_rankings(user, cluster, False, path)
+    prod_ranking = list(sorted(prod, key=lambda x: (prod[x][0], prod[x][1]), reverse=True))[:10]
+    return prod_ranking
+
+def get_simple_con_ranking(user, cluster, path=DEFAULT_PATH):
+    """Produces a ranking that is the Consumption ranking
+
+    Args:
+        con:
+            Is a dictionary where the key is the user id and the value is their
+            score for the respective ranker
+    Returns:
+        An ordered list of about 10 highest ranked users sorted by highest rank.
+    """
+    prod, con, infl1, infl2 = get_rankings(user, cluster, False, path)
+    con_ranking = list(sorted(con, key=lambda x: (con[x][0], con[x][1]), reverse=True))[:10]
+    return con_ranking
+
+def get_simple_sosu_ranking(user, cluster, path=DEFAULT_PATH):
+    """Produces a ranking that is the Social Support ranking
+
+    Args:
+        sosu:
+            Is a dictionary where the key is the user id and the value is their
+            score for the respective ranker
+    Returns:
+        An ordered list of about 10 highest ranked users sorted by highest rank.
+    """
+    sosu, infl1 = get_rankings(user, cluster, path)
+    sosu_ranking = list(sorted(sosu, key=lambda x: (sosu[x][0], sosu[x][1]), reverse=True))[:10]
+    return sosu_ranking
+
+
 def get_intersection_ranking(user, cluster, path=DEFAULT_PATH):
     """Produces a ranking that is the intersection of the Production,
     Consumption, Influence One, and Influence Two rankings

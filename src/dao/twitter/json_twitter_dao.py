@@ -1,22 +1,19 @@
 import datetime
 from queue import Queue
 from threading import Thread
+import json
 
-import tweepy
-
-import conf.credentials as credentials
 from typing import Union, List, Dict, Tuple
-from tweepy import OAuthHandler, Stream, API, Cursor
 from tweepy.streaming import StreamListener
 from src.model.tweet import Tweet
 from src.model.user import User
 from src.dao.twitter.twitter_dao import TwitterGetter
-from tweepy import TweepError
 from src.shared.logger_factory import LoggerFactory
 import threading
 
 log = LoggerFactory.logger(__name__)
 
+JSON_PATH = "data/tweets.json"
 
 apiThreadLock = threading.Lock()
 class BufferedUserTweetGetter():
@@ -157,20 +154,12 @@ class TweepyListener(StreamListener):
         return self.counter < self.limit
 
 
-class TwitterAuthenticator():
-    def authenticate(self):
-        auth = OAuthHandler(credentials.CONSUMER_KEY,
-            credentials.CONSUMER_SECRET)
-        auth.set_access_token(credentials.ACCESS_TOKEN,
-            credentials.ACCESS_TOKEN_SECRET)
-
-        return auth
-
-
-class TweepyTwitterGetter(TwitterGetter):
+class JSONTwitterGetter(TwitterGetter):
     def __init__(self):
-        self.auth = TwitterAuthenticator().authenticate()
-        self.twitter_api = API(self.auth, wait_on_rate_limit=True)
+        self.path = JSON_PATH
+        # Load the json file
+        with open(self.path) as f:
+            self.data = json.load(f)
 
     def stream_tweets_by_user_id_list(self, user_ids, subscriber, num_tweets=0):
         getter = BufferedUserTweetGetter(num_tweets=num_tweets, subscriber=subscriber, user_ids=user_ids, twitter_api=self.twitter_api)

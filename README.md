@@ -26,20 +26,14 @@ CONSUMER_SECRET = "<Your API Key Secret>"
 Note that the API Key is also known as the Consumer Key.
 
 ### Installing
-Python 3.8 is required for the following installation steps.
+Python 3.9 is required for the following installation steps.
 
-1. Clone Git repository to your workspace
-1. Run the install script `./install.sh`
-1. Run `python ./setup.py` to setup the Pipfile
-1. Run `pipenv shell` to start a pip environment using the pip file
+Follow the instructions in the main README.md file to setup the environment.
+
+### Notes
+The algorithm, as run below, takes tweets from July 16, 2022 to July 16, 2023. This date is a bit arbitrary, but it is important to fix the date range since no new tweets are being added to the dataset. This can be viewed at `src/dao/raw_tweet/getter/mongo_raw_tweet_getter.py` in the function `get_tweets_by_user_ids`.
 
 ## Running
 
-1. The main program can be started by running `python ./SNACES.py`.
-1. This will trigger the main program to loop, which will then prompt you
-to input options for which process to trigger:
-   1. `Download` downloads information from twitter
-   1. `Raw Tweet Processing` processes raw tweets
-   1. `Word Frequency` performs word frequency operations on collected data
-   1. `Social Graph` constructs a social graph from downloaded friends
-   1. `Clustering` performs clustering algorithms on data
+1. The main program can be started by running `python detect_core_jaccard.py -n {seed_user} -act {user_activity}`. For example 
+`python detect_core_jaccard.py -n "hardmaru" -act "user retweets"` for seed user "hardmaru" and user activity "user retweets".
