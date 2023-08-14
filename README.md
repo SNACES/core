@@ -38,7 +38,16 @@ Note that you might need to do the following in the pip environment:
 2. pip install matplotlib
 3. create /core/log folder
 
-### Installation for Clustering Trial Branch
+### Configuration
+
+The default path we are using is:
+`/src/scripts/config/create_social_graph_and_cluster_config.yaml`
+
+## The Clustering Trial Branch
+
+A lot of work has been done on the clustering trial branch which focuses on core detection.
+
+### Installing
 
 See `clustering_trial_requirements.txt` for the required packages for the clustering trial branch. **Note:** The pygraphviz package may require additional installation steps. See [here](https://stackoverflow.com/questions/15661384/python-does-not-see-pygraphviz/71661788#71661788).
 
@@ -51,10 +60,13 @@ source env/bin/activate
 pip install -r clustering_trial_requirements.txt
 ```
 
-### Configuration
+### Running
 
-The default path we are using is:
-`/src/scripts/config/create_social_graph_and_cluster_config.yaml`
+Once the required packages are installed, you can run the core detection algorithm by executing
+```
+python detect_core_jaccard.py -n "hardmaru" -act "user retweets"
+```
+`-n` stands for the seed user and `-act` represents the chosen activity set. The available activity sets are `user retweets`, `friends`, and `user retweets ids`.
 
 ## Running
 
