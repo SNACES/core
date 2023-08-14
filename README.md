@@ -38,6 +38,19 @@ Note that you might need to do the following in the pip environment:
 2. pip install matplotlib
 3. create /core/log folder
 
+### Installation for Clustering Trial Branch
+
+See `clustering_trial_requirements.txt` for the required packages for the clustering trial branch. **Note:** The pygraphviz package may require additional installation steps. See [here](https://stackoverflow.com/questions/15661384/python-does-not-see-pygraphviz/71661788#71661788).
+
+There may be some problems with the pipenv shell above. An alternative is to use a conda environment with Python 3.9. After installing conda and activating your environment, run `pip install -r clustering_trial_requirements.txt` to install the required packages.
+
+If there are some issues with pip conflicting, while in the conda environment, try the following to create a virtual environment and install the required packages: 
+```
+python -m venv env
+source env/bin/activate
+pip install -r clustering_trial_requirements.txt
+```
+
 ### Configuration
 
 The default path we are using is:
