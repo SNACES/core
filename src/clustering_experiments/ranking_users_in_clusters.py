@@ -13,8 +13,8 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     dao_module = injector.get_dao_module()
     user_getter = dao_module.get_user_getter()
 
-    #intersection_ranking = get_intersection_ranking(user, cluster, path)
-    intersection_ranking = get_simple_followers_ranking(user, cluster, path)
+    intersection_ranking = get_intersection_ranking(user, cluster, path)
+    #intersection_ranking = get_simple_followers_ranking(user, cluster, path)
 
     top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
     # top_n_users = filter_user_by_clustering(intersection_ranking, "fchollet", user_getter)
