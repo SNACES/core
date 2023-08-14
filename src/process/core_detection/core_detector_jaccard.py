@@ -100,8 +100,8 @@ class JaccardCoreDetector():
                 exit()
 
         # Save selected clusters to file
-        with open(f"results_data/selected_clusters_{initial_user_id}_ls.pkl", "wb") as f:
-            pickle.dump(clusters, f)
+        # with open(f"results_data/selected_clusters_{initial_user_id}_uw.pkl", "wb") as f:
+        #     pickle.dump(clusters, f)
         # with open(f"data/selected_clusters_{initial_user_id}_ww_friends", "wb") as f:
         #     pickle.dump(clusters, f)
         log.info("The previous user id list is " + str(prev_user_id))
@@ -128,7 +128,7 @@ class JaccardCoreDetector():
         else:
             thresh = 0.4
         clusters = self._clustering(user_id, user_activity, thresh, iter=1)
-        log.info("Saving initial clusters to file")
+        # log.info("Saving initial clusters to file")
         # Save initial clusters to file
         # with open(f"initial_clusters_{screen_name}", "wb") as f:
         #     pickle.dump(clusters, f)

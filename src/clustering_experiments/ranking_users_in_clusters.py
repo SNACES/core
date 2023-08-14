@@ -14,7 +14,7 @@ def rank_users(user, cluster, path=DEFAULT_PATH):
     user_getter = dao_module.get_user_getter()
 
     #intersection_ranking = get_intersection_ranking(user, cluster, path)
-    intersection_ranking = get_new_intersection_ranking(user, cluster, path)
+    intersection_ranking = get_simple_followers_ranking(user, cluster, path)
 
     top_n_users = [user_getter.get_user_by_id(id).screen_name for id in intersection_ranking]
     # top_n_users = filter_user_by_clustering(intersection_ranking, "fchollet", user_getter)
@@ -111,6 +111,31 @@ def get_new_intersection_ranking(user, cluster, path=DEFAULT_PATH):
             sosu_ranking.remove(user)
     return sosu_ranking
 
+def get_simple_followers_ranking(user, cluster, path=DEFAULT_PATH):
+    user_id = csgc.get_user_by_screen_name(user).id
+    injector = sdi.Injector.get_injector_from_file(path)
+    process_module = injector.get_process_module()
+    dao_module = injector.get_dao_module()
+    user_getter = dao_module.get_user_getter()
+
+    lf_ranker = process_module.get_ranker("LocalFollowers")
+    infl1_ranker = process_module.get_ranker("InfluenceOne")
+
+    # Second argument is the return of score_users
+    # prod_rank, prod = prod_ranker.rank(user_id, cluster)
+    # con_rank, con = con_ranker.rank(user_id, cluster)
+    # infl2_rank, infl2 = infl2_ranker.rank(user_id, cluster)
+    lf_rank, lf = lf_ranker.rank(user_id, cluster)
+    infl1_rank, infl1 = infl1_ranker.rank(user_id, cluster)
+    lf_ranking = list(sorted(lf, key=lambda x:lf[x], reverse=True))[:20]
+    infl1_ranking = list(sorted(lf, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=False))
+    for user in infl1_ranking:
+        if len(lf_ranking) <= 10:
+            break
+        if user in lf_ranking:
+            lf_ranking.remove(user)
+    return lf_ranking
+
 def get_simple_prod_ranking(user, cluster, path=DEFAULT_PATH):
     """Produces a ranking that is the Production ranking
 
@@ -122,7 +147,13 @@ def get_simple_prod_ranking(user, cluster, path=DEFAULT_PATH):
         An ordered list of about 10 highest ranked users sorted by highest rank.
     """
     prod, con, infl1, infl2 = get_rankings(user, cluster, False, path)
-    prod_ranking = list(sorted(prod, key=lambda x: (prod[x][0], prod[x][1]), reverse=True))[:10]
+    prod_ranking = list(sorted(prod, key=lambda x: (prod[x][0], prod[x][1]), reverse=True))[:20]
+    infl1_ranking = list(sorted(prod, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=False))
+    for user in infl1_ranking:
+        if len(prod_ranking) <= 10:
+            break
+        if user in prod_ranking:
+            prod_ranking.remove(user)
     return prod_ranking
 
 def get_simple_con_ranking(user, cluster, path=DEFAULT_PATH):
@@ -136,7 +167,13 @@ def get_simple_con_ranking(user, cluster, path=DEFAULT_PATH):
         An ordered list of about 10 highest ranked users sorted by highest rank.
     """
     prod, con, infl1, infl2 = get_rankings(user, cluster, False, path)
-    con_ranking = list(sorted(con, key=lambda x: (con[x][0], con[x][1]), reverse=True))[:10]
+    con_ranking = list(sorted(con, key=lambda x: (con[x][0], con[x][1]), reverse=True))[:20]
+    infl1_ranking = list(sorted(con, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=False))
+    for user in infl1_ranking:
+        if len(con_ranking) <= 10:
+            break
+        if user in con_ranking:
+            con_ranking.remove(user)
     return con_ranking
 
 def get_simple_sosu_ranking(user, cluster, path=DEFAULT_PATH):
@@ -150,7 +187,13 @@ def get_simple_sosu_ranking(user, cluster, path=DEFAULT_PATH):
         An ordered list of about 10 highest ranked users sorted by highest rank.
     """
     sosu, infl1 = get_rankings(user, cluster, path)
-    sosu_ranking = list(sorted(sosu, key=lambda x: (sosu[x][0], sosu[x][1]), reverse=True))[:10]
+    sosu_ranking = list(sorted(sosu, key=lambda x: (sosu[x][0], sosu[x][1]), reverse=True))[:20]
+    infl1_ranking = list(sorted(sosu, key=lambda x: (infl1[x][0], infl1[x][1]), reverse=False))
+    for user in infl1_ranking:
+        if len(sosu_ranking) <= 10:
+            break
+        if user in sosu_ranking:
+            sosu_ranking.remove(user)
     return sosu_ranking
 
 
